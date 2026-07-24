@@ -1,0 +1,1260 @@
+openapi: 3.0.3
+info:
+  title: How2Prompt API — Phase 1 (MVP)
+  version: 1.0.0
+  description: |
+    # How2Prompt API Contract — Phase 1 (MVP)
+
+    Đây là hợp đồng API (contract) do Backend cung cấp cho Frontend để phát triển song song.
+
+    ## Quy ước chung
+    - **Base URL**: `/api/v1`
+    - **Content-Type**: `application/json; charset=utf-8`
+    - **Naming**: tất cả field dùng `snake_case`.
+    - **Timestamps**: ISO 8601 UTC (ví dụ `2026-07-22T01:29:13Z`).
+    - **IDs**: UUID v4 dạng string.
+    - **i18n**: các trường có thể dịch trả về object `{ "en": "...", "vi": "..." }`.
+      FE tự chọn ngôn ngữ theo `user.locale`, fallback về `en`.
+
+    ## Authentication
+    - Mọi endpoint (trừ nhóm `Auth` và các endpoint đánh dấu `security: []`) yêu cầu header:
+      `Authorization: Bearer <access_token>`
+    - `access_token` sống 15 phút. Khi hết hạn → BE trả `401` với code `TOKEN_EXPIRED`,
+      FE gọi `POST /auth/refresh` để lấy token mới.
+    - `refresh_token` được BE set trong **httpOnly cookie** (FE không đọc trực tiếp).
+
+    ## Guest access (chưa đăng nhập)
+    Một số endpoint cho phép Guest (không cần token):
+    - `GET /templates`, `GET /templates/{id}`, taxonomy, `GET /ai-models`.
+    - `POST /templates/{id}/generate` — Guest được phép nhưng **giới hạn 3 lần/ngày/IP**.
+      FE phải gửi header `X-Guest-Fingerprint` (browser fingerprint) khi user chưa đăng nhập.
+
+    ## Định dạng lỗi chung
+    Mọi lỗi trả về body:
+    ```json
+    {
+      "error": {
+        "code": "STRING_CODE",
+        "message": "Human readable message",
+        "details": { "field": "reason" },
+        "trace_id": "uuid-for-support"
+      }
+    }
+    ```
+
+    ## Pagination
+    - Dùng **cursor-based**: query `?limit=20&cursor=<opaque>`.
+    - Response chứa `page_info` với `next_cursor` và `has_next`.
+
+servers:
+  - url: https://api.how2prompt.app/api/v1
+    description: Production
+  - url: https://staging-api.how2prompt.app/api/v1
+    description: Staging
+  - url: http://localhost:8080/api/v1
+    description: Local dev
+
+tags:
+  - name: Auth
+    description: Đăng ký, đăng nhập, quản lý phiên
+  - name: Users
+    description: Hồ sơ người dùng
+  - name: Workspaces
+    description: Không gian làm việc (Phase 1 chỉ personal)
+  - name: AI Models
+    description: Danh mục model AI
+  - name: Taxonomy
+    description: Category & Tag
+  - name: Templates
+    description: Duyệt, tìm kiếm, xem chi tiết template
+  - name: Prompt Generation
+    description: Sinh prompt từ template
+  - name: History
+    description: Lịch sử prompt đã sinh
+  - name: Favorites
+    description: Template yêu thích
+  - name: Admin
+    description: Quản trị (yêu cầu is_admin=true)
+
+# ==========================================================
+# GLOBAL SECURITY
+# ==========================================================
+security:
+  - bearerAuth: []
+
+paths:
+
+  # ========================================================
+  # AUTH
+  # ========================================================
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Đăng ký tài khoản mới
+      description: Tạo user + tự động tạo Personal Workspace. Gửi email xác minh.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '409':
+          description: Email đã tồn tại
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+              example:
+                error: { code: EMAIL_ALREADY_EXISTS, message: "Email đã được sử dụng" }
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Đăng nhập bằng email + password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công. refresh_token được set trong httpOnly cookie.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401':
+          description: Sai email hoặc mật khẩu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+              example:
+                error: { code: INVALID_CREDENTIALS, message: "Email hoặc mật khẩu không đúng" }
+        '403':
+          description: Tài khoản bị khóa
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /auth/oauth/google:
+    get:
+      tags: [Auth]
+      summary: Bắt đầu luồng Google OAuth
+      description: Trả về URL redirect tới Google consent. FE chuyển hướng người dùng tới URL này.
+      security: []
+      responses:
+        '200':
+          description: URL để redirect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authorization_url: { type: string, format: uri }
+                  state: { type: string }
+
+  /auth/oauth/google/callback:
+    post:
+      tags: [Auth]
+      summary: Xử lý callback Google OAuth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, state]
+              properties:
+                code: { type: string }
+                state: { type: string }
+      responses:
+        '200':
+          description: Đăng nhập/đăng ký thành công
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '502':
+          description: Google trả lỗi
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Làm mới access token
+      description: Dùng refresh_token trong httpOnly cookie để cấp access_token mới (token rotation).
+      security: []
+      responses:
+        '200':
+          description: Token mới
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  expires_in: { type: integer, example: 900 }
+        '401':
+          description: Refresh token không hợp lệ hoặc hết hạn
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Đăng xuất
+      description: Revoke refresh_token hiện tại, clear cookie.
+      responses:
+        '204':
+          description: Đăng xuất thành công
+
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Yêu cầu đặt lại mật khẩu
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          description: Luôn trả 200 dù email tồn tại hay không (chống enumeration)
+
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Đặt lại mật khẩu bằng token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, new_password]
+              properties:
+                token: { type: string }
+                new_password: { type: string, format: password }
+      responses:
+        '200':
+          description: Đặt lại thành công
+        '410':
+          description: Token hết hạn hoặc đã dùng
+
+  /auth/verify-email:
+    get:
+      tags: [Auth]
+      summary: Xác minh email
+      security: []
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Xác minh thành công
+        '410':
+          description: Token hết hạn
+
+  /auth/resend-verification:
+    post:
+      tags: [Auth]
+      summary: Gửi lại email xác minh
+      responses:
+        '200':
+          description: Đã gửi lại
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  # ========================================================
+  # USERS
+  # ========================================================
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Lấy hồ sơ user hiện tại
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    patch:
+      tags: [Users]
+      summary: Cập nhật hồ sơ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '409':
+          description: Username đã tồn tại
+
+  /users/me/avatar:
+    post:
+      tags: [Users]
+      summary: Upload avatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Trả về URL avatar mới
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar_url: { type: string, format: uri }
+        '413':
+          description: File quá lớn (>2MB)
+
+  # ========================================================
+  # WORKSPACES  (Phase 1: chỉ đọc personal workspace)
+  # ========================================================
+  /workspaces:
+    get:
+      tags: [Workspaces]
+      summary: Danh sách workspace của user
+      description: Phase 1 mỗi user chỉ có 1 personal workspace.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Workspace' }
+
+  # ========================================================
+  # AI MODELS
+  # ========================================================
+  /ai-models:
+    get:
+      tags: [AI Models]
+      summary: Danh sách AI model đang hoạt động
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AiModel' }
+
+  # ========================================================
+  # TAXONOMY
+  # ========================================================
+  /categories:
+    get:
+      tags: [Taxonomy]
+      summary: Danh sách category (hỗ trợ nested)
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+
+  /tags:
+    get:
+      tags: [Taxonomy]
+      summary: Danh sách tag phổ biến
+      security: []
+      parameters:
+        - name: q
+          in: query
+          description: Tìm tag theo tên (autocomplete)
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Tag' }
+
+  # ========================================================
+  # TEMPLATES
+  # ========================================================
+  /templates:
+    get:
+      tags: [Templates]
+      summary: Duyệt / lọc / tìm kiếm template
+      security: []
+      parameters:
+        - name: q
+          in: query
+          description: Full-text search (title, description). Hỗ trợ EN & VI.
+          schema: { type: string }
+        - name: category
+          in: query
+          description: Lọc theo category slug (nhiều giá trị, ngăn cách bởi dấu phẩy)
+          schema: { type: string, example: "writing,marketing" }
+        - name: tags
+          in: query
+          description: Lọc theo tag slug (ngăn cách bởi dấu phẩy)
+          schema: { type: string, example: "email,formal" }
+        - name: model
+          in: query
+          description: Lọc theo model code
+          schema: { type: string, example: "claude-opus-4" }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [popular, newest, most_used, official]
+            default: popular
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 50 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/TemplateListItem' }
+                  page_info: { $ref: '#/components/schemas/PageInfo' }
+                  total_count: { type: integer }
+
+  /templates/{id}:
+    get:
+      tags: [Templates]
+      summary: Chi tiết template (kèm current version, variables, variants)
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          description: Template private của workspace khác
+
+  /templates/featured:
+    get:
+      tags: [Templates]
+      summary: Template nổi bật (do admin gắn)
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TemplateListItem' }
+
+  /templates/trending:
+    get:
+      tags: [Templates]
+      summary: Template trending
+      security: []
+      parameters:
+        - name: window
+          in: query
+          schema: { type: string, enum: [24h, 7d, 30d], default: 7d }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TemplateListItem' }
+
+  # ========================================================
+  # PROMPT GENERATION
+  # ========================================================
+  /templates/{id}/generate:
+    post:
+      tags: [Prompt Generation]
+      summary: Sinh prompt từ template (backend là source of truth)
+      description: |
+        Render prompt cuối cùng và lưu vào lịch sử.
+        - Nếu user đã đăng nhập: dùng quota user, lưu vào DB.
+        - Nếu là Guest (không có token): giới hạn 3 lần/ngày/IP,
+          FE phải gửi header `X-Guest-Fingerprint`. Kết quả KHÔNG lưu server-side.
+      security:
+        - bearerAuth: []
+        - {}   # cho phép guest (không auth)
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+        - name: X-Guest-Fingerprint
+          in: header
+          required: false
+          description: Browser fingerprint (bắt buộc khi Guest)
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GenerateRequest' }
+      responses:
+        '200':
+          description: Prompt được sinh thành công
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GenerateResponse' }
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          description: Guest vượt quota 3 lần/ngày
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+              example:
+                error:
+                  code: GUEST_QUOTA_EXCEEDED
+                  message: "Bạn đã dùng hết lượt miễn phí hôm nay. Đăng ký để nhận 50 lượt/ngày!"
+
+  # ========================================================
+  # HISTORY
+  # ========================================================
+  /generated-prompts:
+    get:
+      tags: [History]
+      summary: Lịch sử prompt của user
+      parameters:
+        - name: template_id
+          in: query
+          schema: { type: string, format: uuid }
+        - name: model
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/GeneratedPromptListItem' }
+                  page_info: { $ref: '#/components/schemas/PageInfo' }
+
+  /generated-prompts/{id}:
+    get:
+      tags: [History]
+      summary: Chi tiết một prompt đã sinh
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GeneratedPromptDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [History]
+      summary: Xóa (soft-delete) một prompt trong lịch sử
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã xóa
+
+  # ========================================================
+  # FAVORITES
+  # ========================================================
+  /templates/{id}/favorite:
+    post:
+      tags: [Favorites]
+      summary: Đánh dấu yêu thích template
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '204':
+          description: Đã favorite
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags: [Favorites]
+      summary: Bỏ yêu thích
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '204':
+          description: Đã bỏ favorite
+
+  /favorites:
+    get:
+      tags: [Favorites]
+      summary: Danh sách template đã yêu thích
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/TemplateListItem' }
+                  page_info: { $ref: '#/components/schemas/PageInfo' }
+
+  # ========================================================
+  # ADMIN
+  # ========================================================
+  /admin/ai-models:
+    get:
+      tags: [Admin]
+      summary: (Admin) Liệt kê tất cả model (kể cả inactive)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AiModel' }
+    post:
+      tags: [Admin]
+      summary: (Admin) Tạo AI model mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AiModelUpsert' }
+      responses:
+        '201':
+          description: Đã tạo
+
+  /admin/ai-models/{id}:
+    patch:
+      tags: [Admin]
+      summary: (Admin) Cập nhật model
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AiModelUpsert' }
+      responses:
+        '200':
+          description: Đã cập nhật
+
+  /admin/categories:
+    post:
+      tags: [Admin]
+      summary: (Admin) Tạo category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryUpsert' }
+      responses:
+        '201':
+          description: Đã tạo
+
+  /admin/categories/{id}:
+    patch:
+      tags: [Admin]
+      summary: (Admin) Cập nhật category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryUpsert' }
+      responses:
+        '200':
+          description: Đã cập nhật
+
+  /admin/templates:
+    post:
+      tags: [Admin]
+      summary: (Admin) Tạo template chính chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateUpsert' }
+      responses:
+        '201':
+          description: Đã tạo (status=draft)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateDetail' }
+
+  /admin/templates/{id}:
+    patch:
+      tags: [Admin]
+      summary: (Admin) Cập nhật template (tạo version mới nếu thay đổi prompt/variables)
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateUpsert' }
+      responses:
+        '200':
+          description: Đã cập nhật
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateDetail' }
+
+  /admin/templates/{id}/publish:
+    post:
+      tags: [Admin]
+      summary: (Admin) Publish template
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: Template đã publish
+        '422':
+          description: Có placeholder trong prompt_body chưa khai báo variable
+
+  /admin/dashboard/stats:
+    get:
+      tags: [Admin]
+      summary: (Admin) Thống kê tổng quan
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DashboardStats' }
+
+# ==========================================================
+# COMPONENTS
+# ==========================================================
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TemplateId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Unauthorized:
+      description: Chưa xác thực hoặc token hết hạn
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+          example:
+            error: { code: TOKEN_EXPIRED, message: "Access token đã hết hạn" }
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+          example:
+            error: { code: NOT_FOUND, message: "Không tìm thấy" }
+    ValidationError:
+      description: Dữ liệu không hợp lệ
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: "Dữ liệu không hợp lệ"
+              details: { email: "Định dạng email không đúng" }
+    RateLimited:
+      description: Vượt giới hạn tần suất
+      headers:
+        Retry-After:
+          schema: { type: integer }
+          description: Số giây chờ trước khi thử lại
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+
+    # ---------- Common ----------
+    I18nString:
+      type: object
+      description: Chuỗi đa ngôn ngữ
+      properties:
+        en: { type: string }
+        vi: { type: string }
+      example: { en: "Writing", vi: "Viết lách" }
+
+    PageInfo:
+      type: object
+      properties:
+        next_cursor: { type: string, nullable: true }
+        has_next: { type: boolean }
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details:
+              type: object
+              additionalProperties: { type: string }
+            trace_id: { type: string, format: uuid }
+
+    # ---------- Auth ----------
+    RegisterRequest:
+      type: object
+      required: [email, password, full_name]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password, minLength: 8 }
+        full_name: { type: string, maxLength: 150 }
+        locale: { type: string, enum: [en, vi], default: en }
+      example:
+        email: "viet@example.com"
+        password: "SecurePass123"
+        full_name: "Viet Nguyen"
+        locale: "vi"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        expires_in: { type: integer, example: 900, description: "Thời gian sống access_token (giây)" }
+        token_type: { type: string, example: "Bearer" }
+        user: { $ref: '#/components/schemas/UserProfile' }
+
+    # ---------- User ----------
+    UserProfile:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        full_name: { type: string }
+        username: { type: string, nullable: true }
+        avatar_url: { type: string, format: uri, nullable: true }
+        bio: { type: string, nullable: true }
+        locale: { type: string, enum: [en, vi] }
+        timezone: { type: string }
+        plan: { type: string, enum: [free, pro, team] }
+        is_admin: { type: boolean }
+        email_verified: { type: boolean }
+        personal_workspace_id: { type: string, format: uuid }
+        created_at: { type: string, format: date-time }
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        full_name: { type: string, maxLength: 150 }
+        username: { type: string, maxLength: 50 }
+        bio: { type: string }
+        locale: { type: string, enum: [en, vi] }
+        timezone: { type: string }
+
+    # ---------- Workspace ----------
+    Workspace:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { type: string }
+        type: { type: string, enum: [personal, team] }
+        plan: { type: string }
+        avatar_url: { type: string, nullable: true }
+        role: { type: string, enum: [owner, admin, editor, viewer], description: "Role của user hiện tại trong workspace" }
+
+    # ---------- AI Model ----------
+    AiModel:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        code: { type: string, example: "claude-opus-4" }
+        name: { type: string, example: "Claude Opus 4" }
+        provider: { type: string, example: "anthropic" }
+        model_type: { type: string, enum: [text, image, video, audio, multimodal] }
+        description: { type: string, nullable: true }
+        capabilities:
+          type: object
+          additionalProperties: true
+          example: { vision: true, context_window: 200000 }
+        icon_url: { type: string, nullable: true }
+        is_active: { type: boolean }
+        sort_order: { type: integer }
+
+    AiModelUpsert:
+      type: object
+      required: [code, name, provider, model_type]
+      properties:
+        code: { type: string }
+        name: { type: string }
+        provider: { type: string }
+        model_type: { type: string, enum: [text, image, video, audio, multimodal] }
+        description: { type: string }
+        capabilities: { type: object, additionalProperties: true }
+        default_config: { type: object, additionalProperties: true }
+        icon_url: { type: string }
+        is_active: { type: boolean, default: true }
+        sort_order: { type: integer, default: 0 }
+
+    # ---------- Taxonomy ----------
+    Category:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { $ref: '#/components/schemas/I18nString' }
+        description: { $ref: '#/components/schemas/I18nString' }
+        icon: { type: string, nullable: true }
+        color: { type: string, nullable: true }
+        parent_id: { type: string, format: uuid, nullable: true }
+        sort_order: { type: integer }
+        template_count: { type: integer, description: "Số template thuộc category này" }
+
+    CategoryUpsert:
+      type: object
+      required: [slug, name]
+      properties:
+        slug: { type: string }
+        name: { $ref: '#/components/schemas/I18nString' }
+        description: { $ref: '#/components/schemas/I18nString' }
+        icon: { type: string }
+        color: { type: string }
+        parent_id: { type: string, format: uuid, nullable: true }
+        sort_order: { type: integer, default: 0 }
+
+    Tag:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { type: string }
+        usage_count: { type: integer }
+
+    # ---------- Template ----------
+    TemplateListItem:
+      type: object
+      description: Thông tin rút gọn của template (dùng trong list)
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        title: { $ref: '#/components/schemas/I18nString' }
+        description: { $ref: '#/components/schemas/I18nString' }
+        cover_image: { type: string, nullable: true }
+        is_official: { type: boolean }
+        author:
+          $ref: '#/components/schemas/AuthorBrief'
+        categories:
+          type: array
+          items: { $ref: '#/components/schemas/Category' }
+        supported_models:
+          type: array
+          items: { type: string, description: "model code" }
+          example: ["gpt-4o", "claude-opus-4"]
+        usage_count: { type: integer }
+        favorite_count: { type: integer }
+        is_favorited: { type: boolean, description: "true nếu user hiện tại đã favorite" }
+        created_at: { type: string, format: date-time }
+
+    TemplateDetail:
+      allOf:
+        - $ref: '#/components/schemas/TemplateListItem'
+        - type: object
+          properties:
+            tags:
+              type: array
+              items: { $ref: '#/components/schemas/Tag' }
+            current_version:
+              $ref: '#/components/schemas/TemplateVersion'
+            view_count: { type: integer }
+
+    TemplateVersion:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        version_number: { type: integer }
+        prompt_body: { type: string, description: "Chứa placeholder {{var_key}}" }
+        system_prompt: { type: string, nullable: true }
+        example_output: { type: string, nullable: true }
+        guide: { $ref: '#/components/schemas/I18nString' }
+        variables:
+          type: array
+          items: { $ref: '#/components/schemas/TemplateVariable' }
+        variants:
+          type: array
+          description: "Biến thể prompt cho từng model (nếu có)"
+          items: { $ref: '#/components/schemas/TemplateVariant' }
+
+    TemplateVariable:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        var_key: { type: string, example: "tone" }
+        label: { $ref: '#/components/schemas/I18nString' }
+        description: { $ref: '#/components/schemas/I18nString' }
+        placeholder: { $ref: '#/components/schemas/I18nString' }
+        help_text: { $ref: '#/components/schemas/I18nString' }
+        input_type:
+          type: string
+          enum: [text, textarea, select, multiselect, number, boolean, date, file, url, color, slider]
+        is_required: { type: boolean }
+        default_value: { type: string, nullable: true }
+        options:
+          type: array
+          description: "Cho select/multiselect"
+          items:
+            type: object
+            properties:
+              value: { type: string }
+              label: { $ref: '#/components/schemas/I18nString' }
+        validation:
+          type: object
+          additionalProperties: true
+          example: { min: 1, max: 500, regex: "^[a-z]+$" }
+        sort_order: { type: integer }
+
+    TemplateVariant:
+      type: object
+      properties:
+        ai_model_code: { type: string }
+        prompt_body_override: { type: string, nullable: true }
+        system_prompt_override: { type: string, nullable: true }
+        model_config: { type: object, additionalProperties: true }
+
+    AuthorBrief:
+      type: object
+      properties:
+        id: { type: string, format: uuid, nullable: true }
+        full_name: { type: string, nullable: true }
+        username: { type: string, nullable: true }
+        avatar_url: { type: string, nullable: true }
+        type: { type: string, enum: [admin, user, system, forked] }
+
+    TemplateUpsert:
+      type: object
+      required: [title, prompt_body]
+      properties:
+        title: { $ref: '#/components/schemas/I18nString' }
+        description: { $ref: '#/components/schemas/I18nString' }
+        cover_image: { type: string }
+        category_ids:
+          type: array
+          items: { type: string, format: uuid }
+        tag_slugs:
+          type: array
+          items: { type: string }
+        model_codes:
+          type: array
+          items: { type: string }
+        prompt_body: { type: string }
+        system_prompt: { type: string }
+        example_output: { type: string }
+        guide: { $ref: '#/components/schemas/I18nString' }
+        variables:
+          type: array
+          items:
+            type: object
+            required: [var_key, input_type, label]
+            properties:
+              var_key: { type: string }
+              label: { $ref: '#/components/schemas/I18nString' }
+              description: { $ref: '#/components/schemas/I18nString' }
+              placeholder: { $ref: '#/components/schemas/I18nString' }
+              input_type: { type: string }
+              is_required: { type: boolean }
+              default_value: { type: string }
+              options: { type: array, items: { type: object } }
+              validation: { type: object }
+              sort_order: { type: integer }
+        changelog: { type: string, description: "Ghi chú thay đổi khi tạo version mới" }
+
+    # ---------- Generate ----------
+    GenerateRequest:
+      type: object
+      required: [ai_model_code, input_values]
+      properties:
+        template_version_id:
+          type: string
+          format: uuid
+          description: "Nếu bỏ trống → dùng current_version của template"
+        ai_model_code: { type: string, example: "claude-opus-4" }
+        input_values:
+          type: object
+          description: "Map var_key → giá trị người dùng nhập"
+          additionalProperties: true
+          example: { tone: "formal", topic: "AI ethics", audience: "students" }
+        extra_instructions:
+          type: string
+          nullable: true
+          description: "Hướng dẫn bổ sung tự do, nối vào cuối prompt"
+        title:
+          type: string
+          nullable: true
+          description: "Nhãn tùy chọn để user tự đặt tên cho prompt"
+
+    GenerateResponse:
+      type: object
+      properties:
+        generated_prompt_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: "null nếu là Guest (không lưu server)"
+        final_prompt: { type: string }
+        tokens_estimate: { type: integer }
+        ai_model_code: { type: string }
+        remaining_quota:
+          type: integer
+          nullable: true
+          description: "Số lượt còn lại trong ngày (Guest hoặc Free plan)"
+
+    # ---------- History ----------
+    GeneratedPromptListItem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string, nullable: true }
+        template_id: { type: string, format: uuid, nullable: true }
+        template_title: { $ref: '#/components/schemas/I18nString' }
+        ai_model_code: { type: string }
+        prompt_snippet: { type: string, description: "150 ký tự đầu của final_prompt" }
+        created_at: { type: string, format: date-time }
+
+    GeneratedPromptDetail:
+      allOf:
+        - $ref: '#/components/schemas/GeneratedPromptListItem'
+        - type: object
+          properties:
+            template_version_id: { type: string, format: uuid, nullable: true }
+            input_values: { type: object, additionalProperties: true }
+            extra_instructions: { type: string, nullable: true }
+            final_prompt: { type: string }
+
+    # ---------- Admin dashboard ----------
+    DashboardStats:
+      type: object
+      properties:
+        total_users: { type: integer }
+        dau: { type: integer, description: "Daily active users" }
+        wau: { type: integer }
+        mau: { type: integer }
+        total_templates: { type: integer }
+        total_prompts_generated: { type: integer }
+        prompts_today: { type: integer }
+        top_templates:
+          type: array
+          items:
+            type: object
+            properties:
+              template_id: { type: string, format: uuid }
+              title: { $ref: '#/components/schemas/I18nString' }
+              usage_count: { type: integer }
+        top_models:
+          type: array
+          items:
+            type: object
+            properties:
+              model_code: { type: string }
+              usage_count: { type: integer }
