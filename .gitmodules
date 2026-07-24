@@ -1,0 +1,4 @@
+[submodule "how2prompt-agentic"]
+	path = how2prompt-agentic
+	url = https://github.com/GIF-NTG/how2prompt-agentic.git
+	branch = main
