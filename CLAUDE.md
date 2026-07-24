@@ -64,9 +64,17 @@ not this file:
 
 ## Visual design direction
 
-An inline fill-in-the-blank auth mockup was approved as the direction to extend
-site-wide (see memory `design_style_auth` from a prior session): cool paper neutrals
+**`docs/design/how2prompt-workspace-mockup.html`** is the source of truth for this —
+open it directly in a browser, no build step needed. Check it before building or
+restyling any screen. It's an inline fill-in-the-blank design: cool paper neutrals
 (`#F3F5F0` light / `#14171A` dark), indigo accent (`#3652E0` light / `#8493FF` dark),
 system sans for body/headings, monospace reserved specifically for anything
-placeholder/template-related (`{field}` labels, code/error badges). Carry these tokens
-forward instead of introducing a new palette per page.
+placeholder/template-related (`{field}` labels, code/error badges, pills). Carry these
+tokens forward instead of introducing a new palette per page.
+
+The mockup's Login/Register screens match the real implementation in
+`src/features/auth` closely. Its catalog/prompt-editor/history/custom-template screens
+are **design-only previews of Epic 1/3** — nothing under `src/features` implements them
+yet; when that work starts, use the mockup as the visual reference but still go
+through `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` for the real feature
+(per Constitution Principle II), don't build straight from the mockup's inline JS.
