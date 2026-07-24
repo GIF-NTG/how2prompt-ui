@@ -85,7 +85,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <span className="rounded-full bg-[#1B1D1B] px-2 py-0.5 font-semibold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
                   JWT
                 </span>
-                phiên đăng nhập được giữ trong 7 ngày trên trình duyệt này
+                phiên đăng nhập được ghi nhớ trên trình duyệt này, không cần đăng nhập
+                lại mỗi lần quay lại
               </div>
             </section>
 

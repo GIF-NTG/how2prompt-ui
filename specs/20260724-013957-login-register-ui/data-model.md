@@ -52,14 +52,25 @@ Represents the client-held signed-in state (spec Key Entities: **Session**).
 > **Amendment (2026-07-24, implemented same day)**: for the real client
 > (`authClient.real.ts`), `token`/`issuedAt`/`expiresAt` represent the real
 > **`access_token`** (15-minute lifetime per `docs/api/openapi.yaml`), not a 7-day
-> token — the actual 7-day-ish session length is governed server-side by the
-> `refresh_token`, which lives only in an httpOnly cookie this app never reads.
-> Nothing is written to `localStorage` for the real client; `restoreSession()` (now
-> `async` on both implementations) reconstructs the `Session` by calling
-> `POST /auth/refresh` then `GET /users/me`. `AuthProvider` schedules a silent
-> `restoreSession()` call ~60 seconds before `expiresAt` so the real short-lived
-> access_token renews itself without signing the visitor out mid-visit, for as long
-> as the refresh_token cookie stays valid.
+> token. How long the overall *session* lasts is governed server-side by the
+> `refresh_token`, which lives only in an httpOnly cookie this app never reads —
+> **its actual lifetime is not documented anywhere in the contract**, so "7 days" is
+> not a confirmed number for the real backend, only an inherited assumption from
+> the submodule's original SRS. Nothing is written to `localStorage` for the real
+> client; `restoreSession()` (now `async` on both implementations) reconstructs the
+> `Session` by calling `POST /auth/refresh` then `GET /users/me`. `AuthProvider`
+> schedules a silent `restoreSession()` call ~60 seconds before `expiresAt` so the
+> real short-lived access_token renews itself without signing the visitor out
+> mid-visit, for as long as the refresh_token cookie stays valid — however long
+> that turns out to be.
+>
+> **Follow-up (2026-07-24, also implemented)**: the UI copy in `AuthLayout.tsx`
+> ("phiên đăng nhập được giữ trong 7 ngày...") asserted this unconfirmed number to
+> the visitor. Changed to a claim that's actually true regardless of the real
+> refresh_token's lifetime — "phiên đăng nhập được ghi nhớ trên trình duyệt này,
+> không cần đăng nhập lại mỗi lần quay lại" — and mirrored in
+> `docs/design/how2prompt-workspace-mockup.html`. Ask Backend for the real
+> `refresh_token` cookie `Max-Age` if a specific number is ever needed again.
 
 ## Auth outcome
 
