@@ -5,7 +5,13 @@ import { requestGoogleCredential } from './googleIdentity'
 // Exported for tests only — production code must go through AuthContext /
 // authClient, never read or write this key directly (contracts/auth-client.md).
 export const SESSION_STORAGE_KEY = 'how2prompt.auth.session'
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000 // mirrors the real system's 7-day JWT lifetime
+// 7 days is an UNVERIFIED placeholder inherited from the submodule's original SRS
+// (before docs/api/openapi.yaml existed). The real contract only confirms
+// access_token = 15 minutes; refresh_token's actual lifetime is set server-side in
+// an httpOnly cookie and is not documented anywhere the frontend can read — this
+// mock's single-token model stands in for "how long you stay logged in overall"
+// (i.e. the refresh_token's real-world equivalent), not a confirmed number.
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000
 
 // Demo credentials, seeded into the mock account store below.
 const DEMO_EMAIL = 'demo@how2prompt.dev'
