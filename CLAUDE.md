@@ -22,25 +22,51 @@ not this file:
   compiler + copy (`Ctrl+Enter`, blocks on empty required pills with red highlight +
   autofocus, 2s "Copied!" toast).
 - **Epic 2 — Authentication & Context Configurations**: register/login (email +
-  username + password, BCrypt hash, JWT 7-day expiry), JWT persisted in `localStorage`
-  + `AuthContext`, Axios interceptor attaches `Authorization: Bearer <token>` and
-  redirects to `/login` on 401, Team Lead–only shared team variables
-  (`PUT /api/v1/users/me/variables`, JSONB, pre-populate matching pills).
+  full name + password, BCrypt hash), short-lived `access_token` (15 min) +
+  httpOnly-cookie `refresh_token` — see API & error conventions below for the
+  corrected session model (supersedes the submodule docs' original "JWT 7-day,
+  localStorage-only" assumption). Implemented in `src/features/auth/api/
+  authClient.real.ts` (plain `fetch` via `httpClient.ts`, not Axios): attaches
+  `Authorization: Bearer <access_token>`, and `AuthProvider` refreshes silently
+  ~60s before expiry via a scheduled `restoreSession()` call rather than an
+  interceptor reacting to a live `401`. Team Lead–only shared team variables
+  (`PUT /api/v1/users/me/variables`, JSONB, pre-populate matching pills) —
+  not present in `docs/api/openapi.yaml`'s Phase 1 scope, revisit when Team Lead work
+  starts.
 - **Epic 3 — Stateless Optimization & History**: prompt optimization calls are
-  resilient (Tenacity retries upstream, RFC-7807 502 on terminal failure), history
-  logged on successful compile (`POST /api/v1/history`), Quick-History Drawer shows
-  latest 20 (`GET /api/v1/history`, `(user_id, created_at DESC)` index), reload a
-  history card back onto the canvas, delete a record
-  (`DELETE /api/v1/history/{id}`).
+  resilient (Tenacity retries upstream, `502` with `error.code` on terminal failure —
+  not RFC-7807, see below), history logged on successful compile
+  (`POST /api/v1/history` in the submodule docs; the real contract's equivalent is
+  `POST /templates/{id}/generate`, which both compiles and logs history server-side),
+  Quick-History Drawer shows latest 20, reload a history card back onto the canvas,
+  delete a record. Reconcile exact endpoint names against `docs/api/openapi.yaml`
+  when this epic's implementation starts — it doesn't match the submodule docs 1:1.
 
 ## API & error conventions
 
+**`docs/api/openapi.yaml`** (this repo, provided by Backend 2026-07-24) is the
+authoritative wire contract — check it before wiring any real endpoint. It supersedes
+`agent/BA.md`'s RFC-7807 assumption, which the real API does not follow.
+
 - REST namespace: `/api/v1/...`.
-- All error responses MUST be RFC-7807 problem+json:
-  `{ type, title, status, detail, instance, error_code }` — see `agent/BA.md` §4.2 for
-  the exact `UNAUTHORIZED_ACCESS` / `LLM_PROVIDER_ERROR` shapes to match against.
-- Auth: JWT in `Authorization: Bearer <token>`, 7-day expiry, stored client-side in
-  `localStorage`.
+- All error responses are `{ error: { code, message, details?, trace_id? } }` — NOT
+  RFC-7807. Branch UI logic on `error.code` (e.g. `INVALID_CREDENTIALS`,
+  `EMAIL_ALREADY_EXISTS`, `TOKEN_EXPIRED`, `VALIDATION_ERROR`, `GUEST_QUOTA_EXCEEDED`).
+- Auth: `Authorization: Bearer <access_token>`. `access_token` expires in **15
+  minutes** — on `401 TOKEN_EXPIRED`, call `POST /auth/refresh` to rotate it.
+  `refresh_token` lives only in an httpOnly cookie the frontend never reads directly.
+- Google sign-in is the standard **authorization-code + redirect** flow:
+  `GET /auth/oauth/google` → `{ authorization_url, state }` → full-page redirect to
+  Google → Google redirects back to `GoogleCallbackPage` (`/auth/google/callback`)
+  with `code`+`state` → `POST /auth/oauth/google/callback`. Implemented in
+  `authClient.real.ts` + `completeGoogleOAuth`. This is a **different** flow from
+  the client-side Google Identity Services "One Tap" approach in
+  `src/features/auth/api/googleIdentity.ts`, which is now mock-only — set
+  `VITE_API_BASE_URL` to switch to the real redirect flow; nothing else changes
+  (`authClient.ts` picks the implementation automatically).
+- Guest access: some endpoints (templates, taxonomy, `ai-models`) work without a
+  token; `POST /templates/{id}/generate` allows Guests but requires an
+  `X-Guest-Fingerprint` header and is capped at 3/day/IP server-side.
 
 ## Frontend stack & conventions
 

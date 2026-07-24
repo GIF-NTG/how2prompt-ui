@@ -60,7 +60,7 @@ and auth-state primitives they depend on. No multi-tenant, no concurrency concer
 |---|---|---|
 | I. Fill-the-Blank Interaction Integrity | **PASS** | Auto-resize MUST reuse the single hidden-span technique — implemented once as a shared hook (`src/shared/hooks`), not duplicated inside the auth feature. Tab/Shift+Tab order and empty-required-field block+highlight+autofocus are carried over from the existing pattern (spec FR-004, FR-006). |
 | II. Spec-Before-Code | **PASS** | This plan follows the approved `spec.md` (clarified 2026-07-24); no implementation starts before `/speckit-tasks` breaks it into tasks. |
-| III. Contract & Error Consistency | **PASS (forward-compatible)** | No real `/api/v1/...` endpoint or RFC-7807 payload exists yet. The mocked `AuthOutcome` failure shape uses this feature's own `error_code` vocabulary (`INVALID_CREDENTIALS`, `EMAIL_ALREADY_REGISTERED`), styled after — but not identical to — `agent/BA.md` §4.2's `UNAUTHORIZED_ACCESS` example, so a real RFC-7807 response can be mapped onto it later without changing how screens read it. |
+| III. Contract & Error Consistency | **PASS (amended 2026-07-24, real client implemented same day)** | Backend supplied `docs/api/openapi.yaml`: error envelope is `{ error: { code, message, details, trace_id } }` (not RFC-7807). `authClient.real.ts` now implements the real contract directly — `errorCode` values (`INVALID_CREDENTIALS`, `EMAIL_ALREADY_EXISTS`) match exactly, and the real nested envelope is mapped onto `AuthOutcome`'s flat shape inside that one file via `httpClient.ts`'s `ApiError`. |
 | IV. Security Non-Negotiables | **PASS (scoped)** | BCrypt/HTTPS apply once a real backend exists; until then, the equivalent obligation is: the mock `AuthClient` MUST NOT persist or log a raw password anywhere (not to `localStorage`, not to console) — only the resulting mocked session token is stored. |
 | V. Verified Before Done | **PASS (enforced at implement time)** | `oxlint`, `tsc -b && vite build`, and `vitest` must pass, and both screens must be exercised in a running browser (light + dark), before any task is marked done. |
 
@@ -100,7 +100,8 @@ src/
 │   │   │   ├── LoginPage.tsx
 │   │   │   ├── LoginPage.test.tsx
 │   │   │   ├── RegisterPage.tsx
-│   │   │   └── RegisterPage.test.tsx
+│   │   │   ├── RegisterPage.test.tsx
+│   │   │   └── GoogleCallbackPage.tsx   # Google authorization-code redirect target
 │   │   ├── components/
 │   │   │   ├── AuthLayout.tsx           # shared shell: top bar, 2-col panel, tabs (mockup parity)
 │   │   │   ├── BraceField.tsx           # decorative background glyphs (mockup parity)
@@ -108,14 +109,16 @@ src/
 │   │   │   ├── GuestContinueLink.tsx    # FR-015, rendered in AuthLayout's top bar
 │   │   │   └── GoogleSignInButton.tsx
 │   │   ├── api/
-│   │   │   ├── authClient.ts            # the ONE swappable integration point (FR-009)
+│   │   │   ├── authClient.ts            # picks real vs mock via isApiConfigured() (FR-009)
 │   │   │   ├── authClient.types.ts      # the AuthClient interface (kept neutral)
-│   │   │   ├── authClient.mock.ts       # current mocked implementation
-│   │   │   ├── googleIdentity.ts        # real Google Identity Services (One Tap) loader
+│   │   │   ├── authClient.mock.ts       # mock implementation (default, no env var set)
+│   │   │   ├── authClient.real.ts       # real implementation against docs/api/openapi.yaml
+│   │   │   ├── httpClient.ts            # fetch wrapper + real error-envelope parsing
+│   │   │   ├── googleIdentity.ts        # mock-only: Google Identity Services (One Tap) loader
 │   │   │   └── types.ts                 # AuthOutcome, Session, Account shapes
 │   │   └── context/
 │   │       ├── AuthContext.ts           # context object + value type
-│   │       ├── AuthProvider.tsx         # provider component
+│   │       ├── AuthProvider.tsx         # provider: async restore + silent token refresh
 │   │       └── useAuth.ts               # consumer hook (signed-in state + localStorage session)
 │   └── home/                            # existing, unchanged
 └── shared/
@@ -133,9 +136,12 @@ The auto-resize measuring hook is promoted to `src/shared/hooks` (not kept insid
 `features/auth`) specifically because Constitution Principle I requires exactly one
 implementation of that technique across the whole app, not one per feature.
 
-Repo root also gained: `src/vite-env.d.ts` (types `VITE_GOOGLE_CLIENT_ID`),
-`.env.example` (committed placeholder), and `.env.local` (real Client ID, already
-covered by the existing `*.local` `.gitignore` pattern — never committed).
+Repo root also gained: `src/vite-env.d.ts` (types `VITE_GOOGLE_CLIENT_ID` and
+`VITE_API_BASE_URL`), `.env.example` (committed placeholder for both), and
+`.env.local` (real values, already covered by the existing `*.local` `.gitignore`
+pattern — never committed). Setting `VITE_API_BASE_URL` (added 2026-07-24) switches
+`authClient.ts` from the mock to `authClient.real.ts` — see
+`contracts/auth-client.md`'s amendment note.
 
 ## Complexity Tracking
 

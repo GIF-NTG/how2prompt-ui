@@ -41,13 +41,25 @@ Represents the client-held signed-in state (spec Key Entities: **Session**).
 | `issuedAt` | `number` (epoch ms) | Set when the session is created. |
 | `expiresAt` | `number` (epoch ms) | `issuedAt + 7 days`, mirroring the project's real JWT lifetime (SRS AR-6). |
 
-**Lifecycle**:
+**Lifecycle (mock)**:
 1. Created by a successful `login`, `register`-then-login, or `signInWithGoogle` call.
 2. Persisted to a single `localStorage` key (owned by `AuthContext`, not read/written
    anywhere else — FR-012).
 3. Restored on app load if `expiresAt > Date.now()`; otherwise treated as absent and
    the stored record is cleared (spec Edge Cases: expired mock session on reload).
 4. Cleared immediately on sign-out (FR-011).
+
+> **Amendment (2026-07-24, implemented same day)**: for the real client
+> (`authClient.real.ts`), `token`/`issuedAt`/`expiresAt` represent the real
+> **`access_token`** (15-minute lifetime per `docs/api/openapi.yaml`), not a 7-day
+> token — the actual 7-day-ish session length is governed server-side by the
+> `refresh_token`, which lives only in an httpOnly cookie this app never reads.
+> Nothing is written to `localStorage` for the real client; `restoreSession()` (now
+> `async` on both implementations) reconstructs the `Session` by calling
+> `POST /auth/refresh` then `GET /users/me`. `AuthProvider` schedules a silent
+> `restoreSession()` call ~60 seconds before `expiresAt` so the real short-lived
+> access_token renews itself without signing the visitor out mid-visit, for as long
+> as the refresh_token cookie stays valid.
 
 ## Auth outcome
 
@@ -61,11 +73,22 @@ AuthOutcome =
   | { status: 'error'; errorCode: AuthErrorCode; message: string }
 
 AuthErrorCode =
-  | 'INVALID_CREDENTIALS'      // Login: email/password did not match (FR-013 scenario 2)
-  | 'EMAIL_ALREADY_REGISTERED' // Register: email already has a password-based account (FR-013 scenario 2 / US2)
-  | 'VALIDATION_ERROR'         // Defensive only — client-side validation (FR-006/007/008) should
-                                // normally prevent this from ever reaching AuthClient
+  | 'INVALID_CREDENTIALS'  // Login: email/password did not match (FR-013 scenario 2)
+  | 'EMAIL_ALREADY_EXISTS' // Register: email already has a password-based account (FR-013 scenario 2 / US2)
+  | 'VALIDATION_ERROR'     // Defensive only — client-side validation (FR-006/007/008) should
+                            // normally prevent this from ever reaching AuthClient
 ```
+
+> **Amendment (2026-07-24, implemented same day)**: `EMAIL_ALREADY_EXISTS` (renamed
+> from `EMAIL_ALREADY_REGISTERED`) and `INVALID_CREDENTIALS` match the real backend's
+> error codes in `docs/api/openapi.yaml` exactly. `AuthErrorCode` was also widened to
+> `'INVALID_CREDENTIALS' | 'EMAIL_ALREADY_EXISTS' | 'VALIDATION_ERROR' | (string &
+> {})` so real backend codes this feature doesn't special-case (`TOKEN_EXPIRED`,
+> `GUEST_QUOTA_EXCEEDED`, etc.) pass through without a type error. The real
+> envelope, `{ error: { code, message, details?, trace_id? } }`, is mapped onto this
+> flat `AuthOutcome` shape entirely inside `authClient.real.ts` (via `httpClient.ts`'s
+> `ApiError`) — `AuthOutcome` itself, and every screen that reads it, stayed
+> unchanged.
 
 - `accountCreated` on a `success` outcome distinguishes "this call created a new
   Account" (Register, or a Google sign-in with no matching email — FR-019) from

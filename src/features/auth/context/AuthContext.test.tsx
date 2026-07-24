@@ -56,7 +56,7 @@ describe('AuthProvider / useAuth session restore', () => {
     renderProbe()
 
     expect(await screen.findByText('signed-out')).toBeInTheDocument()
-    expect(authClient.restoreSession()).toBeNull()
+    expect(await authClient.restoreSession()).toBeNull()
     expect(window.localStorage.getItem(SESSION_STORAGE_KEY)).toBeNull()
   })
 })

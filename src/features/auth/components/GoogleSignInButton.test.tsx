@@ -40,7 +40,7 @@ describe('GoogleSignInButton', () => {
     await user.click(screen.getByRole('button', { name: 'Đăng nhập bằng Google' }))
 
     await screen.findByText('Trang chủ')
-    expect(authClient.restoreSession()).not.toBeNull()
+    expect(await authClient.restoreSession()).not.toBeNull()
   })
 
   it('links a second Google sign-in to the same existing account, not a new one', async () => {
@@ -64,6 +64,6 @@ describe('GoogleSignInButton', () => {
     await user.click(screen.getByRole('button', { name: 'Đăng nhập bằng Google' }))
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-    expect(authClient.restoreSession()).toBeNull()
+    expect(await authClient.restoreSession()).toBeNull()
   })
 })

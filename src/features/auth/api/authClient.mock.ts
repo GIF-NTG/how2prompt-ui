@@ -79,7 +79,7 @@ export function createMockAuthClient(): AuthClient {
       if (mockAccounts.has(email)) {
         return {
           status: 'error',
-          errorCode: 'EMAIL_ALREADY_REGISTERED',
+          errorCode: 'EMAIL_ALREADY_EXISTS',
           message: 'Email này đã được đăng ký, hãy đăng nhập',
         }
       }
@@ -115,10 +115,20 @@ export function createMockAuthClient(): AuthClient {
       persistSession(session)
       return { status: 'success', session, accountCreated: true }
     },
+    async completeGoogleOAuth() {
+      // The mock has no redirect step to complete — this route should be
+      // unreachable while VITE_API_BASE_URL is unset, but resolve gracefully
+      // rather than throwing if it's ever hit (e.g. a stale bookmarked callback URL).
+      return {
+        status: 'error',
+        errorCode: 'VALIDATION_ERROR',
+        message: 'Không hỗ trợ luồng này ở chế độ mock.',
+      }
+    },
     async logout() {
       clearStoredSession()
     },
-    restoreSession() {
+    async restoreSession() {
       const session = readStoredSession()
       if (!session) return null
       if (session.expiresAt <= Date.now()) {

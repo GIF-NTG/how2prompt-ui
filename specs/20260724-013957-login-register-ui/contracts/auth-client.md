@@ -2,12 +2,34 @@
 
 This is the single integration point required by spec FR-009 ("All communication
 with an authentication backend MUST go through a single, clearly identified
-integration point"). Every screen and hook in the auth feature calls these five
-functions and nothing else talks to auth state. Today, `authClient.ts` re-exports the
-mock implementation (`authClient.mock.ts`). Connecting a real backend later means
-writing `authClient.real.ts` against this same interface and changing one import in
-`authClient.ts` — no other file in `src/features/auth` or `src/shared` changes
-(spec SC-004).
+integration point"). Every screen and hook in the auth feature calls these methods
+and nothing else talks to auth state. `authClient.ts` picks between
+`authClient.mock.ts` and `authClient.real.ts` based on whether `VITE_API_BASE_URL`
+is set (see `.env.example`) — no other file in `src/features/auth` or `src/shared`
+needs to change to go live (spec SC-004).
+
+> **Amendment (2026-07-24, implemented same day)**: Backend supplied the real
+> contract at `docs/api/openapi.yaml`. `authClient.real.ts` now implements this
+> interface against it:
+> 1. **Google sign-in** for the real client uses the contract's authorization-code +
+>    redirect flow (`GET /auth/oauth/google` → full-page redirect to Google →
+>    Google redirects to `GoogleCallbackPage` at `/auth/google/callback` with
+>    `code`+`state` → `POST /auth/oauth/google/callback`), via the new
+>    `completeGoogleOAuth(code, state)` method added to `AuthClient`. The mock keeps
+>    the client-side One Tap flow in `googleIdentity.ts` unchanged.
+> 2. **The error shape**: `authClient.real.ts` catches the real
+>    `{ error: { code, message, details, trace_id } }` envelope (via `httpClient.ts`'s
+>    `ApiError`) and maps it onto this feature's `{ errorCode, message }` `AuthOutcome`
+>    shape — the mapping lives entirely in `authClient.real.ts`, so `AuthOutcome`'s
+>    own shape (and every screen that reads it) did not need to change.
+> 3. **Session model**: `restoreSession()` is now `async` (interface change, both
+>    implementations updated) because the real client must round-trip
+>    `POST /auth/refresh` (using the httpOnly `refresh_token` cookie) then
+>    `GET /users/me` to reconstruct a `Session` — there is no synchronous way to know
+>    a cookie-backed session is still valid. `AuthProvider` also now schedules a
+>    silent re-`restoreSession()` ~60s before `session.expiresAt`, so the real
+>    15-minute `access_token` renews itself without signing the visitor out
+>    mid-visit, as long as the refresh_token cookie remains valid.
 
 ```ts
 interface GoogleSignInOptions {
@@ -19,8 +41,14 @@ interface AuthClient {
   login(email: string, password: string): Promise<AuthOutcome>
   register(displayName: string, email: string, password: string): Promise<AuthOutcome>
   signInWithGoogle(options?: GoogleSignInOptions): Promise<AuthOutcome>
+  /** Real-client-only in practice: finishes the authorization-code flow from
+   * GoogleCallbackPage. The mock always resolves an error if called. */
+  completeGoogleOAuth(code: string, state: string): Promise<AuthOutcome>
   logout(): Promise<void>
-  restoreSession(): Session | null
+  /** Async — the real client must round-trip to the backend to know if the
+   * httpOnly refresh_token cookie is still valid; the mock wraps a synchronous
+   * localStorage read in an already-resolved Promise. */
+  restoreSession(): Promise<Session | null>
 }
 ```
 
@@ -48,7 +76,7 @@ interface AuthClient {
   UI does not sign the visitor in automatically (spec FR-013), it routes to `/login`
   with a confirmation.
 - **Given** `email` is already used → resolves `{ status: 'error', errorCode:
-  'EMAIL_ALREADY_REGISTERED', message: 'Email này đã được đăng ký, hãy đăng nhập' }`
+  'EMAIL_ALREADY_EXISTS', message: 'Email này đã được đăng ký, hãy đăng nhập' }`
   (US2 scenario 2).
 - Callers are responsible for FR-006/FR-007/FR-008 (empty fields, malformed email,
   password ≥ 8 characters) *before* calling this.
@@ -60,14 +88,17 @@ interface AuthClient {
 
 ### `signInWithGoogle(options?)`
 
-- Simulates the provider round trip against one fixed mock Google identity — there
-  is no real popup, so the "email" isn't caller-supplied.
-- **Given** that mock identity has no matching existing `Account` yet → resolves
-  `{ status: 'success', session, accountCreated: true }` and creates the account
-  (US4 scenario 1).
-- **Given** that mock identity already matches an existing `Account.email` (from an
-  earlier Google sign-in, or a password-registered account with the same email) →
-  resolves `{ status: 'success', session, accountCreated: false }`, and that
+- Opens the real Google Identity Services (One Tap) prompt via `googleIdentity.ts`
+  and decodes the returned credential client-side (signature NOT verified — no
+  backend yet). **Superseded by the real contract** (see amendment note above): the
+  actual backend expects an authorization-code + redirect flow instead, not an ID
+  token obtained client-side.
+- **Given** the resolved Google email has no matching existing `Account` yet →
+  resolves `{ status: 'success', session, accountCreated: true }` and creates the
+  account (US4 scenario 1).
+- **Given** the resolved Google email already matches an existing `Account.email`
+  (from an earlier Google sign-in, or a password-registered account with the same
+  email) → resolves `{ status: 'success', session, accountCreated: false }`, and that
   `session.accountId` is the existing account's id, not a new one (US4 scenario 2,
   FR-020).
 - **Given** `options.simulate === 'cancel'` → resolves (does not reject)

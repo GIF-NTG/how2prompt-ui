@@ -162,13 +162,16 @@ an email the mock already knows → inline "Email này đã được đăng ký,
       `src/features/auth/api/authClient.mock.ts`: new email →
       `{ status: 'success', session: null, accountCreated: true }` and records the
       mock account; already-used email →
-      `{ status: 'error', errorCode: 'EMAIL_ALREADY_REGISTERED', message: 'Email
+      `{ status: 'error', errorCode: 'EMAIL_ALREADY_EXISTS', message: 'Email
       này đã được đăng ký, hãy đăng nhập' }`, per contracts/auth-client.md. Depends
       on T003.
       _Implementation note: added a shared in-memory `mockAccounts` Map (seeded with
       the T010 demo account) and revised `login()` to check it, so an account
       created via `register()` can immediately `login()` afterward — not explicitly
-      required by any FR, but needed for the mock to behave coherently end-to-end._
+      required by any FR, but needed for the mock to behave coherently end-to-end.
+      **Amended 2026-07-24**: error code renamed from `EMAIL_ALREADY_REGISTERED` to
+      `EMAIL_ALREADY_EXISTS` to match the real backend contract
+      (`docs/api/openapi.yaml`), received after this task was originally completed._
 - [X] T016 [US2] Build `RegisterPage` using `InlineBlankForm` and
       `GuestContinueLink` (display name + email + password blanks), with pre-submit
       validation for empty blanks (FR-006), malformed email (FR-007), and password
@@ -401,6 +404,48 @@ With multiple developers, after Foundational is done:
 - Developer C: User Story 4 (Google), starting once T015 is available
 - User Story 3 is best done by whoever finishes first, since it touches files from
   both US1 and US2
+
+---
+
+## Phase 8: Real Backend Integration (added 2026-07-24, after Backend supplied `docs/api/openapi.yaml`)
+
+**Purpose**: Get ahead of a real backend — implement `AuthClient` against the real
+contract now, so connecting one later is just setting `VITE_API_BASE_URL`, with zero
+UI-facing changes (SC-004 extended to the real client, not just the mock-swap case).
+
+- [X] T030 Add `httpClient.ts`: `fetch` wrapper with `credentials: 'include'` (for the
+      httpOnly `refresh_token` cookie), parses `{ error: {...} }` into a throwable
+      `ApiError`, and `isApiConfigured()` gate. Add `VITE_API_BASE_URL` to
+      `vite-env.d.ts` and `.env.example`.
+- [X] T031 Extend `AuthClient` (`authClient.types.ts`): `restoreSession()` → `Promise<
+      Session | null>` (async, both implementations); add
+      `completeGoogleOAuth(code, state): Promise<AuthOutcome>`. Update
+      `authClient.mock.ts` to match (trivial async wrap; `completeGoogleOAuth` stub
+      returns an error — unreachable in mock mode).
+- [X] T032 Add `authClient.real.ts`: `login`/`register` against `/auth/login`,
+      `/auth/register`; `signInWithGoogle` fetches `/auth/oauth/google` and redirects
+      the page (never resolves — tab navigates away); `completeGoogleOAuth` posts to
+      `/auth/oauth/google/callback`; `restoreSession` calls `/auth/refresh` then
+      `/users/me`; `logout` calls `/auth/logout`. Errors mapped via `httpClient.ts`'s
+      `ApiError` onto this feature's flat `AuthOutcome` shape.
+- [X] T033 Wire the switch in `authClient.ts`: `isApiConfigured() ? createRealAuthClient() : createMockAuthClient()`.
+- [X] T034 Add `GoogleCallbackPage.tsx` + route `/auth/google/callback` in `App.tsx` —
+      reads `code`/`state` from the URL, calls `completeGoogleOAuth`, signs in on
+      success.
+- [X] T035 Update `AuthProvider.tsx`: handle async `restoreSession()`, add
+      `isRestoring` to context, and schedule a silent `restoreSession()` call ~60s
+      before `session.expiresAt` so a real 15-minute `access_token` self-renews.
+- [X] T036 Update the 3 tests that called `authClient.restoreSession()` synchronously
+      (`AuthContext.test.tsx`, `GoogleSignInButton.test.tsx`, `LoginPage.test.tsx`) to
+      `await` it.
+
+**Result**: `npm run lint` 0 errors, `npm run build` succeeds, `npm run test` 12/12
+pass, dev server serves the new files/route without error.
+
+**Deliberately not done** (needs a live backend to verify, or is new scope beyond
+this feature's spec.md, not a flow correction): end-to-end testing of the redirect
+round trip against a real Google+backend pair; the email-verification gate the
+contract implies after `/auth/register`; forgot/reset-password.
 
 ---
 

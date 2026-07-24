@@ -33,7 +33,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
     await waitFor(() => expect(screen.getByText('Trang chủ')).toBeInTheDocument())
-    expect(authClient.restoreSession()).not.toBeNull()
+    expect(await authClient.restoreSession()).not.toBeNull()
   })
 
   it('shows an inline error for invalid credentials without clearing input', async () => {
@@ -62,6 +62,6 @@ describe('LoginPage', () => {
     const passwordInput = screen.getByPlaceholderText('••••••••')
     expect(passwordInput).toHaveFocus()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-    expect(authClient.restoreSession()).toBeNull()
+    expect(await authClient.restoreSession()).toBeNull()
   })
 })
