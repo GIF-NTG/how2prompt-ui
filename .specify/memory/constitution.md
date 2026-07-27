@@ -1,7 +1,7 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 → 3.0.0
-- Modified principles:
+- Version change: 2.0.0 → 3.0.0 → 3.0.1
+- v3.0.0 — Modified principles:
   - I. Fill-the-Blank Interaction Integrity → REDEFINED as "Dynamic Form Rendering
     Integrity" (backward-incompatible, NON-NEGOTIABLE principle redefinition). The
     how2prompt-agentic submodule replaced docs/epics.md with docs/SRS.md v2.0 +
@@ -16,6 +16,31 @@ Sync Impact Report
   - II. Spec-Before-Code — wording only: `docs/epics.md` (removed from the
     submodule) replaced with `docs/SRS.md` §3 + `docs/use-cases.md` +
     `agent/BA.md` §2 as the authoritative requirements source list.
+- v3.0.1 — PATCH, found during a cross-check against CLAUDE.md and the actual
+  codebase (no MUST-level rule changed, factual corrections only):
+  - III. Contract & Error Consistency — rationale referenced "the Axios response
+    interceptor's redirect-on-401/refresh-on-TOKEN_EXPIRED behavior", which does not
+    exist: the real client is a plain `fetch` wrapper (`httpClient.ts`) with
+    `AuthProvider` doing a *proactive* scheduled silent-refresh, not a reactive
+    interceptor — CLAUDE.md already documented this correctly. Rationale rewritten
+    to match.
+  - Technology & Architecture Constraints — the Backend bullet described "Java 17 +
+    Spring Boot 3.2.x API Gateway" plus a "Python FastAPI prompt service" using
+    LiteLLM/Tenacity. Zero matches for Python/FastAPI/LiteLLM/Tenacity/API Gateway
+    in the current submodule docs (SRS.md, BA.md) — this content appears to have
+    been copied from `how2prompt-agentic`'s own internal example-service
+    constitution, which that submodule's CLAUDE.md explicitly says does not apply to
+    consuming projects. Rewritten to match SRS.md §2.2's actual stack (Java 21,
+    Spring Boot 3+, Spring Security/Data JPA/Flyway, AI-provider Adapter pattern,
+    Redis 7+).
+  - Development Workflow — dropped a dangling reference to a `design_style_auth`
+    note that doesn't exist in CLAUDE.md; pointed at CLAUDE.md's actual "Visual
+    design direction" section instead. Also qualified the bare
+    `rules/agent-first-workflow.md` path (doesn't exist at this repo's root) to
+    `how2prompt-agentic/rules/agent-first-workflow.md`.
+  - Principle I rationale — cited "(Principle III)" for the backend-authoritative
+    render claim, but Principle III (Contract & Error Consistency) never states
+    that; pointed at `agent/BA.md` US-3.6 instead, the actual source of that rule.
 - Added sections: none
 - Removed sections: none
 - Templates requiring updates:
@@ -25,7 +50,7 @@ Sync Impact Report
   - .specify/templates/tasks-template.md — ✅ no constitution-specific references
   - CLAUDE.md (repo root) — ✅ already updated in a prior change (Product shape /
     Frontend stack / Visual design direction rewritten for the dynamic-form pivot
-    and the SRS.md v2.0 epic renumbering)
+    and the SRS.md v2.0 epic renumbering); confirmed consistent with this amendment
   - specs/20260724-013957-login-register-ui/* — ⚠ pending manual review: this spec
     predates the pivot and its auth screens still use `InlineBlankForm`; no change
     required unless that spec is reopened, since the redefined Principle I no longer
@@ -59,8 +84,9 @@ Rationale: `how2prompt-agentic/docs/SRS.md` v2.0 §3 (Epic 3) and `agent/BA.md` 
 define the dynamic form as the core MVP mechanic for turning a template into a
 rendered prompt — this superseded the earlier fill-in-the-blank pill/canvas design
 that v2.0.0 of this constitution mandated. A screen that reinvents its own form
-pattern here breaks parity with the backend's authoritative render (Principle III)
-and with every other template's form.
+pattern here breaks parity with the backend's authoritative re-render on
+`POST /templates/{id}/generate` (per `agent/BA.md` US-3.6) and with every other
+template's form.
 
 ### II. Spec-Before-Code
 No feature implementation proceeds without an approved spec → plan → tasks chain
@@ -85,10 +111,12 @@ requests MUST carry `Authorization: Bearer <access_token>`. `access_token` is
 short-lived (15 minutes per the contract); `refresh_token` lives only in an httpOnly
 cookie the frontend never reads directly, silently exchanged via `POST /auth/refresh`
 token rotation — it is NOT a single long-lived token held in `localStorage`.
-Rationale: the Axios response interceptor's redirect-on-401/refresh-on-`TOKEN_EXPIRED`
-behavior depends on one predictable error envelope and token lifecycle; an endpoint
-that invents its own error shape, or frontend code that assumes a single long-lived
-token, silently breaks that interceptor for every other screen.
+Rationale: `AuthProvider`'s proactive silent-refresh (a `setTimeout` scheduled ~60s
+before `access_token` expiry, calling `restoreSession()` — see
+`src/features/auth/context/AuthProvider.tsx`) and `httpClient.ts`'s `ApiError` parsing
+both depend on one predictable error envelope and token lifecycle; an endpoint that
+invents its own error shape, or frontend code that assumes a single long-lived token,
+silently breaks session restoration for every other screen.
 
 ### IV. Security Non-Negotiables
 User passwords MUST be hashed with BCrypt before persistence — plaintext or
@@ -114,13 +142,14 @@ exactly where regressions hide.
   React Router 7. Feature-first layout under `src/features/<feature>/pages`; shared
   cross-feature code under `src/shared/{components,hooks,types,utils}`; path alias
   `@` → `src/`.
-- **Backend** (per SRS/BA, implemented in sibling service repos): Java 17 + Spring
-  Boot 3.2.x acting as the API Gateway, following a strict
-  Controller → Service → Repository → Entity dependency direction with
-  `@Transactional` on every write-path service method; a Python FastAPI prompt
-  service for LLM optimization calls, using LiteLLM plus Tenacity-based exponential
-  backoff (max 3 attempts) for transient upstream failures; PostgreSQL 15.x with
-  UUID primary keys throughout.
+- **Backend** (per `how2prompt-agentic/docs/SRS.md` §2.2, implemented in a sibling
+  service repo — this repo does not own it): Java 21, Spring Boot 3+, Spring
+  Security, Spring Data JPA, Flyway migrations; a stateless REST API under
+  `/api/v1/...` documented in `docs/api/openapi.yaml`; multi-provider AI calls
+  (OpenAI, Anthropic, Google Gemini, Midjourney) go through a backend Adapter
+  pattern — the frontend never calls an AI provider directly. PostgreSQL 15+ with
+  UUID primary keys (`gen_random_uuid`) throughout; Redis 7+ for
+  rate-limiting/session/cache.
 - **Session & local state**: `access_token` (15-minute lifetime, per
   `docs/api/openapi.yaml`) held client-side and mirrored into React `AuthContext`;
   `refresh_token` lives only in an httpOnly cookie set by the backend — the frontend
@@ -130,16 +159,16 @@ exactly where regressions hide.
 ## Development Workflow
 
 - AI-assisted feature work follows the 6-step Agent-First process from
-  `rules/agent-first-workflow.md`: frame intent as user story + acceptance criteria
-  (not implementation) → ensure `CLAUDE.md`/context is current → get a spec-kit plan
-  approved before code → let the agent implement and self-test → review via running
-  tests and the conversation, scanning the diff only for anomalies (not line-by-line)
-  → capture evidence (conversation log, PR link, attribution) when the project is
-  tracking L2C evidence.
+  `how2prompt-agentic/rules/agent-first-workflow.md`: frame intent as user story +
+  acceptance criteria (not implementation) → ensure `CLAUDE.md`/context is current →
+  get a spec-kit plan approved before code → let the agent implement and self-test →
+  review via running tests and the conversation, scanning the diff only for
+  anomalies (not line-by-line) → capture evidence (conversation log, PR link,
+  attribution) when the project is tracking L2C evidence.
 - Design work for any new screen reuses the already-approved visual tokens (cool
   paper neutrals, indigo accent, monospace reserved for placeholder/template motifs)
-  rather than introducing a new palette per page — see the `design_style_auth`
-  design-direction note referenced from `CLAUDE.md`.
+  rather than introducing a new palette per page — see CLAUDE.md's "Visual design
+  direction" section.
 
 ## Governance
 
@@ -154,4 +183,4 @@ above before task generation proceeds. `CLAUDE.md` remains the place for day-to-
 runtime development guidance; this document governs the non-negotiable constraints
 that guidance must not contradict.
 
-**Version**: 3.0.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-07-27
+**Version**: 3.0.1 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-07-27
