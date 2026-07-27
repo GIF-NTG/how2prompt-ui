@@ -1,6 +1,6 @@
 import { createMockAuthClient } from './authClient.mock'
 import { createRealAuthClient } from './authClient.real'
-import { isApiConfigured } from './httpClient'
+import { isApiConfigured } from '@/shared/utils/httpClient'
 
 export type { AuthClient } from './authClient.types'
 

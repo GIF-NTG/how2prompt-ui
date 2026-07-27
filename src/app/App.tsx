@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layout/RootLayout'
-import { HomePage } from '@/features/home/pages/HomePage'
+import { CatalogPage } from '@/features/home/pages/CatalogPage'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
@@ -15,7 +15,7 @@ export function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<RootLayout />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<CatalogPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="forgot-password" element={<ForgotPasswordPage />} />

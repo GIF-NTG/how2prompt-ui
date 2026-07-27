@@ -1,6 +1,6 @@
 import type { AuthClient } from './authClient.types'
 import type { AuthErrorCode, Session } from './types'
-import { apiFetch, ApiError } from './httpClient'
+import { apiFetch, ApiError } from '@/shared/utils/httpClient'
 import { requestGoogleCredential } from './googleIdentity'
 
 interface BackendUser {
