@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 → 3.0.0 → 3.0.1
+- Version change: 2.0.0 → 3.0.0 → 3.0.1 → 3.0.2
 - v3.0.0 — Modified principles:
   - I. Fill-the-Blank Interaction Integrity → REDEFINED as "Dynamic Form Rendering
     Integrity" (backward-incompatible, NON-NEGOTIABLE principle redefinition). The
@@ -41,6 +41,13 @@ Sync Impact Report
   - Principle I rationale — cited "(Principle III)" for the backend-authoritative
     render claim, but Principle III (Contract & Error Consistency) never states
     that; pointed at `agent/BA.md` US-3.6 instead, the actual source of that rule.
+- v3.0.2 — PATCH, found while migrating the frontend to API contract v1.1.0
+  (specs/004-auth-contract-migration):
+  - III. Contract & Error Consistency — the error-envelope example still quoted
+    `trace_id` in snake_case; the v1.1.0 contract (`docs/api/openapi.yaml`) renamed
+    every JSON field to camelCase, including this one to `traceId`. Text updated to
+    match; no MUST-level rule changed (the envelope's outer shape — `error: { code,
+    message, details?, traceId? }` — is unchanged, only that one field's spelling).
 - Added sections: none
 - Removed sections: none
 - Templates requiring updates:
@@ -105,7 +112,7 @@ All backend endpoints live under the `/api/v1/...` namespace. `docs/api/openapi.
 contract — request/response shapes, error envelope, endpoint paths — and supersedes
 any conflicting shape implied by `agent/BA.md` or an earlier version of this
 constitution when they disagree. Every error response MUST serialize as
-`{ error: { code, message, details?, trace_id? } }` (NOT RFC-7807 `problem+json` —
+`{ error: { code, message, details?, traceId? } }` (NOT RFC-7807 `problem+json` —
 that was a v1.0.0 assumption the real contract does not follow). Authenticated
 requests MUST carry `Authorization: Bearer <access_token>`. `access_token` is
 short-lived (15 minutes per the contract); `refresh_token` lives only in an httpOnly
@@ -183,4 +190,4 @@ above before task generation proceeds. `CLAUDE.md` remains the place for day-to-
 runtime development guidance; this document governs the non-negotiable constraints
 that guidance must not contradict.
 
-**Version**: 3.0.1 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-07-27
+**Version**: 3.0.2 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-07-27
