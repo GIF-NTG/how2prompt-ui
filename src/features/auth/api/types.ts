@@ -26,3 +26,16 @@ export type AuthErrorCode = 'INVALID_CREDENTIALS' | 'EMAIL_ALREADY_EXISTS' | 'VA
 export type AuthOutcome =
   | { status: 'success'; session: Session | null; accountCreated: boolean }
   | { status: 'error'; errorCode: AuthErrorCode; message: string }
+
+// Neither of these carries a session — requesting/completing a password reset never
+// authenticates the visitor (mirrors register()'s session: null precedent).
+export type PasswordResetRequestOutcome =
+  | { status: 'success' }
+  | { status: 'error'; errorCode: AuthErrorCode; message: string }
+
+// 'RESET_TOKEN_EXPIRED' is client-derived from ApiError.status === 410 (see
+// httpClient.ts), not a backend error.code — docs/api/openapi.yaml documents only
+// the status for this case, not a specific code.
+export type PasswordResetOutcome =
+  | { status: 'success' }
+  | { status: 'error'; errorCode: AuthErrorCode | 'RESET_TOKEN_EXPIRED'; message: string }

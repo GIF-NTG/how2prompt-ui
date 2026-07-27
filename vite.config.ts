@@ -16,5 +16,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    // Vite loads .env.local even for `vitest` — force the mock AuthClient
+    // regardless of a developer's local VITE_API_BASE_URL, so tests stay
+    // hermetic instead of silently hitting a real (possibly incomplete) backend.
+    env: {
+      VITE_API_BASE_URL: '',
+    },
   },
 })

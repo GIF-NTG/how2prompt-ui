@@ -1,4 +1,4 @@
-import type { AuthOutcome, Session } from './types'
+import type { AuthOutcome, PasswordResetOutcome, PasswordResetRequestOutcome, Session } from './types'
 
 /**
  * The single integration point for all authentication communication (FR-009).
@@ -36,6 +36,16 @@ export interface AuthClient {
    */
   completeGoogleOAuth(code: string, state: string): Promise<AuthOutcome>
   logout(): Promise<void>
+  /**
+   * Always resolves `{ status: 'success' }` for a well-formed email, regardless of
+   * whether it matches an existing account — no account-enumeration signal (FR-002).
+   */
+  requestPasswordReset(email: string): Promise<PasswordResetRequestOutcome>
+  /**
+   * `errorCode: 'RESET_TOKEN_EXPIRED'` signals an expired or already-used token
+   * (see PasswordResetOutcome) — never authenticates the visitor on success.
+   */
+  resetPassword(token: string, newPassword: string): Promise<PasswordResetOutcome>
   /**
    * Async because the real implementation must round-trip to the backend
    * (`POST /auth/refresh`, using the httpOnly `refresh_token` cookie, then

@@ -131,6 +131,26 @@ export function createMockAuthClient(): AuthClient {
         message: 'Không hỗ trợ luồng này ở chế độ mock.',
       }
     },
+    async requestPasswordReset() {
+      // Always succeeds for a well-formed email, regardless of whether it matches
+      // a mock account — deliberately mirrors the real endpoint's no-enumeration
+      // behavior instead of looking the email up in mockAccounts.
+      return { status: 'success' }
+    },
+    async resetPassword(token, newPassword) {
+      // Sentinel token to exercise the expired/used-link branch without a real
+      // backend — see contracts/auth-client.md "Mock implementation notes".
+      if (token === 'expired-token') {
+        return {
+          status: 'error',
+          errorCode: 'RESET_TOKEN_EXPIRED',
+          message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+        }
+      }
+      const account = [...mockAccounts.values()].find((entry) => entry.password !== undefined)
+      if (account) account.password = newPassword
+      return { status: 'success' }
+    },
     async logout() {
       clearStoredSession()
     },

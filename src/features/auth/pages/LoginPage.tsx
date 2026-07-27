@@ -10,13 +10,16 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 interface LoginLocationState {
   justRegistered?: boolean
+  passwordWasReset?: boolean
 }
 
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { signIn } = useAuth()
-  const justRegistered = Boolean((location.state as LoginLocationState | null)?.justRegistered)
+  const locationState = location.state as LoginLocationState | null
+  const justRegistered = Boolean(locationState?.justRegistered)
+  const passwordWasReset = Boolean(locationState?.passwordWasReset)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -89,6 +92,15 @@ export function LoginPage() {
         </p>
       )}
 
+      {passwordWasReset && (
+        <p
+          role="status"
+          className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-4 py-2 text-sm text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262B4A] dark:text-[#8493FF]"
+        >
+          Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.
+        </p>
+      )}
+
       <form
         onSubmit={handleSubmit}
         noValidate
@@ -121,7 +133,13 @@ export function LoginPage() {
         >
           {passwordVisible ? 'ẩn' : 'hiện'}
         </button>
-        .
+        .{' '}
+        <Link
+          to="/forgot-password"
+          className="text-sm text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
+        >
+          Quên mật khẩu?
+        </Link>
         {errorMessage && (
           <p
             role="alert"

@@ -109,6 +109,37 @@ export function createRealAuthClient(): AuthClient {
       }
     },
 
+    async requestPasswordReset(email) {
+      try {
+        await apiFetch<void>('/auth/forgot-password', { method: 'POST', body: { email } })
+        return { status: 'success' }
+      } catch (error) {
+        return toErrorOutcome(error, 'Không thể gửi yêu cầu, vui lòng thử lại.')
+      }
+    },
+
+    async resetPassword(token, newPassword) {
+      try {
+        await apiFetch<void>('/auth/reset-password', {
+          method: 'POST',
+          body: { token, new_password: newPassword },
+        })
+        return { status: 'success' }
+      } catch (error) {
+        // The contract documents only the 410 status for an expired/already-used
+        // token, not a specific error.code (research.md Decision 1) — branch on
+        // status rather than guessing a code.
+        if (error instanceof ApiError && error.status === 410) {
+          return {
+            status: 'error',
+            errorCode: 'RESET_TOKEN_EXPIRED',
+            message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể đặt lại mật khẩu, vui lòng thử lại.')
+      }
+    },
+
     async logout() {
       try {
         await apiFetch<void>('/auth/logout', { method: 'POST' })
