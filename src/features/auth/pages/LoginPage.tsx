@@ -133,13 +133,7 @@ export function LoginPage() {
         >
           {passwordVisible ? 'ẩn' : 'hiện'}
         </button>
-        .{' '}
-        <Link
-          to="/forgot-password"
-          className="text-sm text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
-        >
-          Quên mật khẩu?
-        </Link>
+        .
         {errorMessage && (
           <p
             role="alert"
@@ -158,6 +152,12 @@ export function LoginPage() {
           </button>
         </div>
       </form>
+
+      <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
+        <Link to="/forgot-password" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+          Quên mật khẩu?
+        </Link>
+      </p>
 
       <div className="flex items-center gap-3 text-xs text-[#8B8F86] dark:text-[#6D726A]">
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
