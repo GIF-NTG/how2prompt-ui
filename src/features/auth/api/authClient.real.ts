@@ -174,12 +174,13 @@ export function createRealAuthClient(): AuthClient {
       }
     },
 
-    async resendVerificationEmail(accessToken) {
+    async resendVerificationEmail(email) {
       try {
         // The contract answers 202 Accepted (queued for async delivery), not 200 —
         // apiFetch's `!response.ok` check already treats any 2xx as success, so no
-        // status-code branching is needed here (research.md Decision 4).
-        await apiFetch<void>('/auth/resend-verification', { method: 'POST', accessToken })
+        // status-code branching is needed here (research.md Decision 4). Public
+        // request — no accessToken, identifies the account by email in the body.
+        await apiFetch<void>('/auth/resend-verification', { method: 'POST', body: { email } })
         return { status: 'success' }
       } catch (error) {
         if (error instanceof ApiError && error.status === 429) {

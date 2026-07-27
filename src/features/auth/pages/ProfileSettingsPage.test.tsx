@@ -6,6 +6,7 @@ import { ProfileSettingsPage } from './ProfileSettingsPage'
 import { AuthContext, type AuthContextValue } from '../context/AuthContext'
 import { AuthProvider } from '../context/AuthProvider'
 import { authClient } from '../api/authClient'
+import { SESSION_STORAGE_KEY } from '../api/authClient.mock'
 import { useAuth } from '../context/useAuth'
 
 const DEMO_EMAIL = 'demo@how2prompt.dev'
@@ -114,8 +115,24 @@ describe('ProfileSettingsPage', () => {
     const user = userEvent.setup()
 
     // Seed a second account that already owns the username we'll try to take.
+    // Newly registered mock accounts start unverified, and login now correctly
+    // rejects unverified accounts (EMAIL_NOT_VERIFIED) — so this seeds a session
+    // directly (same technique as EmailVerificationBanner.test.tsx's
+    // seedUnverifiedSession) instead of going through authClient.login, since this
+    // test only cares about username-uniqueness validation, not the login/verify flow.
     await authClient.register('Người Khác', 'other@example.com', 'password123')
-    await authClient.login('other@example.com', 'password123')
+    window.localStorage.setItem(
+      SESSION_STORAGE_KEY,
+      JSON.stringify({
+        accountId: 'other@example.com',
+        displayName: 'Người Khác',
+        email: 'other@example.com',
+        token: 'seed-token',
+        issuedAt: Date.now(),
+        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        emailVerified: false,
+      }),
+    )
     const takenUsernameOutcome = await authClient.updateProfile(
       (await authClient.restoreSession())!.token,
       { fullName: 'Người Khác', username: 'taken-name', bio: null, locale: 'vi' },

@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Invariant: only ever called from UI that itself only renders when `session`
     // is non-null (EmailVerificationBanner) — not defended, matching signOut()'s
     // existing assumption pattern.
-    return authClient.resendVerificationEmail(session!.token)
+    return authClient.resendVerificationEmail(session!.email)
   }
 
   async function verifyEmail(token: string) {

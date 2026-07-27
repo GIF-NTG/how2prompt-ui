@@ -191,16 +191,27 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/AuthResponse" }
         "401":
-          description: Sai email hoặc mật khẩu
+          description: Sai email hoặc mật khẩu, hoặc email chưa được xác minh
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
-              example:
-                error:
-                  {
-                    code: INVALID_CREDENTIALS,
-                    message: "Email hoặc mật khẩu không đúng",
-                  }
+              examples:
+                invalidCredentials:
+                  summary: Sai email hoặc mật khẩu
+                  value:
+                    error:
+                      {
+                        code: INVALID_CREDENTIALS,
+                        message: "Email hoặc mật khẩu không đúng",
+                      }
+                emailNotVerified:
+                  summary: Email chưa được xác minh
+                  value:
+                    error:
+                      {
+                        code: EMAIL_NOT_VERIFIED,
+                        message: "Vui lòng xác minh email trước khi đăng nhập",
+                      }
         "403":
           description: Tài khoản bị khóa
         "429":
@@ -334,6 +345,16 @@ paths:
     post:
       tags: [Auth]
       summary: Gửi lại email xác minh
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
       responses:
         "202":
           description: Yêu cầu đã được chấp nhận, email sẽ được gửi bất đồng bộ (Accepted)

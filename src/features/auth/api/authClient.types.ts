@@ -54,12 +54,12 @@ export interface AuthClient {
    */
   verifyEmail(token: string): Promise<VerifyEmailOutcome>
   /**
-   * Requires the caller's current `access_token` explicitly — unlike most
-   * `AuthClient` methods, this endpoint requires `Authorization: Bearer` (it acts on
-   * the calling user's own account), and the client itself holds no session state.
+   * Public request — no `Authorization` header, identifies the target account by
+   * `email` alone (same shape as `requestPasswordReset`), so it works with or
+   * without an active session.
    * `errorCode: 'RATE_LIMITED'` signals the backend's resend cooldown is still active.
    */
-  resendVerificationEmail(accessToken: string): Promise<ResendVerificationOutcome>
+  resendVerificationEmail(email: string): Promise<ResendVerificationOutcome>
   /**
    * Async because the real implementation must round-trip to the backend
    * (`POST /auth/refresh`, using the httpOnly `refresh_token` cookie, then

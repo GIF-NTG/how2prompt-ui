@@ -98,6 +98,13 @@ export function createMockAuthClient(): AuthClient {
     async login(email, password) {
       const account = mockAccounts.get(email)
       if (account?.password && account.password === password) {
+        if (!account.emailVerified) {
+          return {
+            status: 'error',
+            errorCode: 'EMAIL_NOT_VERIFIED',
+            message: 'Vui lòng xác minh email trước khi đăng nhập.',
+          }
+        }
         const session = createSession(account)
         persistSession(session)
         return { status: 'success', session, accountCreated: false }
@@ -203,9 +210,8 @@ export function createMockAuthClient(): AuthClient {
       }
       return { status: 'success' }
     },
-    async resendVerificationEmail() {
-      const session = readStoredSession()
-      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+    async resendVerificationEmail(email) {
+      const account = mockAccounts.get(email)
       const now = Date.now()
       if (account?.lastVerificationSentAt && now - account.lastVerificationSentAt < MOCK_RESEND_COOLDOWN_MS) {
         return {
@@ -219,8 +225,8 @@ export function createMockAuthClient(): AuthClient {
     },
     async getProfile() {
       // Looks up by the currently persisted session's email (same pattern as
-      // verifyEmail/resendVerificationEmail) rather than the accessToken value
-      // itself, which the mock never stores on the account record.
+      // verifyEmail) rather than the accessToken value itself, which the mock
+      // never stores on the account record.
       const session = readStoredSession()
       const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
       if (!account) {
