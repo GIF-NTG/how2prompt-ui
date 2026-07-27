@@ -28,6 +28,10 @@ interface MockAccountRecord {
   /** Epoch ms of the last resend-verification call, for the mock's rate-limit
    *  simulation (see resendVerificationEmail below). */
   lastVerificationSentAt?: number
+  /** Profile fields editable via US-1.7 (see getProfile/updateProfile below). */
+  username: string | null
+  bio: string | null
+  locale: 'en' | 'vi'
 }
 
 // Mock cooldown window for the "resend verification email" rate limit — short
@@ -47,6 +51,9 @@ const mockAccounts = new Map<string, MockAccountRecord>([
       email: DEMO_EMAIL,
       password: DEMO_PASSWORD,
       emailVerified: true,
+      username: null,
+      bio: null,
+      locale: 'vi',
     },
   ],
 ])
@@ -109,7 +116,16 @@ export function createMockAuthClient(): AuthClient {
           message: 'Email này đã được đăng ký, hãy đăng nhập',
         }
       }
-      mockAccounts.set(email, { id: createAccountId(), displayName, email, password, emailVerified: false })
+      mockAccounts.set(email, {
+        id: createAccountId(),
+        displayName,
+        email,
+        password,
+        emailVerified: false,
+        username: null,
+        bio: null,
+        locale: 'vi',
+      })
       return { status: 'success', session: null, accountCreated: true }
     },
     async signInWithGoogle(options) {
@@ -137,21 +153,14 @@ export function createMockAuthClient(): AuthClient {
         email: credential.email,
         // Google already verifies account ownership of the email itself.
         emailVerified: true,
+        username: null,
+        bio: null,
+        locale: 'vi',
       }
       mockAccounts.set(credential.email, account)
       const session = createSession(account)
       persistSession(session)
       return { status: 'success', session, accountCreated: true }
-    },
-    async completeGoogleOAuth() {
-      // The mock has no redirect step to complete — this route should be
-      // unreachable while VITE_API_BASE_URL is unset, but resolve gracefully
-      // rather than throwing if it's ever hit (e.g. a stale bookmarked callback URL).
-      return {
-        status: 'error',
-        errorCode: 'VALIDATION_ERROR',
-        message: 'Không hỗ trợ luồng này ở chế độ mock.',
-      }
     },
     async requestPasswordReset() {
       // Always succeeds for a well-formed email, regardless of whether it matches
@@ -207,6 +216,43 @@ export function createMockAuthClient(): AuthClient {
       }
       if (account) account.lastVerificationSentAt = now
       return { status: 'success' }
+    },
+    async getProfile() {
+      // Looks up by the currently persisted session's email (same pattern as
+      // verifyEmail/resendVerificationEmail) rather than the accessToken value
+      // itself, which the mock never stores on the account record.
+      const session = readStoredSession()
+      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      if (!account) {
+        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+      }
+      return {
+        status: 'success',
+        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+      }
+    },
+    async updateProfile(_accessToken, input) {
+      const session = readStoredSession()
+      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      if (!account) {
+        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+      }
+      if (input.username) {
+        const collision = [...mockAccounts.values()].find(
+          (entry) => entry !== account && entry.username === input.username,
+        )
+        if (collision) {
+          return { status: 'error', errorCode: 'USERNAME_TAKEN', message: 'Tên người dùng này đã được sử dụng.' }
+        }
+      }
+      account.displayName = input.fullName
+      account.username = input.username
+      account.bio = input.bio
+      account.locale = input.locale
+      return {
+        status: 'success',
+        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+      }
     },
     async logout() {
       clearStoredSession()

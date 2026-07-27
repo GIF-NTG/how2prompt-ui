@@ -76,22 +76,23 @@ reflects that restructure and does **not** match epic numbers from before this u
 authoritative wire contract — check it before wiring any real endpoint. Its error
 envelope matches `agent/BA.md` §4.3.
 
-- REST namespace: `/api/v1/...`.
-- All error responses are `{ error: { code, message, details?, trace_id? } }` — NOT
+- REST namespace: `/api/v1/...`. All JSON fields are `camelCase`; non-`204`
+  responses are wrapped in `ApiResponse<T>` (`{ data, meta }`) — `httpClient.ts`'s
+  `apiFetch` unwraps `data` before returning to callers.
+- All error responses are `{ error: { code, message, details?, traceId? } }` — NOT
   RFC-7807. Branch UI logic on `error.code` (e.g. `INVALID_CREDENTIALS`,
   `EMAIL_ALREADY_EXISTS`, `TOKEN_EXPIRED`, `VALIDATION_ERROR`, `GUEST_QUOTA_EXCEEDED`).
-- Auth: `Authorization: Bearer <access_token>`. `access_token` expires in **15
+- Auth: `Authorization: Bearer <accessToken>`. `accessToken` expires in **15
   minutes** — on `401 TOKEN_EXPIRED`, call `POST /auth/refresh` to rotate it.
-  `refresh_token` lives only in an httpOnly cookie the frontend never reads directly.
-- Google sign-in is the standard **authorization-code + redirect** flow:
-  `GET /auth/oauth/google` → `{ authorization_url, state }` → full-page redirect to
-  Google → Google redirects back to `GoogleCallbackPage` (`/auth/google/callback`)
-  with `code`+`state` → `POST /auth/oauth/google/callback`. Implemented in
-  `authClient.real.ts` + `completeGoogleOAuth`. This is a **different** flow from
-  the client-side Google Identity Services "One Tap" approach in
-  `src/features/auth/api/googleIdentity.ts`, which is now mock-only — set
-  `VITE_API_BASE_URL` to switch to the real redirect flow; nothing else changes
-  (`authClient.ts` picks the implementation automatically).
+  `refreshToken` lives only in an httpOnly cookie the frontend never reads directly.
+- Google sign-in is a single-request **ID-token** flow (v1.1.0 — no authorization-code
+  redirect/callback endpoint exists anymore): the frontend obtains a Google ID token
+  client-side via Google Identity Services (`src/features/auth/api/googleIdentity.ts`,
+  used by both the mock and real clients), then `authClient.real.ts` sends it as
+  `POST /auth/oauth/google { idToken }`; the backend verifies it server-side and
+  responds like a normal login. `login`/`signInWithGoogle`/`POST /auth/refresh` all
+  return only `{ accessToken, expiresIn }` (no `user`) — the real client follows up
+  with `GET /users/me` to assemble the session (same pattern for all three).
 - Guest access: some endpoints (templates, taxonomy, `ai-models`) work without a
   token; `POST /templates/{id}/generate` allows Guests but requires an
   `X-Guest-Fingerprint` header and is capped at 3/day/IP server-side.

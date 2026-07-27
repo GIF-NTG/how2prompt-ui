@@ -10,8 +10,14 @@ interface ApiErrorBody {
     code?: string
     message?: string
     details?: Record<string, string>
-    trace_id?: string
+    traceId?: string
   }
+}
+
+/** Wraps every non-204 response body, per docs/api/openapi.yaml's "Response Wrapper chuẩn". */
+interface ApiEnvelope<T> {
+  data: T
+  meta: unknown
 }
 
 /** Mirrors docs/api/openapi.yaml's error envelope: `{ error: { code, message, ... } }`. */
@@ -73,5 +79,5 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     )
   }
 
-  return data as T
+  return (data as ApiEnvelope<T>).data
 }

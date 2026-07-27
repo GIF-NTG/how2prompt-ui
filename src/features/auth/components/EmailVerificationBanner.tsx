@@ -28,7 +28,7 @@ export function EmailVerificationBanner() {
     try {
       const outcome = await resendVerificationEmail()
       if (outcome.status === 'success') {
-        setStatusMessage('Đã gửi lại email xác minh, hãy kiểm tra hộp thư của bạn.')
+        setStatusMessage('Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.')
         setSecondsLeft(COUNTDOWN_SECONDS)
       } else if (outcome.errorCode === 'RATE_LIMITED') {
         setErrorMessage('Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.')

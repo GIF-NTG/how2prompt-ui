@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { authClient } from '../api/authClient'
-import type { Session } from '../api/types'
+import type { Session, UpdateProfileInput } from '../api/types'
 import { AuthContext } from './AuthContext'
 
 // Refresh this long before expiry so a request never races an about-to-expire
@@ -76,9 +76,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return outcome
   }
 
+  async function getProfile() {
+    // Invariant: only ever called from UI that itself only renders when `session`
+    // is non-null (ProfileSettingsPage) — not defended, matching
+    // resendVerificationEmail()'s existing assumption pattern.
+    return authClient.getProfile(session!.token)
+  }
+
+  async function updateProfile(input: UpdateProfileInput) {
+    const outcome = await authClient.updateProfile(session!.token, input)
+    if (outcome.status === 'success') {
+      setSession((current) => (current ? { ...current, displayName: outcome.profile.fullName } : current))
+    }
+    return outcome
+  }
+
   return (
     <AuthContext.Provider
-      value={{ session, isRestoring, signIn, signOut, resendVerificationEmail, verifyEmail }}
+      value={{
+        session,
+        isRestoring,
+        signIn,
+        signOut,
+        resendVerificationEmail,
+        verifyEmail,
+        getProfile,
+        updateProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

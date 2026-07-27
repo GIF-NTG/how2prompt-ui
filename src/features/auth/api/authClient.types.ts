@@ -2,8 +2,10 @@ import type {
   AuthOutcome,
   PasswordResetOutcome,
   PasswordResetRequestOutcome,
+  ProfileOutcome,
   ResendVerificationOutcome,
   Session,
+  UpdateProfileInput,
   VerifyEmailOutcome,
 } from './types'
 
@@ -27,21 +29,13 @@ export interface AuthClient {
   login(email: string, password: string): Promise<AuthOutcome>
   register(displayName: string, email: string, password: string): Promise<AuthOutcome>
   /**
-   * Starts Google sign-in. Mock: opens the real Google Identity Services (One Tap)
-   * prompt and resolves once the visitor picks an account or dismisses it. Real:
-   * fetches the provider's authorization URL and redirects the whole page there —
-   * this call does not meaningfully "resolve" in that case, since the tab
-   * navigates away; the flow completes on `completeGoogleOAuth` instead, from the
-   * callback route Google redirects back to.
+   * Starts and completes Google sign-in in a single call. Both mock and real
+   * implementations open the real Google Identity Services (One Tap) prompt to
+   * obtain an ID token; the mock decodes it client-side (no backend to verify
+   * against), the real implementation forwards the raw token to
+   * `POST /auth/oauth/google`, which the backend verifies server-side.
    */
   signInWithGoogle(options?: GoogleSignInOptions): Promise<AuthOutcome>
-  /**
-   * Finishes the real authorization-code Google flow: called by
-   * `GoogleCallbackPage` with the `code`/`state` query params Google redirected
-   * back with. The mock implementation has no redirect step to complete and
-   * always resolves with an error if this is ever called.
-   */
-  completeGoogleOAuth(code: string, state: string): Promise<AuthOutcome>
   logout(): Promise<void>
   /**
    * Always resolves `{ status: 'success' }` for a well-formed email, regardless of
@@ -74,4 +68,11 @@ export interface AuthClient {
    * its synchronous `localStorage` read in an already-resolved Promise.
    */
   restoreSession(): Promise<Session | null>
+  /** Fetches the caller's own profile. Requires an active session's access token. */
+  getProfile(accessToken: string): Promise<ProfileOutcome>
+  /**
+   * `errorCode: 'USERNAME_TAKEN'` signals a duplicate username (409). Requires
+   * the caller's current access token.
+   */
+  updateProfile(accessToken: string, input: UpdateProfileInput): Promise<ProfileOutcome>
 }

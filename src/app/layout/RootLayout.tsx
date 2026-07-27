@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { EmailVerificationBanner } from '@/features/auth/components/EmailVerificationBanner'
 
@@ -10,6 +10,9 @@ export function RootLayout() {
       {session && (
         <div className="flex items-center justify-end gap-3 border-b border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]">
           <span>{session.displayName}</span>
+          <Link to="/profile" className="font-mono text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]">
+            Hồ sơ
+          </Link>
           <button
             type="button"
             onClick={() => void signOut()}

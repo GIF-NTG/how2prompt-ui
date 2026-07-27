@@ -33,7 +33,11 @@ describe('GoogleSignInButton', () => {
   })
 
   it('signs in a visitor and reaches a signed-in state', async () => {
-    mockedRequestGoogleCredential.mockResolvedValueOnce({ email: 'visitor@example.com', name: 'Visitor' })
+    mockedRequestGoogleCredential.mockResolvedValueOnce({
+      email: 'visitor@example.com',
+      name: 'Visitor',
+      idToken: 'fake-id-token',
+    })
     const user = userEvent.setup()
     renderButton()
 
@@ -44,7 +48,11 @@ describe('GoogleSignInButton', () => {
   })
 
   it('links a second Google sign-in to the same existing account, not a new one', async () => {
-    mockedRequestGoogleCredential.mockResolvedValue({ email: 'linked@example.com', name: 'Linked User' })
+    mockedRequestGoogleCredential.mockResolvedValue({
+      email: 'linked@example.com',
+      name: 'Linked User',
+      idToken: 'fake-id-token',
+    })
 
     const first = await authClient.signInWithGoogle()
     if (first.status !== 'success' || !first.session) throw new Error('expected a successful session')
