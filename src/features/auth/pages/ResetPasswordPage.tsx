@@ -57,8 +57,12 @@ export function ResetPasswordPage() {
   return (
     <AuthLayout>
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">Đặt lại mật khẩu</h2>
-        <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">Nhập mật khẩu mới cho tài khoản của bạn.</p>
+        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+          Đặt lại mật khẩu
+        </h2>
+        <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
+          Nhập mật khẩu mới cho tài khoản của bạn.
+        </p>
       </div>
 
       {linkExpired ? (

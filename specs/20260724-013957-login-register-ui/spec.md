@@ -16,7 +16,7 @@
 - Q: What password rule should the Register view enforce client-side before allowing submission? → A: Minimum 8 characters, no additional complexity (special character / mixed case) requirement.
 - Q: The user requested adding Google sign-in as a new capability. When a visitor signs in with Google using an email that already has an email/password account, how should that be treated? → A: Linked — same email means the same Account, just a second way to sign into it.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Returning member signs in (Priority: P1)
 
@@ -161,7 +161,7 @@ from either view and observing the mocked provider flow resolve to a signed-in s
 - What happens when a visitor cancels the Google sign-in flow partway through? → They
   return to the signed-out state with no error shown (Story 4, Scenario 3).
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -232,7 +232,7 @@ from either view and observing the mocked provider flow resolve to a signed-in s
   the mocked integration point produces today and the real backend must produce later
   without the UI changing.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

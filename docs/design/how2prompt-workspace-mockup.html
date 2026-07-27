@@ -1,1058 +1,2371 @@
 <!doctype html>
 <html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How2Prompt — Design Reference (Auth + Workspace, SRS v2.0)</title>
-<style>
-  :root {
-    --bg: #F3F5F0;
-    --surface: #FFFFFF;
-    --surface-2: #EAEDE6;
-    --ink: #1B1D1B;
-    --ink-soft: #5B5F58;
-    --ink-faint: #8B8F86;
-    --accent: #3652E0;
-    --accent-ink: #FFFFFF;
-    --accent-soft: #E7EAFC;
-    --line: #DBDFD3;
-    --danger: #C23A2E;
-    --danger-soft: #FBE7E4;
-    --good: #2E7D4F;
-    --good-soft: #E4F3EA;
-    --focus: #3652E0;
-    --shadow: 0 24px 60px -30px rgba(27, 29, 27, 0.35);
-    --font-sans: ui-sans-serif, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", monospace;
-  }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How2Prompt — Design Reference (Auth + Workspace, SRS v2.0)</title>
+    <style>
+      :root {
+        --bg: #f3f5f0;
+        --surface: #ffffff;
+        --surface-2: #eaede6;
+        --ink: #1b1d1b;
+        --ink-soft: #5b5f58;
+        --ink-faint: #8b8f86;
+        --accent: #3652e0;
+        --accent-ink: #ffffff;
+        --accent-soft: #e7eafc;
+        --line: #dbdfd3;
+        --danger: #c23a2e;
+        --danger-soft: #fbe7e4;
+        --good: #2e7d4f;
+        --good-soft: #e4f3ea;
+        --focus: #3652e0;
+        --shadow: 0 24px 60px -30px rgba(27, 29, 27, 0.35);
+        --font-sans: ui-sans-serif, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        --font-mono:
+          ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+      }
 
-  :root[data-theme="dark"] {
-    --bg: #14171A;
-    --surface: #1C2024;
-    --surface-2: #23282C;
-    --ink: #ECEEE8;
-    --ink-soft: #A2A79C;
-    --ink-faint: #6D726A;
-    --accent: #8493FF;
-    --accent-ink: #14171A;
-    --accent-soft: #262C4A;
-    --line: #2C3130;
-    --danger: #FF7A6B;
-    --danger-soft: #3A2224;
-    --good: #6FCF9A;
-    --good-soft: #1E3327;
-    --focus: #8493FF;
-    --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
-  }
+      :root[data-theme='dark'] {
+        --bg: #14171a;
+        --surface: #1c2024;
+        --surface-2: #23282c;
+        --ink: #eceee8;
+        --ink-soft: #a2a79c;
+        --ink-faint: #6d726a;
+        --accent: #8493ff;
+        --accent-ink: #14171a;
+        --accent-soft: #262c4a;
+        --line: #2c3130;
+        --danger: #ff7a6b;
+        --danger-soft: #3a2224;
+        --good: #6fcf9a;
+        --good-soft: #1e3327;
+        --focus: #8493ff;
+        --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+      }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14171A;
-      --surface: #1C2024;
-      --surface-2: #23282C;
-      --ink: #ECEEE8;
-      --ink-soft: #A2A79C;
-      --ink-faint: #6D726A;
-      --accent: #8493FF;
-      --accent-ink: #14171A;
-      --accent-soft: #262C4A;
-      --line: #2C3130;
-      --danger: #FF7A6B;
-      --danger-soft: #3A2224;
-      --good: #6FCF9A;
-      --good-soft: #1E3327;
-      --focus: #8493FF;
-      --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
-    }
-  }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #14171a;
+          --surface: #1c2024;
+          --surface-2: #23282c;
+          --ink: #eceee8;
+          --ink-soft: #a2a79c;
+          --ink-faint: #6d726a;
+          --accent: #8493ff;
+          --accent-ink: #14171a;
+          --accent-soft: #262c4a;
+          --line: #2c3130;
+          --danger: #ff7a6b;
+          --danger-soft: #3a2224;
+          --good: #6fcf9a;
+          --good-soft: #1e3327;
+          --focus: #8493ff;
+          --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+        }
+      }
 
-  * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
 
-  html, body { overflow-x: hidden; }
+      html,
+      body {
+        overflow-x: hidden;
+      }
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    position: relative;
-  }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        position: relative;
+      }
 
-  .brace-field {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-    font-family: var(--font-mono);
-    color: var(--ink);
-    opacity: 0.035;
-  }
-  .brace-field span { position: absolute; font-weight: 600; white-space: nowrap; }
+      .brace-field {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        font-family: var(--font-mono);
+        color: var(--ink);
+        opacity: 0.035;
+      }
+      .brace-field span {
+        position: absolute;
+        font-weight: 600;
+        white-space: nowrap;
+      }
 
-  a { color: inherit; }
-  button { font-family: inherit; }
+      a {
+        color: inherit;
+      }
+      button {
+        font-family: inherit;
+      }
 
-  /* ============ shared top bar ============ */
-  .topbar {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem clamp(1.25rem, 4vw, 3rem);
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
-  .brand .mark {
-    font-family: var(--font-mono);
-    background: var(--ink);
-    color: var(--bg);
-    border-radius: 6px;
-    padding: 0.15rem 0.45rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-  }
-  .guest-link {
-    font-size: 0.85rem;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.15s ease, color 0.15s ease;
-    background: none; border: none; cursor: pointer; padding: 0;
-  }
-  .guest-link:hover { color: var(--ink); border-color: var(--ink-faint); }
-  .guest-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+      /* ============ shared top bar ============ */
+      .topbar {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem clamp(1.25rem, 4vw, 3rem);
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+      }
+      .brand .mark {
+        font-family: var(--font-mono);
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 6px;
+        padding: 0.15rem 0.45rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .guest-link {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+      .guest-link:hover {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .guest-link:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
 
-  .topbar-right { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
-  .app-nav { display: flex; gap: 1.25rem; }
-  .app-nav a {
-    font-size: 0.88rem;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
-  }
-  .app-nav a:hover, .app-nav a[aria-current="page"] { color: var(--ink); border-color: var(--ink-faint); }
-  .app-nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+        flex-wrap: wrap;
+      }
+      .app-nav {
+        display: flex;
+        gap: 1.25rem;
+      }
+      .app-nav a {
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition:
+          color 0.15s ease,
+          border-color 0.15s ease;
+        cursor: pointer;
+      }
+      .app-nav a:hover,
+      .app-nav a[aria-current='page'] {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .app-nav a:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
 
-  .user-chip { display: flex; align-items: center; gap: 0.75rem; }
-  .avatar {
-    width: 2rem; height: 2rem; border-radius: 50%;
-    background: var(--accent-soft); color: var(--accent);
-    font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;
-    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .user-name { font-size: 0.9rem; font-weight: 600; }
-  .link-btn {
-    font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft);
-    background: none; border: none; cursor: pointer; padding: 0;
-    text-decoration: underline; text-underline-offset: 2px;
-  }
-  .link-btn:hover { color: var(--ink); }
-  .link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+      .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .link-btn {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .link-btn:hover {
+        color: var(--ink);
+      }
+      .link-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
 
-  /* ============ auth shell ============ */
-  main.stage {
-    position: relative; z-index: 1;
-    display: grid; place-items: center;
-    padding: 1rem clamp(1.25rem, 4vw, 3rem) 3rem;
-  }
-  .panelwrap {
-    width: 100%; max-width: 1000px;
-    display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
-    border-radius: 20px; overflow: hidden;
-    box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--surface);
-  }
-  .context {
-    background: var(--surface-2);
-    padding: clamp(1.75rem, 3.4vw, 3rem);
-    display: flex; flex-direction: column; gap: 1.75rem;
-    border-right: 1px solid var(--line);
-  }
-  .eyebrow {
-    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent); display: inline-flex; align-items: center; gap: 0.4rem;
-  }
-  .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .context h1 { font-size: clamp(1.5rem, 2.4vw, 1.9rem); line-height: 1.2; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
-  .context p.lede { margin: 0; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.6; max-width: 40ch; }
-  .demo-card {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-    padding: 1.1rem 1.2rem; font-size: 0.92rem; line-height: 1.75; color: var(--ink);
-  }
-  .demo-card .tag {
-    font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint);
-    text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 0.6rem;
-  }
-  .demo-card .blank {
-    font-family: var(--font-mono); background: var(--accent-soft); color: var(--accent);
-    border-radius: 4px; padding: 0.05rem 0.4rem; font-size: 0.88em;
-  }
-  .feature-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; }
-  .feature-list li { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5; }
-  .feature-list .glyph { font-family: var(--font-mono); color: var(--accent); font-weight: 700; flex-shrink: 0; width: 1.1rem; }
-  .session-note {
-    margin-top: auto; font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint);
-    display: flex; align-items: center; gap: 0.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--line);
-  }
-  .session-note .pill { background: var(--ink); color: var(--bg); border-radius: 999px; padding: 0.1rem 0.55rem; font-weight: 600; }
+      /* ============ auth shell ============ */
+      main.stage {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        padding: 1rem clamp(1.25rem, 4vw, 3rem) 3rem;
+      }
+      .panelwrap {
+        width: 100%;
+        max-width: 1000px;
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .context {
+        background: var(--surface-2);
+        padding: clamp(1.75rem, 3.4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        border-right: 1px solid var(--line);
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .context h1 {
+        font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin: 0;
+        text-wrap: balance;
+      }
+      .context p.lede {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-width: 40ch;
+      }
+      .demo-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+        font-size: 0.92rem;
+        line-height: 1.75;
+        color: var(--ink);
+      }
+      .demo-card .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .demo-card .blank {
+        font-family: var(--font-mono);
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 0.05rem 0.4rem;
+        font-size: 0.88em;
+      }
+      .feature-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        font-size: 0.86rem;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+      .feature-list .glyph {
+        font-family: var(--font-mono);
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+        width: 1.1rem;
+      }
+      .session-note {
+        margin-top: auto;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px dashed var(--line);
+      }
+      .session-note .pill {
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 999px;
+        padding: 0.1rem 0.55rem;
+        font-weight: 600;
+      }
 
-  .auth { padding: clamp(1.75rem, 3.4vw, 3rem); display: flex; flex-direction: column; gap: 1.6rem; }
-  .tabs { display: flex; gap: 0.25rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 0.25rem; }
-  .tab {
-    flex: 1; text-align: center; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600;
-    border-radius: 9px; border: none; background: transparent; color: var(--ink-soft); cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; font-family: inherit;
-  }
-  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
-  .tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .form-head h2 { margin: 0 0 0.35rem; font-size: 1.3rem; letter-spacing: -0.01em; }
-  .form-head p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+      .auth {
+        padding: clamp(1.75rem, 3.4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.6rem;
+      }
+      .tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.25rem;
+      }
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.55rem 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border-radius: 9px;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition:
+          background 0.18s ease,
+          color 0.18s ease,
+          box-shadow 0.18s ease;
+        font-family: inherit;
+      }
+      .tab[aria-selected='true'] {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 1px 0 var(--line);
+      }
+      .tab:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .form-head h2 {
+        margin: 0 0 0.35rem;
+        font-size: 1.3rem;
+        letter-spacing: -0.01em;
+      }
+      .form-head p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.86rem;
+      }
 
-  .sentence-form {
-    background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px;
-    padding: 1.3rem 1.35rem; font-size: 1.05rem; line-height: 2.2;
-  }
-  .sentence-form .static { color: var(--ink-soft); }
-  .blank-input {
-    font-family: var(--font-mono); font-size: 0.92rem; background: transparent; border: none;
-    border-bottom: 2px solid var(--ink-faint); color: var(--ink); padding: 0.05rem 0.15rem;
-    min-width: 1.5ch; max-width: 100%; outline: none; transition: border-color 0.15s ease;
-  }
-  .blank-input::placeholder { color: var(--ink-faint); opacity: 0.8; }
-  .blank-input:focus { border-color: var(--accent); }
-  .blank-input.invalid { border-color: var(--danger); }
-  .pw-wrap { display: inline-flex; align-items: baseline; gap: 0.3rem; vertical-align: baseline; }
-  .pw-toggle {
-    font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); background: none; border: none;
-    cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px;
-  }
-  .pw-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
-  .measure { position: absolute; left: -9999px; top: -9999px; white-space: pre; font-family: var(--font-mono); font-size: 0.92rem; }
+      .sentence-form {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.3rem 1.35rem;
+        font-size: 1.05rem;
+        line-height: 2.2;
+      }
+      .sentence-form .static {
+        color: var(--ink-soft);
+      }
+      .blank-input {
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--ink-faint);
+        color: var(--ink);
+        padding: 0.05rem 0.15rem;
+        min-width: 1.5ch;
+        max-width: 100%;
+        outline: none;
+        transition: border-color 0.15s ease;
+      }
+      .blank-input::placeholder {
+        color: var(--ink-faint);
+        opacity: 0.8;
+      }
+      .blank-input:focus {
+        border-color: var(--accent);
+      }
+      .blank-input.invalid {
+        border-color: var(--danger);
+      }
+      .pw-wrap {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        vertical-align: baseline;
+      }
+      .pw-toggle {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--accent);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .pw-toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+      .measure {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        white-space: pre;
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+      }
 
-  .banner {
-    display: none; align-items: flex-start; gap: 0.6rem;
-    border-radius: 10px; padding: 0.7rem 0.85rem; font-size: 0.83rem; line-height: 1.5;
-  }
-  .banner.show { display: flex; }
-  .banner.err { background: var(--danger-soft); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); }
-  .banner.ok { background: var(--good-soft); color: var(--good); border: 1px solid color-mix(in srgb, var(--good) 35%, transparent); }
-  .banner code { font-family: var(--font-mono); font-size: 0.72rem; opacity: 0.85; }
+      .banner {
+        display: none;
+        align-items: flex-start;
+        gap: 0.6rem;
+        border-radius: 10px;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.83rem;
+        line-height: 1.5;
+      }
+      .banner.show {
+        display: flex;
+      }
+      .banner.err {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+      }
+      .banner.ok {
+        background: var(--good-soft);
+        color: var(--good);
+        border: 1px solid color-mix(in srgb, var(--good) 35%, transparent);
+      }
+      .banner code {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        opacity: 0.85;
+      }
 
-  .actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .submit-btn {
-    font-weight: 700; font-size: 0.92rem; background: var(--accent); color: var(--accent-ink);
-    border: none; border-radius: 10px; padding: 0.7rem 1.3rem; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.12s ease, filter 0.12s ease;
-  }
-  .submit-btn:hover { filter: brightness(1.08); }
-  .submit-btn:active { transform: translateY(1px); }
-  .submit-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-  .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-  .ghost-btn {
-    font-weight: 600; font-size: 0.92rem; background: transparent; color: var(--ink);
-    border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 1.3rem; cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-  .ghost-btn:hover { border-color: var(--ink-faint); background: var(--surface-2); }
-  .ghost-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-  .demo-error-toggle {
-    font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); background: none;
-    border: 1px dashed var(--line); border-radius: 8px; padding: 0.4rem 0.65rem; cursor: pointer;
-  }
-  .demo-error-toggle:hover { color: var(--ink-soft); border-color: var(--ink-faint); }
-  .demo-error-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .fineprint { font-size: 0.76rem; color: var(--ink-faint); text-align: center; line-height: 1.6; }
-  .fineprint a { color: var(--ink-soft); cursor: pointer; }
-  .demo-hint { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint); text-align: center; margin-top: 0.6rem; }
-  .fp-link { font-size: 0.82rem; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
-  .fp-link:hover { color: var(--ink); }
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .submit-btn {
+        font-weight: 700;
+        font-size: 0.92rem;
+        background: var(--accent);
+        color: var(--accent-ink);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition:
+          transform 0.12s ease,
+          filter 0.12s ease;
+      }
+      .submit-btn:hover {
+        filter: brightness(1.08);
+      }
+      .submit-btn:active {
+        transform: translateY(1px);
+      }
+      .submit-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+      .submit-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .ghost-btn {
+        font-weight: 600;
+        font-size: 0.92rem;
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .ghost-btn:hover {
+        border-color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+      .ghost-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+      .demo-error-toggle {
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        color: var(--ink-faint);
+        background: none;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 0.4rem 0.65rem;
+        cursor: pointer;
+      }
+      .demo-error-toggle:hover {
+        color: var(--ink-soft);
+        border-color: var(--ink-faint);
+      }
+      .demo-error-toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .fineprint {
+        font-size: 0.76rem;
+        color: var(--ink-faint);
+        text-align: center;
+        line-height: 1.6;
+      }
+      .fineprint a {
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+      .demo-hint {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        text-align: center;
+        margin-top: 0.6rem;
+      }
+      .fp-link {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+      }
+      .fp-link:hover {
+        color: var(--ink);
+      }
 
-  [hidden] { display: none !important; }
+      [hidden] {
+        display: none !important;
+      }
 
-  /* ============ app shell (post-login) ============ */
-  .app-view { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
-  .app-main {
-    flex: 1; display: flex; flex-direction: column; gap: 2rem;
-    max-width: 1120px; margin: 0 auto; width: 100%;
-    padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
-  }
-  .page-head { display: flex; flex-direction: column; gap: 0.5rem; }
-  .page-head h1 { font-size: clamp(1.4rem, 2.4vw, 1.7rem); line-height: 1.2; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
-  .page-head .lede { margin: 0; color: var(--ink-soft); font-size: 0.94rem; line-height: 1.6; max-width: 62ch; }
+      /* ============ app shell (post-login) ============ */
+      .app-view {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 1120px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
+      }
+      .page-head {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .page-head h1 {
+        font-size: clamp(1.4rem, 2.4vw, 1.7rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin: 0;
+        text-wrap: balance;
+      }
+      .page-head .lede {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.94rem;
+        line-height: 1.6;
+        max-width: 62ch;
+      }
 
-  /* search + filters */
-  .filter-bar { display: flex; flex-direction: column; gap: 0.85rem; }
-  .search-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-  .search-box {
-    flex: 1; min-width: 220px; display: flex; align-items: center; gap: 0.6rem;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0.65rem 1rem;
-    transition: border-color 0.15s ease;
-  }
-  .search-box:focus-within { border-color: var(--accent); }
-  .search-box .glyph { color: var(--ink-faint); font-family: var(--font-mono); }
-  .search-box input { flex: 1; border: none; outline: none; background: none; font-family: inherit; font-size: 0.92rem; color: var(--ink); }
-  .search-box input::placeholder { color: var(--ink-faint); }
-  .model-select {
-    font-family: inherit; font-size: 0.86rem; color: var(--ink); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 12px; padding: 0.62rem 0.9rem; cursor: pointer;
-  }
-  .filter-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .chip {
-    font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
-    background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 0.4rem 0.85rem;
-    cursor: pointer; transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
-  }
-  .chip:hover { border-color: var(--ink-faint); }
-  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      /* search + filters */
+      .filter-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+      .search-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .search-box {
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        transition: border-color 0.15s ease;
+      }
+      .search-box:focus-within {
+        border-color: var(--accent);
+      }
+      .search-box .glyph {
+        color: var(--ink-faint);
+        font-family: var(--font-mono);
+      }
+      .search-box input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: none;
+        font-family: inherit;
+        font-size: 0.92rem;
+        color: var(--ink);
+      }
+      .search-box input::placeholder {
+        color: var(--ink-faint);
+      }
+      .model-select {
+        font-family: inherit;
+        font-size: 0.86rem;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.62rem 0.9rem;
+        cursor: pointer;
+      }
+      .filter-chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .chip {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.4rem 0.85rem;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease,
+          background 0.15s ease;
+      }
+      .chip:hover {
+        border-color: var(--ink-faint);
+      }
+      .chip[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      .chip:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
 
-  /* sections */
-  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-  .section-head h2 { margin: 0; font-size: 0.95rem; letter-spacing: -0.005em; }
-  .section-head .count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint); }
-  .rail { display: flex; gap: 0.9rem; overflow-x: auto; padding-bottom: 0.35rem; scrollbar-width: thin; }
-  .rail::-webkit-scrollbar { height: 6px; }
-  .rail::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
-  .rail .template-card { min-width: 240px; flex: 0 0 auto; }
+      /* sections */
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .section-head h2 {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: -0.005em;
+      }
+      .section-head .count {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+      }
+      .rail {
+        display: flex;
+        gap: 0.9rem;
+        overflow-x: auto;
+        padding-bottom: 0.35rem;
+        scrollbar-width: thin;
+      }
+      .rail::-webkit-scrollbar {
+        height: 6px;
+      }
+      .rail::-webkit-scrollbar-thumb {
+        background: var(--line);
+        border-radius: 3px;
+      }
+      .rail .template-card {
+        min-width: 240px;
+        flex: 0 0 auto;
+      }
 
-  .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
-  .template-card {
-    position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-    padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.55rem;
-    text-align: left; cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-    font-family: inherit; color: inherit;
-  }
-  .template-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 24px -18px rgba(27, 29, 27, 0.4); }
-  .template-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
-  .card-badges { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .badge-official {
-    font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em;
-    color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 0.12rem 0.4rem;
-  }
-  .fav-btn {
-    width: 1.7rem; height: 1.7rem; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
-    border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-faint);
-    cursor: pointer; font-size: 0.85rem; line-height: 1;
-  }
-  .fav-btn:hover { color: var(--danger); border-color: var(--danger); }
-  .fav-btn.active { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
-  .fav-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .template-card h3 { margin: 0; font-size: 1rem; letter-spacing: -0.005em; }
-  .template-card p { margin: 0; color: var(--ink-soft); font-size: 0.85rem; line-height: 1.55; }
-  .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.25rem; }
-  .model-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .model-tag { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); background: var(--surface-2); border-radius: 999px; padding: 0.14rem 0.5rem; }
-  .usage-count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); white-space: nowrap; }
-  .empty-state { color: var(--ink-faint); font-size: 0.88rem; padding: 1.5rem 0; text-align: center; }
+      .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+      .template-card {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+        font-family: inherit;
+        color: inherit;
+      }
+      .template-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -18px rgba(27, 29, 27, 0.4);
+      }
+      .template-card:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .card-badges {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .badge-official {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--accent);
+        background: var(--accent-soft);
+        border-radius: 5px;
+        padding: 0.12rem 0.4rem;
+      }
+      .fav-btn {
+        width: 1.7rem;
+        height: 1.7rem;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-faint);
+        cursor: pointer;
+        font-size: 0.85rem;
+        line-height: 1;
+      }
+      .fav-btn:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+      .fav-btn.active {
+        color: var(--danger);
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .fav-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .template-card h3 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.005em;
+      }
+      .template-card p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        line-height: 1.55;
+      }
+      .card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+      }
+      .model-tags {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .model-tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        background: var(--surface-2);
+        border-radius: 999px;
+        padding: 0.14rem 0.5rem;
+      }
+      .usage-count {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+        white-space: nowrap;
+      }
+      .empty-state {
+        color: var(--ink-faint);
+        font-size: 0.88rem;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
 
-  /* template detail + dynamic form */
-  .back-link {
-    align-self: flex-start; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft);
-    background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px;
-  }
-  .back-link:hover { color: var(--ink); }
-  .back-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+      /* template detail + dynamic form */
+      .back-link {
+        align-self: flex-start;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .back-link:hover {
+        color: var(--ink);
+      }
+      .back-link:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
 
-  .detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-  @media (max-width: 860px) { .detail-layout { grid-template-columns: 1fr; } }
+      .detail-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .detail-layout {
+          grid-template-columns: 1fr;
+        }
+      }
 
-  .field-group { display: flex; flex-direction: column; gap: 1.1rem; }
-  .field-row { display: flex; flex-direction: column; gap: 0.4rem; }
-  .field-row .field-label { font-size: 0.86rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem; }
-  .field-row .field-label .req { color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; }
-  .field-row .field-help { font-size: 0.78rem; color: var(--ink-faint); }
-  .text-input, .select-input, textarea.text-input {
-    font-family: inherit; font-size: 0.92rem; color: var(--ink); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 10px; padding: 0.65rem 0.9rem; outline: none;
-    transition: border-color 0.15s ease; width: 100%;
-  }
-  .text-input:focus, .select-input:focus { border-color: var(--accent); }
-  textarea.text-input { resize: vertical; min-height: 4.5rem; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.6; }
-  .chip-select { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .chip-option {
-    font-size: 0.82rem; color: var(--ink-soft); background: var(--surface); border: 1px solid var(--line);
-    border-radius: 999px; padding: 0.4rem 0.8rem; cursor: pointer; transition: all 0.15s ease;
-  }
-  .chip-option[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .chip-option:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .toggle-row { display: flex; align-items: center; gap: 0.65rem; }
-  .toggle {
-    width: 2.4rem; height: 1.4rem; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line);
-    position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.15s ease;
-  }
-  .toggle::after {
-    content: ""; position: absolute; top: 1px; left: 1px; width: 1.15rem; height: 1.15rem; border-radius: 50%;
-    background: var(--ink-faint); transition: transform 0.15s ease, background 0.15s ease;
-  }
-  .toggle[aria-checked="true"] { background: var(--accent-soft); border-color: var(--accent); }
-  .toggle[aria-checked="true"]::after { transform: translateX(1rem); background: var(--accent); }
-  .toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .slider-row { display: flex; align-items: center; gap: 0.75rem; }
-  .slider-row input[type="range"] { flex: 1; accent-color: var(--accent); }
-  .slider-value { font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-soft); min-width: 2.4ch; text-align: right; }
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+      .field-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .field-row .field-label {
+        font-size: 0.86rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .field-row .field-label .req {
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+      .field-row .field-help {
+        font-size: 0.78rem;
+        color: var(--ink-faint);
+      }
+      .text-input,
+      .select-input,
+      textarea.text-input {
+        font-family: inherit;
+        font-size: 0.92rem;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem 0.9rem;
+        outline: none;
+        transition: border-color 0.15s ease;
+        width: 100%;
+      }
+      .text-input:focus,
+      .select-input:focus {
+        border-color: var(--accent);
+      }
+      textarea.text-input {
+        resize: vertical;
+        min-height: 4.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.86rem;
+        line-height: 1.6;
+      }
+      .chip-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .chip-option {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .chip-option[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      .chip-option:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .toggle {
+        width: 2.4rem;
+        height: 1.4rem;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.15s ease;
+      }
+      .toggle::after {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 1.15rem;
+        height: 1.15rem;
+        border-radius: 50%;
+        background: var(--ink-faint);
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      .toggle[aria-checked='true'] {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      .toggle[aria-checked='true']::after {
+        transform: translateX(1rem);
+        background: var(--accent);
+      }
+      .toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .slider-row input[type='range'] {
+        flex: 1;
+        accent-color: var(--accent);
+      }
+      .slider-value {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        min-width: 2.4ch;
+        text-align: right;
+      }
 
-  .preview-panel {
-    background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px;
-    padding: 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.8rem; position: sticky; top: 1rem;
-  }
-  .preview-panel .tag {
-    font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint);
-    text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between;
-  }
-  .preview-body {
-    font-size: 0.94rem; line-height: 1.7; color: var(--ink); white-space: pre-wrap;
-    font-family: var(--font-mono); font-size: 0.85rem;
-  }
-  .preview-body .filled { color: var(--ink); }
-  .preview-body .unfilled { background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0.02rem 0.3rem; }
-  .preview-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); }
+      .preview-panel {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.2rem 1.3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        position: sticky;
+        top: 1rem;
+      }
+      .preview-panel .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: flex;
+        justify-content: space-between;
+      }
+      .preview-body {
+        font-size: 0.94rem;
+        line-height: 1.7;
+        color: var(--ink);
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+      }
+      .preview-body .filled {
+        color: var(--ink);
+      }
+      .preview-body .unfilled {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 0.02rem 0.3rem;
+      }
+      .preview-meta {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+      }
 
-  .output-box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 1.2rem; }
-  .output-box .tag { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 0.6rem; }
-  .output-box pre { margin: 0; white-space: pre-wrap; font-family: var(--font-sans); font-size: 0.95rem; line-height: 1.6; color: var(--ink); }
+      .output-box {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+      }
+      .output-box .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .output-box pre {
+        margin: 0;
+        white-space: pre-wrap;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--ink);
+      }
 
-  .toast {
-    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(120%);
-    background: var(--ink); color: var(--bg); font-size: 0.86rem; font-weight: 600;
-    padding: 0.6rem 1.1rem; border-radius: 10px; box-shadow: var(--shadow); z-index: 20;
-    transition: transform 0.25s ease; pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(120%);
+        background: var(--ink);
+        color: var(--bg);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        z-index: 20;
+        transition: transform 0.25s ease;
+        pointer-events: none;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
 
-  /* history */
-  .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
-  .history-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0.85rem 1.1rem; }
-  .history-row .history-meta { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; flex: 1; }
-  .history-row .history-title { font-size: 0.9rem; font-weight: 600; }
-  .history-row .history-sub { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint); display: flex; gap: 0.6rem; flex-wrap: wrap; }
-  .history-row .history-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
-  .icon-btn {
-    width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center;
-    border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft);
-    font-size: 0.85rem; cursor: pointer; line-height: 1;
-  }
-  .icon-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
-  .icon-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
-  .icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      /* history */
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .history-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+      }
+      .history-row .history-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+        flex: 1;
+      }
+      .history-row .history-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .history-row .history-sub {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .history-row .history-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+      }
+      .icon-btn {
+        width: 2rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .icon-btn:hover {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .icon-btn.danger:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+      .icon-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
 
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-</style>
-</head>
-<body>
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brace-field" id="braceField" aria-hidden="true"></div>
 
-<div class="brace-field" id="braceField" aria-hidden="true"></div>
+    <!-- ============================================================ AUTH ============================================================ -->
+    <div id="viewAuth">
+      <div class="topbar">
+        <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
+        <button type="button" class="guest-link" onclick="continueGuest()">
+          Tiếp tục với vai trò Khách →
+        </button>
+      </div>
 
-<!-- ============================================================ AUTH ============================================================ -->
-<div id="viewAuth">
-  <div class="topbar">
-    <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
-    <button type="button" class="guest-link" onclick="continueGuest()">Tiếp tục với vai trò Khách →</button>
-  </div>
+      <main class="stage">
+        <div class="panelwrap">
+          <section class="context">
+            <span class="eyebrow" id="ctxEyebrow">api/auth</span>
+            <h1 id="ctxHeading">Đừng viết prompt từ đầu. Điền vào chỗ trống.</h1>
+            <p class="lede" id="ctxLede">
+              Duyệt thư viện mẫu, chọn model AI, điền các ô đã được định nghĩa sẵn — hệ thống ghép
+              thành prompt hoàn chỉnh cho bạn.
+            </p>
 
-  <main class="stage">
-    <div class="panelwrap">
-      <section class="context">
-        <span class="eyebrow" id="ctxEyebrow">api/auth</span>
-        <h1 id="ctxHeading">Đừng viết prompt từ đầu. Điền vào chỗ trống.</h1>
-        <p class="lede" id="ctxLede">Duyệt thư viện mẫu, chọn model AI, điền các ô đã được định nghĩa sẵn — hệ thống ghép thành prompt hoàn chỉnh cho bạn.</p>
+            <div class="demo-card" aria-hidden="true">
+              <span class="tag">template_variables preview</span>
+              Với vai trò <span class="blank">{audience}</span>, hãy sửa văn phong đoạn dưới sang
+              giọng <span class="blank">{tone}</span>, độ dài tối đa
+              <span class="blank">{length}</span> từ.
+            </div>
 
-        <div class="demo-card" aria-hidden="true">
-          <span class="tag">template_variables preview</span>
-          Với vai trò <span class="blank">{audience}</span>, hãy sửa văn phong đoạn dưới sang giọng <span class="blank">{tone}</span>, độ dài tối đa <span class="blank">{length}</span> từ.
+            <ul class="feature-list">
+              <li>
+                <span class="glyph">＋</span> Tự động lưu lịch sử prompt vào tài khoản của bạn
+              </li>
+              <li><span class="glyph">↻</span> Sinh lại prompt từ lịch sử, không cần điền lại</li>
+              <li>
+                <span class="glyph">✓</span> Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh
+                token
+              </li>
+            </ul>
+
+            <div class="session-note">
+              <span class="pill">TOKEN</span> access token 15 phút, tự làm mới ngầm — không cần đăng
+              nhập lại
+            </div>
+          </section>
+
+          <section class="auth">
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Chuyển đổi đăng nhập / đăng ký"
+              id="authTabs"
+            >
+              <button
+                class="tab"
+                role="tab"
+                id="tab-login"
+                aria-selected="true"
+                aria-controls="panel-login"
+                onclick="showAuthPanel('login')"
+              >
+                Đăng nhập
+              </button>
+              <button
+                class="tab"
+                role="tab"
+                id="tab-register"
+                aria-selected="false"
+                aria-controls="panel-register"
+                onclick="showAuthPanel('register')"
+              >
+                Đăng ký
+              </button>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+              <div class="form-head">
+                <h2>Chào bạn quay lại</h2>
+                <p>Điền hai ô trống để mở lại phiên làm việc của bạn.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitDemo(event, 'login')"
+              >
+                <span class="static">Đăng nhập bằng email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-login"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">và mật khẩu</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="••••••••"
+                    data-field="pw-login"
+                    required
+                    style="width: 9ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">.</span>
+                <div class="banner err" id="err-login">
+                  <span>⚠</span
+                  ><span
+                    ><strong>401 Unauthorized</strong> — Email hoặc mật khẩu không chính xác.
+                    <code>{"error":{"code":"INVALID_CREDENTIALS"}}</code></span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đăng nhập →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-login')"
+                  >
+                    xem trạng thái lỗi (demo)
+                  </button>
+                </div>
+              </form>
+              <p class="fineprint" style="margin-top: 0.9rem">
+                <button type="button" class="fp-link" onclick="showAuthPanel('forgot')">
+                  Quên mật khẩu?
+                </button>
+              </p>
+              <p class="fineprint">
+                Chưa có tài khoản? <a onclick="showAuthPanel('register')">Đăng ký ngay</a> — miễn
+                phí, không cần thẻ.
+              </p>
+              <p class="demo-hint">demo: demo@how2prompt.dev / demo1234</p>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
+              <div class="form-head">
+                <h2>Tạo tài khoản Member</h2>
+                <p>Ba ô trống, một tài khoản để lưu toàn bộ lịch sử prompt.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitDemo(event, 'register')"
+              >
+                <span class="static">Tôi tên là</span>
+                <input
+                  class="blank-input"
+                  type="text"
+                  placeholder="tên hiển thị"
+                  data-field="username"
+                  required
+                  style="width: 10ch"
+                />
+                <span class="static">, dùng email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-reg"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">và mật khẩu</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="tối thiểu 8 ký tự"
+                    data-field="pw-reg"
+                    required
+                    style="width: 12ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">để mở tài khoản.</span>
+                <div class="banner err" id="err-register">
+                  <span>⚠</span
+                  ><span
+                    ><strong>409 Conflict</strong> — Email này đã được đăng ký.
+                    <code>{"error":{"code":"EMAIL_ALREADY_EXISTS"}}</code></span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đăng ký →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-register')"
+                  >
+                    xem trạng thái lỗi (demo)
+                  </button>
+                </div>
+              </form>
+              <p class="fineprint" style="margin-top: 1.25rem">
+                Đăng ký xong bạn sẽ được chuyển tới trang đăng nhập — tài khoản mới chưa tự động
+                đăng nhập.
+              </p>
+              <p class="fineprint">
+                Đã có tài khoản? <a onclick="showAuthPanel('login')">Đăng nhập</a>
+              </p>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="panel-forgot" role="tabpanel" hidden>
+              <div class="form-head">
+                <h2>Quên mật khẩu</h2>
+                <p>Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitForgot(event)"
+                id="forgotForm"
+              >
+                <span class="static">Gửi liên kết đặt lại mật khẩu tới email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-forgot"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">.</span>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Gửi liên kết →</button>
+                </div>
+              </form>
+              <div class="banner ok" id="ok-forgot">
+                <span>✓</span
+                ><span
+                  >Nếu email này tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi
+                  tới.</span
+                >
+              </div>
+              <p class="fineprint" style="margin-top: 0.9rem">
+                Nhớ ra mật khẩu rồi? <a onclick="showAuthPanel('login')">Đăng nhập</a>
+              </p>
+            </div>
+
+            <!-- RESET PASSWORD -->
+            <div id="panel-reset" role="tabpanel" hidden>
+              <div class="form-head">
+                <h2>Đặt lại mật khẩu</h2>
+                <p>
+                  Nhập mật khẩu mới cho tài khoản của bạn. (mô phỏng đã bấm vào liên kết trong
+                  email)
+                </p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitReset(event)"
+              >
+                <span class="static">Mật khẩu mới</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="tối thiểu 8 ký tự"
+                    data-field="pw-reset"
+                    required
+                    style="width: 12ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">.</span>
+                <div class="banner err" id="err-reset">
+                  <span>⚠</span
+                  ><span
+                    >Liên kết đã hết hạn hoặc đã được sử dụng.
+                    <a
+                      onclick="showAuthPanel('forgot')"
+                      style="color: inherit; text-decoration: underline"
+                      >Yêu cầu liên kết mới</a
+                    >.</span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đặt lại mật khẩu →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-reset')"
+                  >
+                    xem liên kết hết hạn (demo)
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============================================================ APP (post-login) ============================================================ -->
+    <div class="app-view" id="viewApp" hidden>
+      <div class="topbar">
+        <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
+        <div class="topbar-right">
+          <nav class="app-nav">
+            <a id="navCatalog" aria-current="page" onclick="showPage('pageCatalog')">Thư viện</a>
+            <a id="navHistory" onclick="showPage('pageHistory')">Lịch sử</a>
+          </nav>
+          <div class="user-chip">
+            <span class="avatar" id="userAvatar">N</span>
+            <span class="user-name" id="userName">Người dùng Demo</span>
+            <button type="button" class="link-btn" onclick="signOut()">Đăng xuất</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Catalog (Epic 2) -->
+      <main class="app-main" id="pageCatalog">
+        <div class="page-head">
+          <span class="eyebrow">templates · guest &amp; member</span>
+          <h1 id="catalogGreeting">Chào Người dùng Demo, tìm mẫu prompt phù hợp</h1>
+          <p class="lede">
+            Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào các ô đã
+            định nghĩa sẵn.
+          </p>
         </div>
 
-        <ul class="feature-list">
-          <li><span class="glyph">＋</span> Tự động lưu lịch sử prompt vào tài khoản của bạn</li>
-          <li><span class="glyph">↻</span> Sinh lại prompt từ lịch sử, không cần điền lại</li>
-          <li><span class="glyph">✓</span> Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh token</li>
-        </ul>
-
-        <div class="session-note">
-          <span class="pill">TOKEN</span> access token 15 phút, tự làm mới ngầm — không cần đăng nhập lại
+        <div class="filter-bar">
+          <div class="search-row">
+            <div class="search-box">
+              <span class="glyph">⌕</span>
+              <input
+                type="search"
+                id="templateSearch"
+                placeholder="Tìm theo tên hoặc mô tả…"
+                oninput="renderCatalog()"
+              />
+            </div>
+            <select class="model-select" id="modelFilter" onchange="renderCatalog()">
+              <option value="all">Tất cả model AI</option>
+              <option value="gpt">GPT-4o</option>
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+            </select>
+          </div>
+          <div class="filter-chips" id="tagFilters" role="group" aria-label="Lọc theo chủ đề"></div>
         </div>
-      </section>
 
-      <section class="auth">
-        <div class="tabs" role="tablist" aria-label="Chuyển đổi đăng nhập / đăng ký" id="authTabs">
-          <button class="tab" role="tab" id="tab-login" aria-selected="true" aria-controls="panel-login" onclick="showAuthPanel('login')">Đăng nhập</button>
-          <button class="tab" role="tab" id="tab-register" aria-selected="false" aria-controls="panel-register" onclick="showAuthPanel('register')">Đăng ký</button>
+        <section>
+          <div class="section-head">
+            <h2>Nổi bật</h2>
+            <span class="count">chọn bởi Admin</span>
+          </div>
+          <div class="rail" id="featuredRail"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>Thịnh hành 7 ngày qua</h2>
+            <span class="count" id="trendingCount"></span>
+          </div>
+          <div class="rail" id="trendingRail"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>Toàn bộ thư viện</h2>
+            <span class="count" id="gridCount"></span>
+          </div>
+          <div class="template-grid" id="templateGrid"></div>
+          <p class="empty-state" id="emptyState" hidden>
+            Không tìm thấy mẫu phù hợp — thử từ khóa hoặc bộ lọc khác.
+          </p>
+        </section>
+      </main>
+
+      <!-- Template detail + dynamic generate form (Epic 3) -->
+      <main class="app-main" id="pageTemplate" hidden>
+        <button type="button" class="back-link" onclick="showPage('pageCatalog')">
+          ← Quay lại thư viện
+        </button>
+
+        <div class="page-head">
+          <span class="eyebrow" id="tplTag">#debugging</span>
+          <h1 id="tplTitle">Debug lỗi hiệu quả</h1>
+          <p class="lede" id="tplDesc"></p>
         </div>
 
-        <!-- LOGIN -->
-        <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-          <div class="form-head"><h2>Chào bạn quay lại</h2><p>Điền hai ô trống để mở lại phiên làm việc của bạn.</p></div>
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitDemo(event, 'login')">
-            <span class="static">Đăng nhập bằng email</span>
-            <input class="blank-input" type="email" placeholder="ban@vidu.com" data-field="email-login" required style="width:9ch">
-            <span class="static">và mật khẩu</span>
-            <span class="pw-wrap">
-              <input class="blank-input" type="password" placeholder="••••••••" data-field="pw-login" required style="width:9ch">
-              <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
-            </span>
-            <span class="static">.</span>
-            <div class="banner err" id="err-login"><span>⚠</span><span><strong>401 Unauthorized</strong> — Email hoặc mật khẩu không chính xác. <code>{"error":{"code":"INVALID_CREDENTIALS"}}</code></span></div>
-            <div class="actions" style="margin-top:1.1rem">
-              <button type="submit" class="submit-btn">Đăng nhập →</button>
-              <button type="button" class="demo-error-toggle" onclick="toggleBanner('err-login')">xem trạng thái lỗi (demo)</button>
+        <div class="field-row" style="max-width: 280px">
+          <span class="field-label">Model AI mục tiêu</span>
+          <select class="select-input" id="tplModelSelect" onchange="updatePreview()"></select>
+        </div>
+
+        <div class="detail-layout">
+          <form id="tplForm" onsubmit="return handleGenerate(event)">
+            <div class="field-group" id="tplFields"></div>
+
+            <div class="field-row" style="margin-top: 1.1rem">
+              <span class="field-label"
+                >Hướng dẫn bổ sung
+                <span style="color: var(--ink-faint); font-weight: 400">(tùy chọn)</span></span
+              >
+              <textarea
+                class="text-input"
+                id="extraInstructions"
+                rows="2"
+                placeholder="Thêm yêu cầu riêng, sẽ được nối vào cuối prompt…"
+                oninput="updatePreview()"
+              ></textarea>
+            </div>
+
+            <div class="banner err" id="err-generate">
+              <span>⚠</span><span>Vui lòng điền đủ các trường bắt buộc trước khi tạo prompt.</span>
+            </div>
+
+            <div class="actions" style="margin-top: 1.1rem">
+              <button type="submit" class="submit-btn">Tạo &amp; Sao chép prompt →</button>
+              <button type="button" class="ghost-btn" onclick="resetTplForm()">Xóa form</button>
             </div>
           </form>
-          <p class="fineprint" style="margin-top:0.9rem"><button type="button" class="fp-link" onclick="showAuthPanel('forgot')">Quên mật khẩu?</button></p>
-          <p class="fineprint">Chưa có tài khoản? <a onclick="showAuthPanel('register')">Đăng ký ngay</a> — miễn phí, không cần thẻ.</p>
-          <p class="demo-hint">demo: demo@how2prompt.dev / demo1234</p>
+
+          <aside class="preview-panel">
+            <span class="tag"
+              ><span>xem trước (client-side)</span><span id="tokenEstimate">~0 tokens</span></span
+            >
+            <div class="preview-body" id="previewBody"></div>
+          </aside>
         </div>
 
-        <!-- REGISTER -->
-        <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
-          <div class="form-head"><h2>Tạo tài khoản Member</h2><p>Ba ô trống, một tài khoản để lưu toàn bộ lịch sử prompt.</p></div>
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitDemo(event, 'register')">
-            <span class="static">Tôi tên là</span>
-            <input class="blank-input" type="text" placeholder="tên hiển thị" data-field="username" required style="width:10ch">
-            <span class="static">, dùng email</span>
-            <input class="blank-input" type="email" placeholder="ban@vidu.com" data-field="email-reg" required style="width:9ch">
-            <span class="static">và mật khẩu</span>
-            <span class="pw-wrap">
-              <input class="blank-input" type="password" placeholder="tối thiểu 8 ký tự" data-field="pw-reg" required style="width:12ch">
-              <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
-            </span>
-            <span class="static">để mở tài khoản.</span>
-            <div class="banner err" id="err-register"><span>⚠</span><span><strong>409 Conflict</strong> — Email này đã được đăng ký. <code>{"error":{"code":"EMAIL_ALREADY_EXISTS"}}</code></span></div>
-            <div class="actions" style="margin-top:1.1rem">
-              <button type="submit" class="submit-btn">Đăng ký →</button>
-              <button type="button" class="demo-error-toggle" onclick="toggleBanner('err-register')">xem trạng thái lỗi (demo)</button>
-            </div>
-          </form>
-          <p class="fineprint" style="margin-top:1.25rem">Đăng ký xong bạn sẽ được chuyển tới trang đăng nhập — tài khoản mới chưa tự động đăng nhập.</p>
-          <p class="fineprint">Đã có tài khoản? <a onclick="showAuthPanel('login')">Đăng nhập</a></p>
+        <div class="output-box" id="tplOutput" hidden>
+          <span class="tag">Prompt hoàn chỉnh — đã lưu vào lịch sử</span>
+          <pre id="tplOutputText"></pre>
+          <div class="actions" style="margin-top: 0.9rem">
+            <button type="button" class="submit-btn" onclick="copyOutput(this)">
+              Sao chép lại
+            </button>
+          </div>
         </div>
+      </main>
 
-        <!-- FORGOT PASSWORD -->
-        <div id="panel-forgot" role="tabpanel" hidden>
-          <div class="form-head"><h2>Quên mật khẩu</h2><p>Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p></div>
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitForgot(event)" id="forgotForm">
-            <span class="static">Gửi liên kết đặt lại mật khẩu tới email</span>
-            <input class="blank-input" type="email" placeholder="ban@vidu.com" data-field="email-forgot" required style="width:9ch">
-            <span class="static">.</span>
-            <div class="actions" style="margin-top:1.1rem"><button type="submit" class="submit-btn">Gửi liên kết →</button></div>
-          </form>
-          <div class="banner ok" id="ok-forgot"><span>✓</span><span>Nếu email này tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi tới.</span></div>
-          <p class="fineprint" style="margin-top:0.9rem">Nhớ ra mật khẩu rồi? <a onclick="showAuthPanel('login')">Đăng nhập</a></p>
+      <!-- History (Epic 4) -->
+      <main class="app-main" id="pageHistory" hidden>
+        <div class="page-head">
+          <span class="eyebrow">lịch sử của bạn</span>
+          <h1>Prompt đã tạo</h1>
+          <p class="lede">
+            Mới nhất trước — nạp lại để chỉnh sửa và tạo bản mới, hoặc xóa những prompt không cần
+            nữa.
+          </p>
         </div>
-
-        <!-- RESET PASSWORD -->
-        <div id="panel-reset" role="tabpanel" hidden>
-          <div class="form-head"><h2>Đặt lại mật khẩu</h2><p>Nhập mật khẩu mới cho tài khoản của bạn. (mô phỏng đã bấm vào liên kết trong email)</p></div>
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitReset(event)">
-            <span class="static">Mật khẩu mới</span>
-            <span class="pw-wrap">
-              <input class="blank-input" type="password" placeholder="tối thiểu 8 ký tự" data-field="pw-reset" required style="width:12ch">
-              <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
-            </span>
-            <span class="static">.</span>
-            <div class="banner err" id="err-reset"><span>⚠</span><span>Liên kết đã hết hạn hoặc đã được sử dụng. <a onclick="showAuthPanel('forgot')" style="color:inherit;text-decoration:underline">Yêu cầu liên kết mới</a>.</span></div>
-            <div class="actions" style="margin-top:1.1rem">
-              <button type="submit" class="submit-btn">Đặt lại mật khẩu →</button>
-              <button type="button" class="demo-error-toggle" onclick="toggleBanner('err-reset')">xem liên kết hết hạn (demo)</button>
-            </div>
-          </form>
-        </div>
-      </section>
-    </div>
-  </main>
-</div>
-
-<!-- ============================================================ APP (post-login) ============================================================ -->
-<div class="app-view" id="viewApp" hidden>
-  <div class="topbar">
-    <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
-    <div class="topbar-right">
-      <nav class="app-nav">
-        <a id="navCatalog" aria-current="page" onclick="showPage('pageCatalog')">Thư viện</a>
-        <a id="navHistory" onclick="showPage('pageHistory')">Lịch sử</a>
-      </nav>
-      <div class="user-chip">
-        <span class="avatar" id="userAvatar">N</span>
-        <span class="user-name" id="userName">Người dùng Demo</span>
-        <button type="button" class="link-btn" onclick="signOut()">Đăng xuất</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Catalog (Epic 2) -->
-  <main class="app-main" id="pageCatalog">
-    <div class="page-head">
-      <span class="eyebrow">templates · guest &amp; member</span>
-      <h1 id="catalogGreeting">Chào Người dùng Demo, tìm mẫu prompt phù hợp</h1>
-      <p class="lede">Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào các ô đã định nghĩa sẵn.</p>
+        <div class="history-list" id="historyFullList"></div>
+        <p class="empty-state" id="historyEmpty" hidden>
+          Bạn chưa tạo prompt nào — hãy chọn một mẫu ở Thư viện.
+        </p>
+      </main>
     </div>
 
-    <div class="filter-bar">
-      <div class="search-row">
-        <div class="search-box">
-          <span class="glyph">⌕</span>
-          <input type="search" id="templateSearch" placeholder="Tìm theo tên hoặc mô tả…" oninput="renderCatalog()">
-        </div>
-        <select class="model-select" id="modelFilter" onchange="renderCatalog()">
-          <option value="all">Tất cả model AI</option>
-          <option value="gpt">GPT-4o</option>
-          <option value="claude">Claude</option>
-          <option value="gemini">Gemini</option>
-        </select>
-      </div>
-      <div class="filter-chips" id="tagFilters" role="group" aria-label="Lọc theo chủ đề"></div>
-    </div>
+    <div class="measure" id="measure" aria-hidden="true"></div>
+    <div class="toast" id="toast"></div>
 
-    <section>
-      <div class="section-head"><h2>Nổi bật</h2><span class="count">chọn bởi Admin</span></div>
-      <div class="rail" id="featuredRail"></div>
-    </section>
+    <script>
+      /* ===================== brace field decoration ===================== */
+      ;(function () {
+        const words = ['role', 'context', '{ }', 'constraints', 'tone', 'audience']
+        const field = document.getElementById('braceField')
+        const positions = [
+          [8, 5, 1.6, -6],
+          [20, 82, 2.1, 4],
+          [40, 10, 2.6, -3],
+          [64, 72, 1.4, 7],
+          [82, 18, 1.9, -5],
+          [12, 46, 1.3, 2],
+          [55, 92, 2.3, -8],
+          [92, 55, 1.5, 5],
+        ]
+        positions.forEach((p, i) => {
+          const span = document.createElement('span')
+          span.textContent = '{' + words[i % words.length] + '}'
+          span.style.top = p[0] + '%'
+          span.style.left = p[1] + '%'
+          span.style.fontSize = p[2] + 'rem'
+          span.style.transform = 'rotate(' + p[3] + 'deg)'
+          field.appendChild(span)
+        })
+      })()
 
-    <section>
-      <div class="section-head"><h2>Thịnh hành 7 ngày qua</h2><span class="count" id="trendingCount"></span></div>
-      <div class="rail" id="trendingRail"></div>
-    </section>
+      /* ===================== auth panel switching ===================== */
+      function showAuthPanel(which) {
+        const panels = ['login', 'register', 'forgot', 'reset']
+        panels.forEach((p) => {
+          document.getElementById('panel-' + p).hidden = p !== which
+        })
+        document
+          .getElementById('tab-login')
+          .setAttribute('aria-selected', String(which === 'login'))
+        document
+          .getElementById('tab-register')
+          .setAttribute('aria-selected', String(which === 'register'))
+        document.getElementById('authTabs').style.visibility =
+          which === 'login' || which === 'register' ? 'visible' : 'hidden'
+      }
 
-    <section>
-      <div class="section-head"><h2>Toàn bộ thư viện</h2><span class="count" id="gridCount"></span></div>
-      <div class="template-grid" id="templateGrid"></div>
-      <p class="empty-state" id="emptyState" hidden>Không tìm thấy mẫu phù hợp — thử từ khóa hoặc bộ lọc khác.</p>
-    </section>
-  </main>
+      function togglePw(btn) {
+        const input = btn.previousElementSibling
+        const showing = input.type === 'text'
+        input.type = showing ? 'password' : 'text'
+        btn.textContent = showing ? 'hiện' : 'ẩn'
+      }
+      function toggleBanner(id) {
+        document.getElementById(id).classList.toggle('show')
+      }
 
-  <!-- Template detail + dynamic generate form (Epic 3) -->
-  <main class="app-main" id="pageTemplate" hidden>
-    <button type="button" class="back-link" onclick="showPage('pageCatalog')">← Quay lại thư viện</button>
+      function submitDemo(evt, kind) {
+        evt.preventDefault()
+        const form = evt.target
+        if (kind === 'login') {
+          const email = form.querySelector('[data-field="email-login"]').value.trim()
+          const pw = form.querySelector('[data-field="pw-login"]').value
+          if (email === 'demo@how2prompt.dev' && pw === 'demo1234') {
+            goToApp('Người dùng Demo')
+            return false
+          }
+          toggleBanner('err-login')
+          return false
+        }
+        toggleBanner('err-register')
+        return false
+      }
+      function submitForgot(evt) {
+        evt.preventDefault()
+        document.getElementById('ok-forgot').classList.add('show')
+        evt.target.querySelector('button[type=submit]').disabled = true
+        return false
+      }
+      function submitReset(evt) {
+        evt.preventDefault()
+        showAuthPanel('login')
+        return false
+      }
+      function continueGuest() {
+        goToApp(null)
+      }
 
-    <div class="page-head">
-      <span class="eyebrow" id="tplTag">#debugging</span>
-      <h1 id="tplTitle">Debug lỗi hiệu quả</h1>
-      <p class="lede" id="tplDesc"></p>
-    </div>
+      function goToApp(name) {
+        document.getElementById('viewAuth').hidden = true
+        document.getElementById('viewApp').hidden = false
+        const chip = document.querySelector('.user-chip')
+        if (name) {
+          chip.hidden = false
+          document.getElementById('userName').textContent = name
+          document.getElementById('userAvatar').textContent = name.trim().charAt(0).toUpperCase()
+          document.getElementById('catalogGreeting').textContent =
+            'Chào ' + name + ', tìm mẫu prompt phù hợp'
+        } else {
+          chip.hidden = true
+          document.getElementById('catalogGreeting').textContent =
+            'Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'
+        }
+        isGuest = !name
+        renderCatalog()
+        showPage('pageCatalog')
+      }
+      function signOut() {
+        document.getElementById('viewApp').hidden = true
+        document.getElementById('viewAuth').hidden = false
+        showAuthPanel('login')
+      }
 
-    <div class="field-row" style="max-width:280px">
-      <span class="field-label">Model AI mục tiêu</span>
-      <select class="select-input" id="tplModelSelect" onchange="updatePreview()"></select>
-    </div>
+      /* ===================== app data ===================== */
+      let isGuest = false
+      const TEMPLATES = [
+        {
+          id: 't1',
+          title: 'Debug lỗi hiệu quả',
+          tag: 'debugging',
+          official: true,
+          usage: 482,
+          featured: true,
+          trending: true,
+          models: ['gpt', 'claude'],
+          desc: 'Mô tả lỗi + log, nhận hướng dẫn debug theo đúng vai trò và bối cảnh kỹ thuật của bạn.',
+          body: 'Với vai trò {{role}}, hãy debug đoạn log sau trong bối cảnh {{context}}, tuân thủ ràng buộc {{constraints}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'role',
+              label: 'Vai trò',
+              type: 'select',
+              required: true,
+              options: ['Senior Backend Engineer', 'DevOps Engineer', 'QA Engineer'],
+            },
+            {
+              key: 'context',
+              label: 'Bối cảnh hệ thống',
+              type: 'textarea',
+              required: true,
+              placeholder: 'VD: dịch vụ Node.js chạy trên Kubernetes…',
+            },
+            {
+              key: 'constraints',
+              label: 'Ràng buộc',
+              type: 'text',
+              required: false,
+              placeholder: 'VD: không đổi schema DB',
+            },
+          ],
+        },
+        {
+          id: 't2',
+          title: 'Sửa văn phong nội dung',
+          tag: 'writing',
+          official: true,
+          usage: 311,
+          featured: true,
+          trending: false,
+          models: ['gpt', 'claude', 'gemini'],
+          desc: 'Đưa một đoạn văn về đúng giọng điệu và độ dài mong muốn.',
+          body: 'Sửa văn phong đoạn sau sang giọng {{tone}}, độ dài tối đa {{length}} từ, hướng tới đối tượng {{audience}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'tone',
+              label: 'Giọng văn',
+              type: 'chips',
+              required: true,
+              options: ['Trang trọng', 'Thân thiện', 'Súc tích', 'Hài hước'],
+            },
+            {
+              key: 'length',
+              label: 'Độ dài tối đa (từ)',
+              type: 'slider',
+              required: true,
+              min: 50,
+              max: 500,
+              step: 10,
+              default: 150,
+            },
+            {
+              key: 'audience',
+              label: 'Đối tượng đọc',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: khách hàng doanh nghiệp',
+            },
+          ],
+        },
+        {
+          id: 't3',
+          title: 'Mô tả sản phẩm marketing',
+          tag: 'marketing',
+          official: true,
+          usage: 205,
+          featured: false,
+          trending: true,
+          models: ['gpt', 'gemini'],
+          desc: 'Viết mô tả sản phẩm bám theo tính năng và điểm khác biệt cạnh tranh.',
+          body: 'Viết mô tả sản phẩm {{product}} nhắm tới {{segment}}, nhấn mạnh tính năng {{features}}.{{highlight}}{{__extra__}}',
+          fields: [
+            {
+              key: 'product',
+              label: 'Tên sản phẩm',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: Ứng dụng quản lý chi tiêu',
+            },
+            {
+              key: 'segment',
+              label: 'Phân khúc khách hàng',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: sinh viên, người mới đi làm',
+            },
+            {
+              key: 'features',
+              label: 'Tính năng nổi bật',
+              type: 'multiselect',
+              required: true,
+              options: [
+                'Theo dõi realtime',
+                'Đồng bộ ngân hàng',
+                'Cảnh báo chi tiêu',
+                'Báo cáo AI',
+              ],
+            },
+            {
+              key: 'highlight',
+              label: 'Nhấn mạnh yếu tố miễn phí?',
+              type: 'boolean',
+              required: false,
+            },
+          ],
+        },
+        {
+          id: 't4',
+          title: 'Kiểm tra code review',
+          tag: 'coding',
+          official: true,
+          usage: 158,
+          featured: false,
+          trending: false,
+          models: ['claude'],
+          desc: 'Rà soát pull request theo checklist bảo mật và hiệu năng.',
+          body: 'Review đoạn code sau theo mức độ nghiêm ngặt {{strictness}}/5, tập trung vào {{focus}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'strictness',
+              label: 'Mức độ nghiêm ngặt',
+              type: 'slider',
+              required: true,
+              min: 1,
+              max: 5,
+              step: 1,
+              default: 3,
+            },
+            {
+              key: 'focus',
+              label: 'Tập trung vào',
+              type: 'multiselect',
+              required: true,
+              options: ['Bảo mật', 'Hiệu năng', 'Khả năng đọc', 'Test coverage'],
+            },
+          ],
+        },
+      ]
+      const MODEL_LABEL = { gpt: 'GPT-4o', claude: 'Claude', gemini: 'Gemini' }
+      let activeTag = 'all'
+      let history = [
+        {
+          id: 'h1',
+          templateId: 't1',
+          title: 'Debug lỗi hiệu quả',
+          model: 'gpt',
+          time: 'Hôm nay, 09:42',
+          values: {
+            role: 'Senior Backend Engineer',
+            context: 'dịch vụ Node.js chạy trên Kubernetes',
+            constraints: 'không đổi schema DB',
+          },
+          text: 'Với vai trò Senior Backend Engineer, hãy debug đoạn log sau trong bối cảnh dịch vụ Node.js chạy trên Kubernetes, tuân thủ ràng buộc không đổi schema DB.',
+        },
+        {
+          id: 'h2',
+          templateId: 't2',
+          title: 'Sửa văn phong nội dung',
+          model: 'claude',
+          time: 'Hôm qua, 16:05',
+          values: { tone: 'Trang trọng', length: '150', audience: 'khách hàng doanh nghiệp' },
+          text: 'Sửa văn phong đoạn sau sang giọng Trang trọng, độ dài tối đa 150 từ, hướng tới đối tượng khách hàng doanh nghiệp.',
+        },
+      ]
 
-    <div class="detail-layout">
-      <form id="tplForm" onsubmit="return handleGenerate(event)">
-        <div class="field-group" id="tplFields"></div>
+      /* ===================== catalog rendering (Epic 2) ===================== */
+      const ALL_TAGS = ['all', 'debugging', 'coding', 'writing', 'marketing']
+      const TAG_LABEL = {
+        all: 'Tất cả',
+        debugging: '#debugging',
+        coding: '#coding',
+        writing: '#writing',
+        marketing: '#marketing',
+      }
+      ;(function initTagFilters() {
+        const wrap = document.getElementById('tagFilters')
+        ALL_TAGS.forEach((tag) => {
+          const btn = document.createElement('button')
+          btn.type = 'button'
+          btn.className = 'chip'
+          btn.textContent = TAG_LABEL[tag]
+          btn.setAttribute('aria-pressed', String(tag === 'all'))
+          btn.onclick = () => {
+            activeTag = tag
+            document
+              .querySelectorAll('#tagFilters .chip')
+              .forEach((c) => c.setAttribute('aria-pressed', 'false'))
+            btn.setAttribute('aria-pressed', 'true')
+            renderCatalog()
+          }
+          wrap.appendChild(btn)
+        })
+      })()
 
-        <div class="field-row" style="margin-top:1.1rem">
-          <span class="field-label">Hướng dẫn bổ sung <span style="color:var(--ink-faint);font-weight:400">(tùy chọn)</span></span>
-          <textarea class="text-input" id="extraInstructions" rows="2" placeholder="Thêm yêu cầu riêng, sẽ được nối vào cuối prompt…" oninput="updatePreview()"></textarea>
-        </div>
+      function matchesFilters(t) {
+        const q = document.getElementById('templateSearch').value.trim().toLowerCase()
+        const model = document.getElementById('modelFilter').value
+        if (activeTag !== 'all' && t.tag !== activeTag) return false
+        if (model !== 'all' && !t.models.includes(model)) return false
+        if (q && !(t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)))
+          return false
+        return true
+      }
 
-        <div class="banner err" id="err-generate"><span>⚠</span><span>Vui lòng điền đủ các trường bắt buộc trước khi tạo prompt.</span></div>
+      function templateCardHTML(t) {
+        const favActive = favorites.has(t.id)
+        return (
+          '<button type="button" class="template-card" onclick="openTemplate(\'' +
+          t.id +
+          '\')">' +
+          '<div class="card-top"><span class="card-badges">' +
+          (t.official ? '<span class="badge-official">Chính thức</span>' : '') +
+          '</span>' +
+          '<span class="fav-btn' +
+          (favActive ? ' active' : '') +
+          '" role="button" tabindex="0" onclick="event.stopPropagation(); toggleFavorite(\'' +
+          t.id +
+          '\', this)">' +
+          (favActive ? '♥' : '♡') +
+          '</span></div>' +
+          '<h3>' +
+          t.title +
+          '</h3><p>' +
+          t.desc +
+          '</p>' +
+          '<div class="card-meta"><div class="model-tags">' +
+          t.models.map((m) => '<span class="model-tag">' + MODEL_LABEL[m] + '</span>').join('') +
+          '</div>' +
+          '<span class="usage-count">' +
+          t.usage +
+          ' lượt dùng</span></div></button>'
+        )
+      }
+      const favorites = new Set()
+      function toggleFavorite(id, el) {
+        if (favorites.has(id)) favorites.delete(id)
+        else favorites.add(id)
+        el.classList.toggle('active')
+        el.textContent = favorites.has(id) ? '♥' : '♡'
+        showToast(favorites.has(id) ? 'Đã thêm vào Yêu thích' : 'Đã bỏ Yêu thích')
+      }
 
-        <div class="actions" style="margin-top:1.1rem">
-          <button type="submit" class="submit-btn">Tạo &amp; Sao chép prompt →</button>
-          <button type="button" class="ghost-btn" onclick="resetTplForm()">Xóa form</button>
-        </div>
-      </form>
+      function renderCatalog() {
+        const filtered = TEMPLATES.filter(matchesFilters)
+        document.getElementById('featuredRail').innerHTML = TEMPLATES.filter((t) => t.featured)
+          .map(templateCardHTML)
+          .join('')
+        const trending = TEMPLATES.filter((t) => t.trending)
+        document.getElementById('trendingRail').innerHTML = trending.map(templateCardHTML).join('')
+        document.getElementById('trendingCount').textContent = trending.length + ' mẫu'
+        document.getElementById('templateGrid').innerHTML = filtered.map(templateCardHTML).join('')
+        document.getElementById('gridCount').textContent =
+          filtered.length + ' / ' + TEMPLATES.length + ' mẫu'
+        document.getElementById('emptyState').hidden = filtered.length !== 0
+      }
 
-      <aside class="preview-panel">
-        <span class="tag"><span>xem trước (client-side)</span><span id="tokenEstimate">~0 tokens</span></span>
-        <div class="preview-body" id="previewBody"></div>
-      </aside>
-    </div>
+      /* ===================== page switching ===================== */
+      function showPage(id) {
+        ;['pageCatalog', 'pageTemplate', 'pageHistory'].forEach((pid) => {
+          document.getElementById(pid).hidden = pid !== id
+        })
+        document.getElementById('navCatalog').removeAttribute('aria-current')
+        document.getElementById('navHistory').removeAttribute('aria-current')
+        if (id === 'pageCatalog') {
+          document.getElementById('navCatalog').setAttribute('aria-current', 'page')
+          renderCatalog()
+        }
+        if (id === 'pageHistory') {
+          document.getElementById('navHistory').setAttribute('aria-current', 'page')
+          renderHistory()
+        }
+      }
 
-    <div class="output-box" id="tplOutput" hidden>
-      <span class="tag">Prompt hoàn chỉnh — đã lưu vào lịch sử</span>
-      <pre id="tplOutputText"></pre>
-      <div class="actions" style="margin-top:0.9rem">
-        <button type="button" class="submit-btn" onclick="copyOutput(this)">Sao chép lại</button>
-      </div>
-    </div>
-  </main>
+      /* ===================== template detail + dynamic form (Epic 3) ===================== */
+      let currentTemplate = null
+      let currentValues = {}
 
-  <!-- History (Epic 4) -->
-  <main class="app-main" id="pageHistory" hidden>
-    <div class="page-head">
-      <span class="eyebrow">lịch sử của bạn</span>
-      <h1>Prompt đã tạo</h1>
-      <p class="lede">Mới nhất trước — nạp lại để chỉnh sửa và tạo bản mới, hoặc xóa những prompt không cần nữa.</p>
-    </div>
-    <div class="history-list" id="historyFullList"></div>
-    <p class="empty-state" id="historyEmpty" hidden>Bạn chưa tạo prompt nào — hãy chọn một mẫu ở Thư viện.</p>
-  </main>
-</div>
+      function openTemplate(id, presetValues) {
+        currentTemplate = TEMPLATES.find((t) => t.id === id)
+        if (!currentTemplate) return
+        currentValues = presetValues ? Object.assign({}, presetValues) : {}
+        document.getElementById('tplTag').textContent = TAG_LABEL[currentTemplate.tag]
+        document.getElementById('tplTitle').textContent = currentTemplate.title
+        document.getElementById('tplDesc').textContent = currentTemplate.desc
 
-<div class="measure" id="measure" aria-hidden="true"></div>
-<div class="toast" id="toast"></div>
+        const modelSel = document.getElementById('tplModelSelect')
+        modelSel.innerHTML = currentTemplate.models
+          .map((m) => '<option value="' + m + '">' + MODEL_LABEL[m] + '</option>')
+          .join('')
 
-<script>
-  /* ===================== brace field decoration ===================== */
-  (function () {
-    const words = ["role", "context", "{ }", "constraints", "tone", "audience"];
-    const field = document.getElementById("braceField");
-    const positions = [
-      [8, 5, 1.6, -6], [20, 82, 2.1, 4], [40, 10, 2.6, -3], [64, 72, 1.4, 7],
-      [82, 18, 1.9, -5], [12, 46, 1.3, 2], [55, 92, 2.3, -8], [92, 55, 1.5, 5],
-    ];
-    positions.forEach((p, i) => {
-      const span = document.createElement("span");
-      span.textContent = "{" + words[i % words.length] + "}";
-      span.style.top = p[0] + "%"; span.style.left = p[1] + "%";
-      span.style.fontSize = p[2] + "rem"; span.style.transform = "rotate(" + p[3] + "deg)";
-      field.appendChild(span);
-    });
-  })();
+        const fieldsWrap = document.getElementById('tplFields')
+        fieldsWrap.innerHTML = ''
+        currentTemplate.fields.forEach((f) => fieldsWrap.appendChild(renderField(f)))
+        document.getElementById('extraInstructions').value = ''
+        document.getElementById('tplOutput').hidden = true
+        document.getElementById('err-generate').classList.remove('show')
+        updatePreview()
+        showPage('pageTemplate')
+      }
 
-  /* ===================== auth panel switching ===================== */
-  function showAuthPanel(which) {
-    const panels = ["login", "register", "forgot", "reset"];
-    panels.forEach((p) => { document.getElementById("panel-" + p).hidden = p !== which; });
-    document.getElementById("tab-login").setAttribute("aria-selected", String(which === "login"));
-    document.getElementById("tab-register").setAttribute("aria-selected", String(which === "register"));
-    document.getElementById("authTabs").style.visibility = (which === "login" || which === "register") ? "visible" : "hidden";
-  }
+      function renderField(f) {
+        const row = document.createElement('div')
+        row.className = 'field-row'
+        const labelHTML =
+          '<span class="field-label">' +
+          f.label +
+          (f.required ? ' <span class="req">bắt buộc</span>' : '') +
+          '</span>'
 
-  function togglePw(btn) {
-    const input = btn.previousElementSibling;
-    const showing = input.type === "text";
-    input.type = showing ? "password" : "text";
-    btn.textContent = showing ? "hiện" : "ẩn";
-  }
-  function toggleBanner(id) { document.getElementById(id).classList.toggle("show"); }
+        if (f.type === 'text') {
+          row.innerHTML =
+            labelHTML +
+            '<input class="text-input" type="text" placeholder="' +
+            (f.placeholder || '') +
+            '" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)">'
+        } else if (f.type === 'textarea') {
+          row.innerHTML =
+            labelHTML +
+            '<textarea class="text-input" rows="3" placeholder="' +
+            (f.placeholder || '') +
+            '" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)"></textarea>'
+        } else if (f.type === 'select') {
+          row.innerHTML =
+            labelHTML +
+            '<select class="select-input" onchange="setValue(\'' +
+            f.key +
+            '\', this.value)"><option value="">— chọn —</option>' +
+            f.options.map((o) => '<option>' + o + '</option>').join('') +
+            '</select>'
+        } else if (f.type === 'number') {
+          row.innerHTML =
+            labelHTML +
+            '<input class="text-input" type="number" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)">'
+        } else if (f.type === 'chips') {
+          const chips = f.options
+            .map(
+              (o) =>
+                '<button type="button" class="chip-option" aria-pressed="false" data-key="' +
+                f.key +
+                '" data-val="' +
+                o +
+                '" onclick="selectChip(this)">' +
+                o +
+                '</button>',
+            )
+            .join('')
+          row.innerHTML = labelHTML + '<div class="chip-select">' + chips + '</div>'
+        } else if (f.type === 'multiselect') {
+          const chips = f.options
+            .map(
+              (o) =>
+                '<button type="button" class="chip-option" aria-pressed="false" data-key="' +
+                f.key +
+                '" data-val="' +
+                o +
+                '" onclick="toggleChip(this)">' +
+                o +
+                '</button>',
+            )
+            .join('')
+          row.innerHTML =
+            labelHTML +
+            '<div class="field-help">Chọn một hoặc nhiều</div><div class="chip-select">' +
+            chips +
+            '</div>'
+        } else if (f.type === 'boolean') {
+          row.innerHTML =
+            labelHTML +
+            '<div class="toggle-row"><span class="toggle" role="switch" aria-checked="false" tabindex="0" onclick="toggleBool(this, \'' +
+            f.key +
+            '\')" onkeydown="if(event.key===\' \'){event.preventDefault();this.click();}"></span><span class="field-help" style="font-size:0.86rem">Bật/tắt</span></div>'
+        } else if (f.type === 'slider') {
+          const dflt = f.default != null ? f.default : f.min
+          row.innerHTML =
+            labelHTML +
+            '<div class="slider-row"><input type="range" min="' +
+            f.min +
+            '" max="' +
+            f.max +
+            '" step="' +
+            f.step +
+            '" value="' +
+            dflt +
+            '" oninput="setSlider(this, \'' +
+            f.key +
+            '\')"><span class="slider-value" id="slider-' +
+            f.key +
+            '">' +
+            dflt +
+            '</span></div>'
+          setTimeout(() => setValue(f.key, String(dflt)), 0)
+        }
+        return row
+      }
 
-  function submitDemo(evt, kind) {
-    evt.preventDefault();
-    const form = evt.target;
-    if (kind === "login") {
-      const email = form.querySelector('[data-field="email-login"]').value.trim();
-      const pw = form.querySelector('[data-field="pw-login"]').value;
-      if (email === "demo@how2prompt.dev" && pw === "demo1234") { goToApp("Người dùng Demo"); return false; }
-      toggleBanner("err-login");
-      return false;
-    }
-    toggleBanner("err-register");
-    return false;
-  }
-  function submitForgot(evt) {
-    evt.preventDefault();
-    document.getElementById("ok-forgot").classList.add("show");
-    evt.target.querySelector("button[type=submit]").disabled = true;
-    return false;
-  }
-  function submitReset(evt) {
-    evt.preventDefault();
-    showAuthPanel("login");
-    return false;
-  }
-  function continueGuest() { goToApp(null); }
+      function setValue(key, val) {
+        currentValues[key] = val
+        updatePreview()
+      }
+      function selectChip(btn) {
+        const key = btn.dataset.key
+        btn.parentElement
+          .querySelectorAll('.chip-option')
+          .forEach((c) => c.setAttribute('aria-pressed', 'false'))
+        btn.setAttribute('aria-pressed', 'true')
+        setValue(key, btn.dataset.val)
+      }
+      function toggleChip(btn) {
+        const pressed = btn.getAttribute('aria-pressed') === 'true'
+        btn.setAttribute('aria-pressed', String(!pressed))
+        const key = btn.dataset.key
+        const selected = Array.from(
+          btn.parentElement.querySelectorAll('[aria-pressed="true"]'),
+        ).map((b) => b.dataset.val)
+        setValue(key, selected.join(', '))
+      }
+      function toggleBool(el, key) {
+        const checked = el.getAttribute('aria-checked') === 'true'
+        el.setAttribute('aria-checked', String(!checked))
+        setValue(key, !checked ? 'có' : '')
+      }
+      function setSlider(input, key) {
+        document.getElementById('slider-' + key).textContent = input.value
+        setValue(key, input.value)
+      }
 
-  function goToApp(name) {
-    document.getElementById("viewAuth").hidden = true;
-    document.getElementById("viewApp").hidden = false;
-    const chip = document.querySelector(".user-chip");
-    if (name) {
-      chip.hidden = false;
-      document.getElementById("userName").textContent = name;
-      document.getElementById("userAvatar").textContent = name.trim().charAt(0).toUpperCase();
-      document.getElementById("catalogGreeting").textContent = "Chào " + name + ", tìm mẫu prompt phù hợp";
-    } else {
-      chip.hidden = true;
-      document.getElementById("catalogGreeting").textContent = "Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử";
-    }
-    isGuest = !name;
-    renderCatalog();
-    showPage("pageCatalog");
-  }
-  function signOut() {
-    document.getElementById("viewApp").hidden = true;
-    document.getElementById("viewAuth").hidden = false;
-    showAuthPanel("login");
-  }
+      function updatePreview() {
+        if (!currentTemplate) return
+        const extra = document.getElementById('extraInstructions').value.trim()
+        let html = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) => {
+          if (key === '__extra__') return ''
+          const val = currentValues[key]
+          return val
+            ? '<span class="filled">' + escapeHtml(val) + '</span>'
+            : '<span class="unfilled">{' + key + '}</span>'
+        })
+        if (extra) html += '\n\n' + escapeHtml(extra)
+        document.getElementById('previewBody').innerHTML = html
+        const plain = html.replace(/<[^>]+>/g, '')
+        document.getElementById('tokenEstimate').textContent =
+          '~' + Math.max(1, Math.round(plain.length / 4)) + ' tokens'
+      }
+      function escapeHtml(s) {
+        return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c])
+      }
 
-  /* ===================== app data ===================== */
-  let isGuest = false;
-  const TEMPLATES = [
-    {
-      id: "t1", title: "Debug lỗi hiệu quả", tag: "debugging", official: true, usage: 482, featured: true, trending: true,
-      models: ["gpt", "claude"],
-      desc: "Mô tả lỗi + log, nhận hướng dẫn debug theo đúng vai trò và bối cảnh kỹ thuật của bạn.",
-      body: "Với vai trò {{role}}, hãy debug đoạn log sau trong bối cảnh {{context}}, tuân thủ ràng buộc {{constraints}}.{{__extra__}}",
-      fields: [
-        { key: "role", label: "Vai trò", type: "select", required: true, options: ["Senior Backend Engineer", "DevOps Engineer", "QA Engineer"] },
-        { key: "context", label: "Bối cảnh hệ thống", type: "textarea", required: true, placeholder: "VD: dịch vụ Node.js chạy trên Kubernetes…" },
-        { key: "constraints", label: "Ràng buộc", type: "text", required: false, placeholder: "VD: không đổi schema DB" },
-      ],
-    },
-    {
-      id: "t2", title: "Sửa văn phong nội dung", tag: "writing", official: true, usage: 311, featured: true, trending: false,
-      models: ["gpt", "claude", "gemini"],
-      desc: "Đưa một đoạn văn về đúng giọng điệu và độ dài mong muốn.",
-      body: "Sửa văn phong đoạn sau sang giọng {{tone}}, độ dài tối đa {{length}} từ, hướng tới đối tượng {{audience}}.{{__extra__}}",
-      fields: [
-        { key: "tone", label: "Giọng văn", type: "chips", required: true, options: ["Trang trọng", "Thân thiện", "Súc tích", "Hài hước"] },
-        { key: "length", label: "Độ dài tối đa (từ)", type: "slider", required: true, min: 50, max: 500, step: 10, default: 150 },
-        { key: "audience", label: "Đối tượng đọc", type: "text", required: true, placeholder: "VD: khách hàng doanh nghiệp" },
-      ],
-    },
-    {
-      id: "t3", title: "Mô tả sản phẩm marketing", tag: "marketing", official: true, usage: 205, featured: false, trending: true,
-      models: ["gpt", "gemini"],
-      desc: "Viết mô tả sản phẩm bám theo tính năng và điểm khác biệt cạnh tranh.",
-      body: "Viết mô tả sản phẩm {{product}} nhắm tới {{segment}}, nhấn mạnh tính năng {{features}}.{{highlight}}{{__extra__}}",
-      fields: [
-        { key: "product", label: "Tên sản phẩm", type: "text", required: true, placeholder: "VD: Ứng dụng quản lý chi tiêu" },
-        { key: "segment", label: "Phân khúc khách hàng", type: "text", required: true, placeholder: "VD: sinh viên, người mới đi làm" },
-        { key: "features", label: "Tính năng nổi bật", type: "multiselect", required: true, options: ["Theo dõi realtime", "Đồng bộ ngân hàng", "Cảnh báo chi tiêu", "Báo cáo AI"] },
-        { key: "highlight", label: "Nhấn mạnh yếu tố miễn phí?", type: "boolean", required: false },
-      ],
-    },
-    {
-      id: "t4", title: "Kiểm tra code review", tag: "coding", official: true, usage: 158, featured: false, trending: false,
-      models: ["claude"],
-      desc: "Rà soát pull request theo checklist bảo mật và hiệu năng.",
-      body: "Review đoạn code sau theo mức độ nghiêm ngặt {{strictness}}/5, tập trung vào {{focus}}.{{__extra__}}",
-      fields: [
-        { key: "strictness", label: "Mức độ nghiêm ngặt", type: "slider", required: true, min: 1, max: 5, step: 1, default: 3 },
-        { key: "focus", label: "Tập trung vào", type: "multiselect", required: true, options: ["Bảo mật", "Hiệu năng", "Khả năng đọc", "Test coverage"] },
-      ],
-    },
-  ];
-  const MODEL_LABEL = { gpt: "GPT-4o", claude: "Claude", gemini: "Gemini" };
-  let activeTag = "all";
-  let history = [
-    { id: "h1", templateId: "t1", title: "Debug lỗi hiệu quả", model: "gpt", time: "Hôm nay, 09:42", values: { role: "Senior Backend Engineer", context: "dịch vụ Node.js chạy trên Kubernetes", constraints: "không đổi schema DB" }, text: "Với vai trò Senior Backend Engineer, hãy debug đoạn log sau trong bối cảnh dịch vụ Node.js chạy trên Kubernetes, tuân thủ ràng buộc không đổi schema DB." },
-    { id: "h2", templateId: "t2", title: "Sửa văn phong nội dung", model: "claude", time: "Hôm qua, 16:05", values: { tone: "Trang trọng", length: "150", audience: "khách hàng doanh nghiệp" }, text: "Sửa văn phong đoạn sau sang giọng Trang trọng, độ dài tối đa 150 từ, hướng tới đối tượng khách hàng doanh nghiệp." },
-  ];
+      function resetTplForm() {
+        if (currentTemplate) openTemplate(currentTemplate.id)
+      }
 
-  /* ===================== catalog rendering (Epic 2) ===================== */
-  const ALL_TAGS = ["all", "debugging", "coding", "writing", "marketing"];
-  const TAG_LABEL = { all: "Tất cả", debugging: "#debugging", coding: "#coding", writing: "#writing", marketing: "#marketing" };
-  (function initTagFilters() {
-    const wrap = document.getElementById("tagFilters");
-    ALL_TAGS.forEach((tag) => {
-      const btn = document.createElement("button");
-      btn.type = "button"; btn.className = "chip"; btn.textContent = TAG_LABEL[tag];
-      btn.setAttribute("aria-pressed", String(tag === "all"));
-      btn.onclick = () => { activeTag = tag; document.querySelectorAll("#tagFilters .chip").forEach((c) => c.setAttribute("aria-pressed", "false")); btn.setAttribute("aria-pressed", "true"); renderCatalog(); };
-      wrap.appendChild(btn);
-    });
-  })();
+      function handleGenerate(evt) {
+        evt.preventDefault()
+        const missing = currentTemplate.fields.filter((f) => f.required && !currentValues[f.key])
+        if (missing.length) {
+          document.getElementById('err-generate').classList.add('show')
+          return false
+        }
+        document.getElementById('err-generate').classList.remove('show')
+        const extra = document.getElementById('extraInstructions').value.trim()
+        let text = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) =>
+          key === '__extra__' ? '' : currentValues[key] || '',
+        )
+        if (extra) text += '\n\n' + extra
+        document.getElementById('tplOutputText').textContent = text
+        document.getElementById('tplOutput').hidden = false
 
-  function matchesFilters(t) {
-    const q = document.getElementById("templateSearch").value.trim().toLowerCase();
-    const model = document.getElementById("modelFilter").value;
-    if (activeTag !== "all" && t.tag !== activeTag) return false;
-    if (model !== "all" && !t.models.includes(model)) return false;
-    if (q && !(t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))) return false;
-    return true;
-  }
+        history.unshift({
+          id: 'h' + Date.now(),
+          templateId: currentTemplate.id,
+          title: currentTemplate.title,
+          model: document.getElementById('tplModelSelect').value,
+          time: 'Vừa xong',
+          values: Object.assign({}, currentValues),
+          text: text,
+        })
+        showToast(
+          isGuest ? 'Đã tạo prompt (Khách — không lưu lịch sử)' : 'Đã tạo và lưu vào lịch sử',
+        )
+        return false
+      }
 
-  function templateCardHTML(t) {
-    const favActive = favorites.has(t.id);
-    return (
-      '<button type="button" class="template-card" onclick="openTemplate(\'' + t.id + '\')">' +
-      '<div class="card-top"><span class="card-badges">' + (t.official ? '<span class="badge-official">Chính thức</span>' : '') + '</span>' +
-      '<span class="fav-btn' + (favActive ? ' active' : '') + '" role="button" tabindex="0" onclick="event.stopPropagation(); toggleFavorite(\'' + t.id + '\', this)">' + (favActive ? "♥" : "♡") + '</span></div>' +
-      '<h3>' + t.title + '</h3><p>' + t.desc + '</p>' +
-      '<div class="card-meta"><div class="model-tags">' + t.models.map((m) => '<span class="model-tag">' + MODEL_LABEL[m] + '</span>').join("") + '</div>' +
-      '<span class="usage-count">' + t.usage + ' lượt dùng</span></div></button>'
-    );
-  }
-  const favorites = new Set();
-  function toggleFavorite(id, el) {
-    if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
-    el.classList.toggle("active"); el.textContent = favorites.has(id) ? "♥" : "♡";
-    showToast(favorites.has(id) ? "Đã thêm vào Yêu thích" : "Đã bỏ Yêu thích");
-  }
+      function copyOutput(btn) {
+        const original = btn.textContent
+        btn.textContent = 'Đã sao chép!'
+        setTimeout(() => (btn.textContent = original), 1600)
+        showToast('Đã sao chép vào clipboard')
+      }
 
-  function renderCatalog() {
-    const filtered = TEMPLATES.filter(matchesFilters);
-    document.getElementById("featuredRail").innerHTML = TEMPLATES.filter((t) => t.featured).map(templateCardHTML).join("");
-    const trending = TEMPLATES.filter((t) => t.trending);
-    document.getElementById("trendingRail").innerHTML = trending.map(templateCardHTML).join("");
-    document.getElementById("trendingCount").textContent = trending.length + " mẫu";
-    document.getElementById("templateGrid").innerHTML = filtered.map(templateCardHTML).join("");
-    document.getElementById("gridCount").textContent = filtered.length + " / " + TEMPLATES.length + " mẫu";
-    document.getElementById("emptyState").hidden = filtered.length !== 0;
-  }
+      /* ===================== history (Epic 4) ===================== */
+      function renderHistory() {
+        const list = document.getElementById('historyFullList')
+        document.getElementById('historyEmpty').hidden = history.length !== 0
+        list.innerHTML = history
+          .map(
+            (h) =>
+              '<div class="history-row"><div class="history-meta"><span class="history-title">' +
+              h.title +
+              '</span>' +
+              '<span class="history-sub"><span>' +
+              MODEL_LABEL[h.model] +
+              '</span><span>' +
+              h.time +
+              '</span></span></div>' +
+              '<div class="history-actions">' +
+              '<button type="button" class="icon-btn" title="Nạp lại để chỉnh sửa" onclick="reloadHistory(\'' +
+              h.id +
+              '\')">↻</button>' +
+              '<button type="button" class="icon-btn" title="Sao chép" onclick="copyHistoryText(\'' +
+              h.id +
+              '\', this)">⧉</button>' +
+              '<button type="button" class="icon-btn danger" title="Xóa" onclick="deleteHistory(\'' +
+              h.id +
+              '\')">✕</button>' +
+              '</div></div>',
+          )
+          .join('')
+      }
+      function reloadHistory(id) {
+        const h = history.find((x) => x.id === id)
+        if (!h) return
+        openTemplate(h.templateId, h.values)
+        showToast('Đã nạp lại vào form — sửa và tạo bản mới')
+      }
+      function copyHistoryText(id, btn) {
+        const original = btn.textContent
+        btn.textContent = '✓'
+        setTimeout(() => (btn.textContent = original), 1200)
+        showToast('Đã sao chép vào clipboard')
+      }
+      function deleteHistory(id) {
+        history = history.filter((x) => x.id !== id)
+        renderHistory()
+        showToast('Đã xóa khỏi lịch sử')
+      }
 
-  /* ===================== page switching ===================== */
-  function showPage(id) {
-    ["pageCatalog", "pageTemplate", "pageHistory"].forEach((pid) => { document.getElementById(pid).hidden = pid !== id; });
-    document.getElementById("navCatalog").removeAttribute("aria-current");
-    document.getElementById("navHistory").removeAttribute("aria-current");
-    if (id === "pageCatalog") { document.getElementById("navCatalog").setAttribute("aria-current", "page"); renderCatalog(); }
-    if (id === "pageHistory") { document.getElementById("navHistory").setAttribute("aria-current", "page"); renderHistory(); }
-  }
+      /* ===================== toast ===================== */
+      let toastTimer
+      function showToast(msg) {
+        const t = document.getElementById('toast')
+        t.textContent = msg
+        t.classList.add('show')
+        clearTimeout(toastTimer)
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2000)
+      }
 
-  /* ===================== template detail + dynamic form (Epic 3) ===================== */
-  let currentTemplate = null;
-  let currentValues = {};
-
-  function openTemplate(id, presetValues) {
-    currentTemplate = TEMPLATES.find((t) => t.id === id);
-    if (!currentTemplate) return;
-    currentValues = presetValues ? Object.assign({}, presetValues) : {};
-    document.getElementById("tplTag").textContent = TAG_LABEL[currentTemplate.tag];
-    document.getElementById("tplTitle").textContent = currentTemplate.title;
-    document.getElementById("tplDesc").textContent = currentTemplate.desc;
-
-    const modelSel = document.getElementById("tplModelSelect");
-    modelSel.innerHTML = currentTemplate.models.map((m) => '<option value="' + m + '">' + MODEL_LABEL[m] + "</option>").join("");
-
-    const fieldsWrap = document.getElementById("tplFields");
-    fieldsWrap.innerHTML = "";
-    currentTemplate.fields.forEach((f) => fieldsWrap.appendChild(renderField(f)));
-    document.getElementById("extraInstructions").value = "";
-    document.getElementById("tplOutput").hidden = true;
-    document.getElementById("err-generate").classList.remove("show");
-    updatePreview();
-    showPage("pageTemplate");
-  }
-
-  function renderField(f) {
-    const row = document.createElement("div");
-    row.className = "field-row";
-    const labelHTML = '<span class="field-label">' + f.label + (f.required ? ' <span class="req">bắt buộc</span>' : "") + "</span>";
-
-    if (f.type === "text") {
-      row.innerHTML = labelHTML + '<input class="text-input" type="text" placeholder="' + (f.placeholder || "") + '" oninput="setValue(\'' + f.key + "', this.value)\">";
-    } else if (f.type === "textarea") {
-      row.innerHTML = labelHTML + '<textarea class="text-input" rows="3" placeholder="' + (f.placeholder || "") + '" oninput="setValue(\'' + f.key + "', this.value)\"></textarea>";
-    } else if (f.type === "select") {
-      row.innerHTML = labelHTML + '<select class="select-input" onchange="setValue(\'' + f.key + '\', this.value)"><option value="">— chọn —</option>' + f.options.map((o) => "<option>" + o + "</option>").join("") + "</select>";
-    } else if (f.type === "number") {
-      row.innerHTML = labelHTML + '<input class="text-input" type="number" oninput="setValue(\'' + f.key + "', this.value)\">";
-    } else if (f.type === "chips") {
-      const chips = f.options.map((o) => '<button type="button" class="chip-option" aria-pressed="false" data-key="' + f.key + '" data-val="' + o + '" onclick="selectChip(this)">' + o + "</button>").join("");
-      row.innerHTML = labelHTML + '<div class="chip-select">' + chips + "</div>";
-    } else if (f.type === "multiselect") {
-      const chips = f.options.map((o) => '<button type="button" class="chip-option" aria-pressed="false" data-key="' + f.key + '" data-val="' + o + '" onclick="toggleChip(this)">' + o + "</button>").join("");
-      row.innerHTML = labelHTML + '<div class="field-help">Chọn một hoặc nhiều</div><div class="chip-select">' + chips + "</div>";
-    } else if (f.type === "boolean") {
-      row.innerHTML = labelHTML + '<div class="toggle-row"><span class="toggle" role="switch" aria-checked="false" tabindex="0" onclick="toggleBool(this, \'' + f.key + '\')" onkeydown="if(event.key===\' \'){event.preventDefault();this.click();}"></span><span class="field-help" style="font-size:0.86rem">Bật/tắt</span></div>';
-    } else if (f.type === "slider") {
-      const dflt = f.default != null ? f.default : f.min;
-      row.innerHTML = labelHTML + '<div class="slider-row"><input type="range" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '" value="' + dflt + '" oninput="setSlider(this, \'' + f.key + '\')"><span class="slider-value" id="slider-' + f.key + '">' + dflt + "</span></div>";
-      setTimeout(() => setValue(f.key, String(dflt)), 0);
-    }
-    return row;
-  }
-
-  function setValue(key, val) { currentValues[key] = val; updatePreview(); }
-  function selectChip(btn) {
-    const key = btn.dataset.key;
-    btn.parentElement.querySelectorAll(".chip-option").forEach((c) => c.setAttribute("aria-pressed", "false"));
-    btn.setAttribute("aria-pressed", "true");
-    setValue(key, btn.dataset.val);
-  }
-  function toggleChip(btn) {
-    const pressed = btn.getAttribute("aria-pressed") === "true";
-    btn.setAttribute("aria-pressed", String(!pressed));
-    const key = btn.dataset.key;
-    const selected = Array.from(btn.parentElement.querySelectorAll('[aria-pressed="true"]')).map((b) => b.dataset.val);
-    setValue(key, selected.join(", "));
-  }
-  function toggleBool(el, key) {
-    const checked = el.getAttribute("aria-checked") === "true";
-    el.setAttribute("aria-checked", String(!checked));
-    setValue(key, !checked ? "có" : "");
-  }
-  function setSlider(input, key) {
-    document.getElementById("slider-" + key).textContent = input.value;
-    setValue(key, input.value);
-  }
-
-  function updatePreview() {
-    if (!currentTemplate) return;
-    const extra = document.getElementById("extraInstructions").value.trim();
-    let html = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) => {
-      if (key === "__extra__") return "";
-      const val = currentValues[key];
-      return val ? '<span class="filled">' + escapeHtml(val) + "</span>" : '<span class="unfilled">{' + key + "}</span>";
-    });
-    if (extra) html += "\n\n" + escapeHtml(extra);
-    document.getElementById("previewBody").innerHTML = html;
-    const plain = html.replace(/<[^>]+>/g, "");
-    document.getElementById("tokenEstimate").textContent = "~" + Math.max(1, Math.round(plain.length / 4)) + " tokens";
-  }
-  function escapeHtml(s) { return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
-
-  function resetTplForm() { if (currentTemplate) openTemplate(currentTemplate.id); }
-
-  function handleGenerate(evt) {
-    evt.preventDefault();
-    const missing = currentTemplate.fields.filter((f) => f.required && !currentValues[f.key]);
-    if (missing.length) {
-      document.getElementById("err-generate").classList.add("show");
-      return false;
-    }
-    document.getElementById("err-generate").classList.remove("show");
-    const extra = document.getElementById("extraInstructions").value.trim();
-    let text = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) => (key === "__extra__" ? "" : currentValues[key] || ""));
-    if (extra) text += "\n\n" + extra;
-    document.getElementById("tplOutputText").textContent = text;
-    document.getElementById("tplOutput").hidden = false;
-
-    history.unshift({
-      id: "h" + Date.now(), templateId: currentTemplate.id, title: currentTemplate.title,
-      model: document.getElementById("tplModelSelect").value, time: "Vừa xong",
-      values: Object.assign({}, currentValues), text: text,
-    });
-    showToast(isGuest ? "Đã tạo prompt (Khách — không lưu lịch sử)" : "Đã tạo và lưu vào lịch sử");
-    return false;
-  }
-
-  function copyOutput(btn) {
-    const original = btn.textContent;
-    btn.textContent = "Đã sao chép!";
-    setTimeout(() => (btn.textContent = original), 1600);
-    showToast("Đã sao chép vào clipboard");
-  }
-
-  /* ===================== history (Epic 4) ===================== */
-  function renderHistory() {
-    const list = document.getElementById("historyFullList");
-    document.getElementById("historyEmpty").hidden = history.length !== 0;
-    list.innerHTML = history.map((h) => (
-      '<div class="history-row"><div class="history-meta"><span class="history-title">' + h.title + '</span>' +
-      '<span class="history-sub"><span>' + MODEL_LABEL[h.model] + '</span><span>' + h.time + '</span></span></div>' +
-      '<div class="history-actions">' +
-      '<button type="button" class="icon-btn" title="Nạp lại để chỉnh sửa" onclick="reloadHistory(\'' + h.id + '\')">↻</button>' +
-      '<button type="button" class="icon-btn" title="Sao chép" onclick="copyHistoryText(\'' + h.id + '\', this)">⧉</button>' +
-      '<button type="button" class="icon-btn danger" title="Xóa" onclick="deleteHistory(\'' + h.id + '\')">✕</button>' +
-      "</div></div>"
-    )).join("");
-  }
-  function reloadHistory(id) {
-    const h = history.find((x) => x.id === id);
-    if (!h) return;
-    openTemplate(h.templateId, h.values);
-    showToast("Đã nạp lại vào form — sửa và tạo bản mới");
-  }
-  function copyHistoryText(id, btn) {
-    const original = btn.textContent; btn.textContent = "✓";
-    setTimeout(() => (btn.textContent = original), 1200);
-    showToast("Đã sao chép vào clipboard");
-  }
-  function deleteHistory(id) {
-    history = history.filter((x) => x.id !== id);
-    renderHistory();
-    showToast("Đã xóa khỏi lịch sử");
-  }
-
-  /* ===================== toast ===================== */
-  let toastTimer;
-  function showToast(msg) {
-    const t = document.getElementById("toast");
-    t.textContent = msg; t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
-  }
-
-  renderCatalog();
-</script>
-</body>
+      renderCatalog()
+    </script>
+  </body>
 </html>

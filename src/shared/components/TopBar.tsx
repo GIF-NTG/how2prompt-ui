@@ -7,7 +7,10 @@ export function TopBar() {
 
   return (
     <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-[clamp(1.25rem,4vw,3rem)]">
-      <Link to="/" className="flex items-center gap-2.5 text-[1.05rem] font-bold tracking-[-0.01em]">
+      <Link
+        to="/"
+        className="flex items-center gap-2.5 text-[1.05rem] font-bold tracking-[-0.01em]"
+      >
         <span className="font-mono rounded-md bg-[#1B1D1B] px-2 py-0.5 text-[0.95rem] font-bold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
           {'{ }'}
         </span>

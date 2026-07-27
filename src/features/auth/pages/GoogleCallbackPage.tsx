@@ -52,7 +52,9 @@ export function GoogleCallbackPage() {
             </button>
           </>
         ) : (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang hoàn tất đăng nhập bằng Google…</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">
+            Đang hoàn tất đăng nhập bằng Google…
+          </p>
         )}
       </div>
     </AuthLayout>

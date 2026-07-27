@@ -16,6 +16,7 @@
 **Setup**: No `VITE_API_BASE_URL` set (mock mode).
 
 **Steps**:
+
 1. Run `npm run dev`
 2. Open `http://localhost:5173/`
 3. Observe the Home page loads with:
@@ -30,6 +31,7 @@
 ### Scenario 2: Filter by AI model
 
 **Steps**:
+
 1. On the catalog page, open the model dropdown
 2. Select "Claude"
 3. Observe the grid narrows to only Claude-compatible templates
@@ -41,6 +43,7 @@
 ### Scenario 3: Filter by tag chip
 
 **Steps**:
+
 1. Click the "#debugging" tag chip
 2. Observe the chip becomes active (indigo background)
 3. Grid narrows to debugging templates
@@ -52,6 +55,7 @@
 ### Scenario 4: Search with debounce
 
 **Steps**:
+
 1. Type "email" in the search box
 2. Observe results appear after ~300ms delay
 3. Clear the search box
@@ -62,6 +66,7 @@
 ### Scenario 5: Combined filters (AND logic)
 
 **Steps**:
+
 1. Select model "Claude" from dropdown
 2. Type "marketing" in search
 3. Observe only templates matching BOTH criteria appear
@@ -71,6 +76,7 @@
 ### Scenario 6: Empty state
 
 **Steps**:
+
 1. Type "xyznonexistent" in search
 2. Observe empty state message appears
 
@@ -79,6 +85,7 @@
 ### Scenario 7: Deep-linking
 
 **Steps**:
+
 1. Apply filters (e.g., model=claude, tag=debugging)
 2. Copy the URL
 3. Open in a new incognito window
@@ -89,6 +96,7 @@
 ### Scenario 8: Dark mode
 
 **Steps**:
+
 1. Toggle system/browser to dark mode (or add `data-theme="dark"` to `<html>`)
 2. Observe the catalog page renders with dark background, light text, and indigo accent
 

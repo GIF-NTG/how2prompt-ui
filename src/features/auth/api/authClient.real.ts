@@ -75,9 +75,10 @@ export function createRealAuthClient(): AuthClient {
       // client-side One Tap flow. This call navigates the whole tab away to Google,
       // so it does not meaningfully resolve — GoogleCallbackPage finishes the flow
       // via completeGoogleOAuth() once Google redirects back.
-      const { authorization_url, state } = await apiFetch<{ authorization_url: string; state: string }>(
-        '/auth/oauth/google',
-      )
+      const { authorization_url, state } = await apiFetch<{
+        authorization_url: string
+        state: string
+      }>('/auth/oauth/google')
       window.sessionStorage.setItem(GOOGLE_OAUTH_STATE_KEY, state)
       window.location.href = authorization_url
       return new Promise<AuthOutcome>(() => {
@@ -150,10 +151,15 @@ export function createRealAuthClient(): AuthClient {
 
     async restoreSession() {
       try {
-        const refreshed = await apiFetch<{ access_token: string; expires_in: number }>('/auth/refresh', {
-          method: 'POST',
+        const refreshed = await apiFetch<{ access_token: string; expires_in: number }>(
+          '/auth/refresh',
+          {
+            method: 'POST',
+          },
+        )
+        const profile = await apiFetch<BackendUser>('/users/me', {
+          accessToken: refreshed.access_token,
         })
-        const profile = await apiFetch<BackendUser>('/users/me', { accessToken: refreshed.access_token })
         return toSession({ ...refreshed, token_type: 'Bearer', user: profile })
       } catch {
         // No valid refresh_token cookie (never logged in, logged out, or expired).

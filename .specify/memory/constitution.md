@@ -69,6 +69,7 @@ Sync Impact Report
 ## Core Principles
 
 ### I. Dynamic Form Rendering Integrity (NON-NEGOTIABLE)
+
 Any screen that lets a user fill in a template's inputs (Epic 3 — Prompt Generation
 Engine) MUST render its form by reading that template's `template_variables` JSONB
 array and emitting one control per declared `input_type` (text, textarea, select,
@@ -89,6 +90,7 @@ pattern here breaks parity with the backend's authoritative re-render on
 template's form.
 
 ### II. Spec-Before-Code
+
 No feature implementation proceeds without an approved spec → plan → tasks chain
 (`/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`). The
 submodule documents — `how2prompt-agentic/docs/SRS.md`, `docs/use-cases.md`,
@@ -100,6 +102,7 @@ maintained independently; routing every implementation through the same spec-kit
 funnel is what keeps them from silently drifting apart.
 
 ### III. Contract & Error Consistency
+
 All backend endpoints live under the `/api/v1/...` namespace. `docs/api/openapi.yaml`
 (this repo, provided by Backend) is the authoritative source for the literal wire
 contract — request/response shapes, error envelope, endpoint paths — and supersedes
@@ -119,6 +122,7 @@ invents its own error shape, or frontend code that assumes a single long-lived t
 silently breaks session restoration for every other screen.
 
 ### IV. Security Non-Negotiables
+
 User passwords MUST be hashed with BCrypt before persistence — plaintext or
 reversible storage is never acceptable. All traffic carrying JWTs MUST run over
 HTTPS. No secrets or credentials are ever committed to the repository.
@@ -127,6 +131,7 @@ auth handling as Critical severity — a violation here blocks merge with no
 exceptions, unlike lower-severity findings that can be scheduled for a later sprint.
 
 ### V. Verified Before Done
+
 `oxlint`, the TypeScript build (`tsc -b && vite build`), and `vitest` MUST all pass
 before any change is reported complete. UI changes MUST be exercised in a running
 browser — a passing type-check is not evidence that a dynamic form's field types,

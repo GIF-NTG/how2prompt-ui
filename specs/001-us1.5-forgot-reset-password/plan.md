@@ -52,15 +52,15 @@ implementations), 1 new field appended to `ApiError` (HTTP status — see
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Applicability | Status |
-|---|---|---|
-| I. Dynamic Form Rendering Integrity | N/A — this feature is not Epic 3 (Prompt Generation Engine); no `template_variables`-driven form is involved. The existing `InlineBlank` pill component is reused, which the principle explicitly permits for auth screens ("confined to the auth screens that already use it") — this remains an auth screen. | PASS |
-| II. Spec-Before-Code | This plan follows an approved spec (`spec.md`, clarified via `/speckit-clarify`). | PASS |
-| III. Contract & Error Consistency | New calls target `/auth/forgot-password` and `/auth/reset-password` from `docs/api/openapi.yaml`; error envelope parsed via the existing `httpClient.ts`/`ApiError`, extended (not replaced) to carry HTTP status — see `research.md` Decision 1. | PASS |
-| IV. Security Non-Negotiables | No password hashing, HTTPS enforcement, or secret storage happens client-side; this feature only calls already-deployed backend endpoints. No secrets introduced. | PASS |
-| V. Verified Before Done | `oxlint`, `tsc -b && vite build`, and `vitest` must pass; both new pages must be exercised in a running browser before this feature is reported done (implementation-phase gate, not a plan-time violation). | PASS (gate noted for implementation) |
+| Principle                           | Applicability                                                                                                                                                                                                                                                                                                  | Status                               |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| I. Dynamic Form Rendering Integrity | N/A — this feature is not Epic 3 (Prompt Generation Engine); no `template_variables`-driven form is involved. The existing `InlineBlank` pill component is reused, which the principle explicitly permits for auth screens ("confined to the auth screens that already use it") — this remains an auth screen. | PASS                                 |
+| II. Spec-Before-Code                | This plan follows an approved spec (`spec.md`, clarified via `/speckit-clarify`).                                                                                                                                                                                                                              | PASS                                 |
+| III. Contract & Error Consistency   | New calls target `/auth/forgot-password` and `/auth/reset-password` from `docs/api/openapi.yaml`; error envelope parsed via the existing `httpClient.ts`/`ApiError`, extended (not replaced) to carry HTTP status — see `research.md` Decision 1.                                                              | PASS                                 |
+| IV. Security Non-Negotiables        | No password hashing, HTTPS enforcement, or secret storage happens client-side; this feature only calls already-deployed backend endpoints. No secrets introduced.                                                                                                                                              | PASS                                 |
+| V. Verified Before Done             | `oxlint`, `tsc -b && vite build`, and `vitest` must pass; both new pages must be exercised in a running browser before this feature is reported done (implementation-phase gate, not a plan-time violation).                                                                                                   | PASS (gate noted for implementation) |
 
 No violations — Complexity Tracking section is empty and omitted.
 
@@ -118,4 +118,4 @@ surface as login/register/logout, not a separate product area.
 
 ## Complexity Tracking
 
-*No Constitution Check violations — this section intentionally left empty.*
+_No Constitution Check violations — this section intentionally left empty._

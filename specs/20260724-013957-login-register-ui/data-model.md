@@ -10,14 +10,15 @@ for the functions that produce/consume them, and `research.md` for why the
 
 Represents a registered identity (spec Key Entities: **Account**).
 
-| Field | Type | Notes |
-|---|---|---|
-| `id` | `string` | Opaque identifier; mock generates a random id, a real backend would return its own UUID. |
-| `displayName` | `string` | Collected on Register (FR-003). Required, non-empty. |
-| `email` | `string` | Collected on Register and used on Login. Required; must match a basic `local@domain` shape (FR-007). Also the join key used for Google account linking (FR-020). |
+| Field           | Type                         | Notes                                                                                                                                                                                                               |
+| --------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | `string`                     | Opaque identifier; mock generates a random id, a real backend would return its own UUID.                                                                                                                            |
+| `displayName`   | `string`                     | Collected on Register (FR-003). Required, non-empty.                                                                                                                                                                |
+| `email`         | `string`                     | Collected on Register and used on Login. Required; must match a basic `local@domain` shape (FR-007). Also the join key used for Google account linking (FR-020).                                                    |
 | `authProviders` | `('password' \| 'google')[]` | Which sign-in method(s) reach this account. A Google sign-in whose email matches an existing `password`-provider account adds `'google'` to that same account's list rather than creating a new `Account` (FR-020). |
 
 **Validation rules** (client-side, before the mock/real call — FR-006, FR-007, FR-008):
+
 - `displayName`: required, non-empty after trimming.
 - `email`: required, must contain `@` and a domain segment.
 - `password` (not stored on `Account` — see Auth outcome below): required, minimum 8
@@ -32,16 +33,17 @@ retained client-side once the call resolves.
 
 Represents the client-held signed-in state (spec Key Entities: **Session**).
 
-| Field | Type | Notes |
-|---|---|---|
-| `accountId` | `string` | The `Account.id` this session belongs to. |
-| `displayName` | `string` | Denormalized for immediate nav display (FR-011) without a lookup. |
-| `email` | `string` | Denormalized, same reason. |
-| `token` | `string` | Opaque mock token today; a real JWT once a backend exists. Never parsed client-side beyond expiry bookkeeping. |
-| `issuedAt` | `number` (epoch ms) | Set when the session is created. |
-| `expiresAt` | `number` (epoch ms) | `issuedAt + 7 days`, mirroring the project's real JWT lifetime (SRS AR-6). |
+| Field         | Type                | Notes                                                                                                          |
+| ------------- | ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `accountId`   | `string`            | The `Account.id` this session belongs to.                                                                      |
+| `displayName` | `string`            | Denormalized for immediate nav display (FR-011) without a lookup.                                              |
+| `email`       | `string`            | Denormalized, same reason.                                                                                     |
+| `token`       | `string`            | Opaque mock token today; a real JWT once a backend exists. Never parsed client-side beyond expiry bookkeeping. |
+| `issuedAt`    | `number` (epoch ms) | Set when the session is created.                                                                               |
+| `expiresAt`   | `number` (epoch ms) | `issuedAt + 7 days`, mirroring the project's real JWT lifetime (SRS AR-6).                                     |
 
 **Lifecycle (mock)**:
+
 1. Created by a successful `login`, `register`-then-login, or `signInWithGoogle` call.
 2. Persisted to a single `localStorage` key (owned by `AuthContext`, not read/written
    anywhere else — FR-012).
@@ -52,7 +54,7 @@ Represents the client-held signed-in state (spec Key Entities: **Session**).
 > **Amendment (2026-07-24, implemented same day)**: for the real client
 > (`authClient.real.ts`), `token`/`issuedAt`/`expiresAt` represent the real
 > **`access_token`** (15-minute lifetime per `docs/api/openapi.yaml`), not a 7-day
-> token. How long the overall *session* lasts is governed server-side by the
+> token. How long the overall _session_ lasts is governed server-side by the
 > `refresh_token`, which lives only in an httpOnly cookie this app never reads —
 > **its actual lifetime is not documented anywhere in the contract**, so "7 days" is
 > not a confirmed number for the real backend, only an inherited assumption from
@@ -94,7 +96,7 @@ AuthErrorCode =
 > from `EMAIL_ALREADY_REGISTERED`) and `INVALID_CREDENTIALS` match the real backend's
 > error codes in `docs/api/openapi.yaml` exactly. `AuthErrorCode` was also widened to
 > `'INVALID_CREDENTIALS' | 'EMAIL_ALREADY_EXISTS' | 'VALIDATION_ERROR' | (string &
-> {})` so real backend codes this feature doesn't special-case (`TOKEN_EXPIRED`,
+{})` so real backend codes this feature doesn't special-case (`TOKEN_EXPIRED`,
 > `GUEST_QUOTA_EXCEEDED`, etc.) pass through without a type error. The real
 > envelope, `{ error: { code, message, details?, trace_id? } }`, is mapped onto this
 > flat `AuthOutcome` shape entirely inside `authClient.real.ts` (via `httpClient.ts`'s
@@ -115,8 +117,8 @@ AuthErrorCode =
 
 ## State ownership summary
 
-| State | Owner | Persisted where |
-|---|---|---|
-| Current `Session` (or none) | `AuthContext` (React context provider wrapping the app) | `localStorage`, one key |
-| In-flight submit / loading flag per form | Local component state in `LoginPage` / `RegisterPage` | Not persisted (Edge Case: no double-submit while in flight) |
-| Typed blank values before submit | Local component state in each page | Not persisted — spec explicitly says switching views discards partially-typed values |
+| State                                    | Owner                                                   | Persisted where                                                                      |
+| ---------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Current `Session` (or none)              | `AuthContext` (React context provider wrapping the app) | `localStorage`, one key                                                              |
+| In-flight submit / loading flag per form | Local component state in `LoginPage` / `RegisterPage`   | Not persisted (Edge Case: no double-submit while in flight)                          |
+| Typed blank values before submit         | Local component state in each page                      | Not persisted — spec explicitly says switching views discards partially-typed values |

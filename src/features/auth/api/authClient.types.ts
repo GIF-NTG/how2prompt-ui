@@ -1,4 +1,9 @@
-import type { AuthOutcome, PasswordResetOutcome, PasswordResetRequestOutcome, Session } from './types'
+import type {
+  AuthOutcome,
+  PasswordResetOutcome,
+  PasswordResetRequestOutcome,
+  Session,
+} from './types'
 
 /**
  * The single integration point for all authentication communication (FR-009).

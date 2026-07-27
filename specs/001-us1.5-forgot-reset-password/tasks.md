@@ -1,7 +1,5 @@
 ---
-
-description: "Task list for Forgot & Reset Password"
-
+description: 'Task list for Forgot & Reset Password'
 ---
 
 # Tasks: Forgot & Reset Password
@@ -48,12 +46,12 @@ implementations depend on — MUST complete before Phase 3 starts.
 
 **⚠️ CRITICAL**: No User Story 1 work can begin until this phase is complete.
 
-- [X] T001 [P] Add a `status: number` field to `ApiError` and populate it from
+- [x] T001 [P] Add a `status: number` field to `ApiError` and populate it from
       `Response.status` inside `apiFetch`'s error branch, in
       `src/features/auth/api/httpClient.ts` (research.md Decision 1)
-- [X] T002 [P] Add `PasswordResetRequestOutcome` and `PasswordResetOutcome` types to
+- [x] T002 [P] Add `PasswordResetRequestOutcome` and `PasswordResetOutcome` types to
       `src/features/auth/api/types.ts` (data-model.md)
-- [X] T003 Add `requestPasswordReset(email: string): Promise<PasswordResetRequestOutcome>`
+- [x] T003 Add `requestPasswordReset(email: string): Promise<PasswordResetRequestOutcome>`
       and `resetPassword(token: string, newPassword: string): Promise<PasswordResetOutcome>`
       to the `AuthClient` interface in `src/features/auth/api/authClient.types.ts`
       (depends on T002 for the imported types; contracts/auth-client.md)
@@ -74,17 +72,17 @@ password, and confirm login succeeds with the new password.
 
 ### Implementation for User Story 1
 
-- [X] T004 [P] [US1] Implement `requestPasswordReset` and `resetPassword` in the mock
+- [x] T004 [P] [US1] Implement `requestPasswordReset` and `resetPassword` in the mock
       client `src/features/auth/api/authClient.mock.ts` — always resolve `success`
       for a well-formed email; use a fixed sentinel token (e.g. `'expired-token'`) to
       exercise the `RESET_TOKEN_EXPIRED` branch (contracts/auth-client.md "Mock
       implementation notes") — depends on Phase 2
-- [X] T005 [P] [US1] Implement `requestPasswordReset` and `resetPassword` in the real
+- [x] T005 [P] [US1] Implement `requestPasswordReset` and `resetPassword` in the real
       client `src/features/auth/api/authClient.real.ts` — `POST /auth/forgot-password`
       with `{ email }`, `POST /auth/reset-password` with `{ token, new_password }`;
       map `ApiError.status === 410` to `errorCode: 'RESET_TOKEN_EXPIRED'`
       (contracts/auth-client.md) — depends on Phase 2
-- [X] T006 [P] [US1] Create `ForgotPasswordPage` in
+- [x] T006 [P] [US1] Create `ForgotPasswordPage` in
       `src/features/auth/pages/ForgotPasswordPage.tsx` — email form using the
       existing `AuthLayout`/`InlineBlank` pattern (research.md Decision 3), calls
       `authClient.requestPasswordReset`. On `status: 'success'`, show one identical
@@ -94,7 +92,7 @@ password, and confirm login succeeds with the new password.
       show the returned `message` inline instead, same as `LoginPage`/`RegisterPage`
       (spec FR-005) — do NOT collapse this into the generic confirmation — depends
       on T004, T005
-- [X] T007 [P] [US1] Create `ResetPasswordPage` in
+- [x] T007 [P] [US1] Create `ResetPasswordPage` in
       `src/features/auth/pages/ResetPasswordPage.tsx` — reads `token` from the URL
       query string, single new-password field with show/hide toggle (research.md
       Decision 2, matching `RegisterPage`'s pattern), client-side min-length
@@ -102,17 +100,17 @@ password, and confirm login succeeds with the new password.
       `authClient.resetPassword`; on `RESET_TOKEN_EXPIRED` shows an expired-link
       message with a link back to `/forgot-password` (spec FR-003, FR-004); on
       success, redirects to `/login` with a success message — depends on T004, T005
-- [X] T008 [P] [US1] Add a "Forgot password?" link from `/login` to
+- [x] T008 [P] [US1] Add a "Forgot password?" link from `/login` to
       `/forgot-password` in `src/features/auth/pages/LoginPage.tsx`, next to the
       password field
-- [X] T009 [US1] Register the `forgot-password` and `reset-password` routes
+- [x] T009 [US1] Register the `forgot-password` and `reset-password` routes
       (rendering `ForgotPasswordPage` and `ResetPasswordPage`) under the existing
       `RootLayout` route in `src/app/App.tsx` (research.md Decision 4) — depends on
       T006, T007
-- [X] T010 [P] [US1] Write `src/features/auth/pages/ForgotPasswordPage.test.tsx`
+- [x] T010 [P] [US1] Write `src/features/auth/pages/ForgotPasswordPage.test.tsx`
       covering Acceptance Scenarios 1–2 (submit known/unknown email → identical
       confirmation message) — depends on T006
-- [X] T011 [P] [US1] Write `src/features/auth/pages/ResetPasswordPage.test.tsx`
+- [x] T011 [P] [US1] Write `src/features/auth/pages/ResetPasswordPage.test.tsx`
       covering Acceptance Scenarios 3–5 (valid token success, expired/used token
       message, password-too-short validation) plus the Edge Case "reopening an
       already-used reset link via the browser back button re-validates the token
@@ -129,11 +127,11 @@ this is the entire feature (single-story spec).
 **Purpose**: Verification gates required before the feature can be reported done
 (Constitution Principle V)
 
-- [X] T012 [P] Run `npm run lint` and fix any issues in the changed/new files
-- [X] T013 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors
-- [X] T014 Run `npm run test` and confirm `ForgotPasswordPage.test.tsx` and
+- [x] T012 [P] Run `npm run lint` and fix any issues in the changed/new files
+- [x] T013 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors
+- [x] T014 Run `npm run test` and confirm `ForgotPasswordPage.test.tsx` and
       `ResetPasswordPage.test.tsx` pass
-- [X] T015 Manually exercise all 5 scenarios in `quickstart.md` in a running browser
+- [x] T015 Manually exercise all 5 scenarios in `quickstart.md` in a running browser
       (`npm run dev`) — a passing type-check is not sufficient evidence per
       Constitution Principle V
 

@@ -16,7 +16,7 @@
   frontend? → A: A 5-minute countdown on the UI, matching the backend's rate limit
   per `agent/BA.md` US-1.6 (Alternative Flow: "rate limited to once per 5 minutes").
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Verify email address (Priority: P1)
 
@@ -65,7 +65,7 @@ token and confirming a "verified" banner state replaces the "please verify" bann
   the page loads; an already-used token is treated as expired (scenario already
   covered).
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -91,7 +91,7 @@ token and confirming a "verified" banner state replaces the "please verify" bann
 - **Email Verification State**: A boolean per user account (verified / not verified)
   that gates the reminder banner's visibility; changed via a single-use link token.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

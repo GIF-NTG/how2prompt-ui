@@ -11,6 +11,7 @@ needs to change to go live (spec SC-004).
 > **Amendment (2026-07-24, implemented same day)**: Backend supplied the real
 > contract at `docs/api/openapi.yaml`. `authClient.real.ts` now implements this
 > interface against it:
+>
 > 1. **Google sign-in** for the real client uses the contract's authorization-code +
 >    redirect flow (`GET /auth/oauth/google` → full-page redirect to Google →
 >    Google redirects to `GoogleCallbackPage` at `/auth/google/callback` with
@@ -62,11 +63,11 @@ interface AuthClient {
   resolves `{ status: 'success', session, accountCreated: false }` (spec US1
   scenario 1).
 - **Given** they don't match → resolves `{ status: 'error', errorCode:
-  'INVALID_CREDENTIALS', message: 'Email hoặc mật khẩu không chính xác' }` (US1
+'INVALID_CREDENTIALS', message: 'Email hoặc mật khẩu không chính xác' }` (US1
   scenario 2). Never rejects for this case — a wrong password is an expected outcome,
   not an exceptional one.
 - Callers are responsible for FR-006/FR-007 (empty-field, malformed-email) validation
-  *before* calling this — `login` assumes both arguments are already well-formed and
+  _before_ calling this — `login` assumes both arguments are already well-formed and
   non-empty.
 
 ### `register(displayName, email, password)`
@@ -76,10 +77,10 @@ interface AuthClient {
   UI does not sign the visitor in automatically (spec FR-013), it routes to `/login`
   with a confirmation.
 - **Given** `email` is already used → resolves `{ status: 'error', errorCode:
-  'EMAIL_ALREADY_EXISTS', message: 'Email này đã được đăng ký, hãy đăng nhập' }`
+'EMAIL_ALREADY_EXISTS', message: 'Email này đã được đăng ký, hãy đăng nhập' }`
   (US2 scenario 2).
 - Callers are responsible for FR-006/FR-007/FR-008 (empty fields, malformed email,
-  password ≥ 8 characters) *before* calling this.
+  password ≥ 8 characters) _before_ calling this.
 - **Note on `session` for a `register` success**: `session` is always `null` here —
   per FR-013, creating an account MUST NOT sign the visitor in, so there is nothing
   to persist yet. `RegisterPage` navigates to `/login` regardless of this field (see

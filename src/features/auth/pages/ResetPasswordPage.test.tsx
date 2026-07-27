@@ -39,7 +39,9 @@ describe('ResetPasswordPage', () => {
     await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhaumoi123')
     await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
 
-    expect(await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+    ).toBeInTheDocument()
     await user.click(screen.getByRole('link', { name: 'Yêu cầu liên kết mới' }))
     expect(await screen.findByRole('heading', { name: 'Quên mật khẩu' })).toBeInTheDocument()
   })
@@ -63,6 +65,8 @@ describe('ResetPasswordPage', () => {
     await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhaumoi123')
     await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
 
-    expect(await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+    ).toBeInTheDocument()
   })
 })

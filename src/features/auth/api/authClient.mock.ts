@@ -29,7 +29,15 @@ interface MockAccountRecord {
 // In-memory mock account store (US2/US4). Reset on page reload — there is no
 // backend yet, only the currently open tab's session persists (localStorage).
 const mockAccounts = new Map<string, MockAccountRecord>([
-  [DEMO_EMAIL, { id: 'demo-account', displayName: DEMO_DISPLAY_NAME, email: DEMO_EMAIL, password: DEMO_PASSWORD }],
+  [
+    DEMO_EMAIL,
+    {
+      id: 'demo-account',
+      displayName: DEMO_DISPLAY_NAME,
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+    },
+  ],
 ])
 
 function createAccountId(): string {

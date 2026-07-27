@@ -8,7 +8,7 @@
 
 **Input**: User description: "Cập nhật lại spec cho trang Home dựa trên các user story US-2.1 (browse the template library), US-2.2 (filter by category/tag/AI model), US-2.3 (full-text search templates). Giao diện phải bám sát chính xác thiết kế trong how2prompt-workspace-mockup.html và docs/design/README.md."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 — Guest browses the template library (Priority: P1)
 
@@ -155,7 +155,7 @@ the real API is available.
   templates are visible; the favorite toggle on template cards is hidden or disabled
   for guests.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -231,7 +231,7 @@ the real API is available.
   available to authenticated users. Toggling a favorite is a client-side action that
   calls the API; the heart icon reflects the current state.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

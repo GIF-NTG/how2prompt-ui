@@ -83,7 +83,6 @@ security:
   - bearerAuth: []
 
 paths:
-
   # ========================================================
   # AUTH
   # ========================================================
@@ -112,7 +111,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ErrorResponse' }
               example:
-                error: { code: EMAIL_ALREADY_EXISTS, message: "Email đã được sử dụng" }
+                error: { code: EMAIL_ALREADY_EXISTS, message: 'Email đã được sử dụng' }
         '422':
           $ref: '#/components/responses/ValidationError'
         '429':
@@ -141,7 +140,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/ErrorResponse' }
               example:
-                error: { code: INVALID_CREDENTIALS, message: "Email hoặc mật khẩu không đúng" }
+                error: { code: INVALID_CREDENTIALS, message: 'Email hoặc mật khẩu không đúng' }
         '403':
           description: Tài khoản bị khóa
         '429':
@@ -429,15 +428,15 @@ paths:
         - name: category
           in: query
           description: Lọc theo category slug (nhiều giá trị, ngăn cách bởi dấu phẩy)
-          schema: { type: string, example: "writing,marketing" }
+          schema: { type: string, example: 'writing,marketing' }
         - name: tags
           in: query
           description: Lọc theo tag slug (ngăn cách bởi dấu phẩy)
-          schema: { type: string, example: "email,formal" }
+          schema: { type: string, example: 'email,formal' }
         - name: model
           in: query
           description: Lọc theo model code
-          schema: { type: string, example: "claude-opus-4" }
+          schema: { type: string, example: 'claude-opus-4' }
         - name: sort
           in: query
           schema:
@@ -528,7 +527,7 @@ paths:
           FE phải gửi header `X-Guest-Fingerprint`. Kết quả KHÔNG lưu server-side.
       security:
         - bearerAuth: []
-        - {}   # cho phép guest (không auth)
+        - {} # cho phép guest (không auth)
       parameters:
         - $ref: '#/components/parameters/TemplateId'
         - name: X-Guest-Fingerprint
@@ -557,7 +556,7 @@ paths:
               example:
                 error:
                   code: GUEST_QUOTA_EXCEEDED
-                  message: "Bạn đã dùng hết lượt miễn phí hôm nay. Đăng ký để nhận 50 lượt/ngày!"
+                  message: 'Bạn đã dùng hết lượt miễn phí hôm nay. Đăng ký để nhận 50 lượt/ngày!'
 
   # ========================================================
   # HISTORY
@@ -818,7 +817,6 @@ paths:
 # COMPONENTS
 # ==========================================================
 components:
-
   securitySchemes:
     bearerAuth:
       type: http
@@ -839,14 +837,14 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
           example:
-            error: { code: TOKEN_EXPIRED, message: "Access token đã hết hạn" }
+            error: { code: TOKEN_EXPIRED, message: 'Access token đã hết hạn' }
     NotFound:
       description: Không tìm thấy tài nguyên
       content:
         application/json:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
           example:
-            error: { code: NOT_FOUND, message: "Không tìm thấy" }
+            error: { code: NOT_FOUND, message: 'Không tìm thấy' }
     ValidationError:
       description: Dữ liệu không hợp lệ
       content:
@@ -855,8 +853,8 @@ components:
           example:
             error:
               code: VALIDATION_ERROR
-              message: "Dữ liệu không hợp lệ"
-              details: { email: "Định dạng email không đúng" }
+              message: 'Dữ liệu không hợp lệ'
+              details: { email: 'Định dạng email không đúng' }
     RateLimited:
       description: Vượt giới hạn tần suất
       headers:
@@ -868,7 +866,6 @@ components:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
 
   schemas:
-
     # ---------- Common ----------
     I18nString:
       type: object
@@ -876,7 +873,7 @@ components:
       properties:
         en: { type: string }
         vi: { type: string }
-      example: { en: "Writing", vi: "Viết lách" }
+      example: { en: 'Writing', vi: 'Viết lách' }
 
     PageInfo:
       type: object
@@ -907,10 +904,10 @@ components:
         full_name: { type: string, maxLength: 150 }
         locale: { type: string, enum: [en, vi], default: en }
       example:
-        email: "viet@example.com"
-        password: "SecurePass123"
-        full_name: "Viet Nguyen"
-        locale: "vi"
+        email: 'viet@example.com'
+        password: 'SecurePass123'
+        full_name: 'Viet Nguyen'
+        locale: 'vi'
 
     LoginRequest:
       type: object
@@ -923,8 +920,9 @@ components:
       type: object
       properties:
         access_token: { type: string }
-        expires_in: { type: integer, example: 900, description: "Thời gian sống access_token (giây)" }
-        token_type: { type: string, example: "Bearer" }
+        expires_in:
+          { type: integer, example: 900, description: 'Thời gian sống access_token (giây)' }
+        token_type: { type: string, example: 'Bearer' }
         user: { $ref: '#/components/schemas/UserProfile' }
 
     # ---------- User ----------
@@ -964,16 +962,21 @@ components:
         type: { type: string, enum: [personal, team] }
         plan: { type: string }
         avatar_url: { type: string, nullable: true }
-        role: { type: string, enum: [owner, admin, editor, viewer], description: "Role của user hiện tại trong workspace" }
+        role:
+          {
+            type: string,
+            enum: [owner, admin, editor, viewer],
+            description: 'Role của user hiện tại trong workspace',
+          }
 
     # ---------- AI Model ----------
     AiModel:
       type: object
       properties:
         id: { type: string, format: uuid }
-        code: { type: string, example: "claude-opus-4" }
-        name: { type: string, example: "Claude Opus 4" }
-        provider: { type: string, example: "anthropic" }
+        code: { type: string, example: 'claude-opus-4' }
+        name: { type: string, example: 'Claude Opus 4' }
+        provider: { type: string, example: 'anthropic' }
         model_type: { type: string, enum: [text, image, video, audio, multimodal] }
         description: { type: string, nullable: true }
         capabilities:
@@ -1011,7 +1014,7 @@ components:
         color: { type: string, nullable: true }
         parent_id: { type: string, format: uuid, nullable: true }
         sort_order: { type: integer }
-        template_count: { type: integer, description: "Số template thuộc category này" }
+        template_count: { type: integer, description: 'Số template thuộc category này' }
 
     CategoryUpsert:
       type: object
@@ -1051,11 +1054,11 @@ components:
           items: { $ref: '#/components/schemas/Category' }
         supported_models:
           type: array
-          items: { type: string, description: "model code" }
-          example: ["gpt-4o", "claude-opus-4"]
+          items: { type: string, description: 'model code' }
+          example: ['gpt-4o', 'claude-opus-4']
         usage_count: { type: integer }
         favorite_count: { type: integer }
-        is_favorited: { type: boolean, description: "true nếu user hiện tại đã favorite" }
+        is_favorited: { type: boolean, description: 'true nếu user hiện tại đã favorite' }
         created_at: { type: string, format: date-time }
 
     TemplateDetail:
@@ -1075,7 +1078,7 @@ components:
       properties:
         id: { type: string, format: uuid }
         version_number: { type: integer }
-        prompt_body: { type: string, description: "Chứa placeholder {{var_key}}" }
+        prompt_body: { type: string, description: 'Chứa placeholder {{var_key}}' }
         system_prompt: { type: string, nullable: true }
         example_output: { type: string, nullable: true }
         guide: { $ref: '#/components/schemas/I18nString' }
@@ -1084,26 +1087,27 @@ components:
           items: { $ref: '#/components/schemas/TemplateVariable' }
         variants:
           type: array
-          description: "Biến thể prompt cho từng model (nếu có)"
+          description: 'Biến thể prompt cho từng model (nếu có)'
           items: { $ref: '#/components/schemas/TemplateVariant' }
 
     TemplateVariable:
       type: object
       properties:
         id: { type: string, format: uuid }
-        var_key: { type: string, example: "tone" }
+        var_key: { type: string, example: 'tone' }
         label: { $ref: '#/components/schemas/I18nString' }
         description: { $ref: '#/components/schemas/I18nString' }
         placeholder: { $ref: '#/components/schemas/I18nString' }
         help_text: { $ref: '#/components/schemas/I18nString' }
         input_type:
           type: string
-          enum: [text, textarea, select, multiselect, number, boolean, date, file, url, color, slider]
+          enum:
+            [text, textarea, select, multiselect, number, boolean, date, file, url, color, slider]
         is_required: { type: boolean }
         default_value: { type: string, nullable: true }
         options:
           type: array
-          description: "Cho select/multiselect"
+          description: 'Cho select/multiselect'
           items:
             type: object
             properties:
@@ -1112,7 +1116,7 @@ components:
         validation:
           type: object
           additionalProperties: true
-          example: { min: 1, max: 500, regex: "^[a-z]+$" }
+          example: { min: 1, max: 500, regex: '^[a-z]+$' }
         sort_order: { type: integer }
 
     TemplateVariant:
@@ -1168,7 +1172,7 @@ components:
               options: { type: array, items: { type: object } }
               validation: { type: object }
               sort_order: { type: integer }
-        changelog: { type: string, description: "Ghi chú thay đổi khi tạo version mới" }
+        changelog: { type: string, description: 'Ghi chú thay đổi khi tạo version mới' }
 
     # ---------- Generate ----------
     GenerateRequest:
@@ -1178,21 +1182,21 @@ components:
         template_version_id:
           type: string
           format: uuid
-          description: "Nếu bỏ trống → dùng current_version của template"
-        ai_model_code: { type: string, example: "claude-opus-4" }
+          description: 'Nếu bỏ trống → dùng current_version của template'
+        ai_model_code: { type: string, example: 'claude-opus-4' }
         input_values:
           type: object
-          description: "Map var_key → giá trị người dùng nhập"
+          description: 'Map var_key → giá trị người dùng nhập'
           additionalProperties: true
-          example: { tone: "formal", topic: "AI ethics", audience: "students" }
+          example: { tone: 'formal', topic: 'AI ethics', audience: 'students' }
         extra_instructions:
           type: string
           nullable: true
-          description: "Hướng dẫn bổ sung tự do, nối vào cuối prompt"
+          description: 'Hướng dẫn bổ sung tự do, nối vào cuối prompt'
         title:
           type: string
           nullable: true
-          description: "Nhãn tùy chọn để user tự đặt tên cho prompt"
+          description: 'Nhãn tùy chọn để user tự đặt tên cho prompt'
 
     GenerateResponse:
       type: object
@@ -1201,14 +1205,14 @@ components:
           type: string
           format: uuid
           nullable: true
-          description: "null nếu là Guest (không lưu server)"
+          description: 'null nếu là Guest (không lưu server)'
         final_prompt: { type: string }
         tokens_estimate: { type: integer }
         ai_model_code: { type: string }
         remaining_quota:
           type: integer
           nullable: true
-          description: "Số lượt còn lại trong ngày (Guest hoặc Free plan)"
+          description: 'Số lượt còn lại trong ngày (Guest hoặc Free plan)'
 
     # ---------- History ----------
     GeneratedPromptListItem:
@@ -1219,7 +1223,7 @@ components:
         template_id: { type: string, format: uuid, nullable: true }
         template_title: { $ref: '#/components/schemas/I18nString' }
         ai_model_code: { type: string }
-        prompt_snippet: { type: string, description: "150 ký tự đầu của final_prompt" }
+        prompt_snippet: { type: string, description: '150 ký tự đầu của final_prompt' }
         created_at: { type: string, format: date-time }
 
     GeneratedPromptDetail:
@@ -1237,7 +1241,7 @@ components:
       type: object
       properties:
         total_users: { type: integer }
-        dau: { type: integer, description: "Daily active users" }
+        dau: { type: integer, description: 'Daily active users' }
         wau: { type: integer }
         mau: { type: integer }
         total_templates: { type: integer }

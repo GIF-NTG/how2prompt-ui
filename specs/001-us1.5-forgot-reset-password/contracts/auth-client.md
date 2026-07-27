@@ -30,9 +30,9 @@ interface AuthClient {
   unconditionally for a well-formed email — this is the whole point of FR-002
   (no account-enumeration signal), not a mock-only shortcut.
 - **Given** a network/unexpected failure → resolves `{ status: 'error', errorCode,
-  message }` (does not reject) — callers show `message` inline, same as every other
+message }` (does not reject) — callers show `message` inline, same as every other
   `AuthClient` method.
-- Callers are responsible for empty/malformed-email validation *before* calling this
+- Callers are responsible for empty/malformed-email validation _before_ calling this
   (same division of responsibility as `login`/`register`).
 - **Real implementation**: `POST /auth/forgot-password` with `{ email }`, per
   `docs/api/openapi.yaml`. The endpoint always returns `200`, so in practice the
@@ -44,7 +44,7 @@ interface AuthClient {
 - **Given** a valid, unexpired `token` and a `newPassword` meeting the minimum-length
   rule → resolves `{ status: 'success' }`.
 - **Given** an expired or already-used `token` → resolves `{ status: 'error',
-  errorCode: 'RESET_TOKEN_EXPIRED', message }`. The real implementation sets this
+errorCode: 'RESET_TOKEN_EXPIRED', message }`. The real implementation sets this
   `errorCode` when the underlying `ApiError.status === 410` (see `research.md`
   Decision 1) — **not** from the backend's `error.code`, since the contract doesn't
   document one for this case.
@@ -52,7 +52,7 @@ interface AuthClient {
   somehow missed) → resolves `{ status: 'error', errorCode, message }` using the
   backend's actual `error.code`.
 - Callers are responsible for the same client-side password-length validation
-  `RegisterPage` already performs, *before* calling this.
+  `RegisterPage` already performs, _before_ calling this.
 - **Real implementation**: `POST /auth/reset-password` with
   `{ token, new_password }`, per `docs/api/openapi.yaml`.
 

@@ -47,7 +47,9 @@ describe('LoginPage', () => {
     await user.type(passwordInput, 'wrongpass')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Email hoặc mật khẩu không chính xác')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Email hoặc mật khẩu không chính xác',
+    )
     expect(emailInput).toHaveValue('wrong@example.com')
     expect(passwordInput).toHaveValue('wrongpass')
   })

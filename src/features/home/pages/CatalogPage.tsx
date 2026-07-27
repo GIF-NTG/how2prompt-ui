@@ -85,8 +85,8 @@ export function CatalogPage() {
           {greeting}
         </h1>
         <p className="m-0 max-w-[62ch] text-[0.94rem] leading-[1.6] text-[#5B5F58] dark:text-[#A2A79C]">
-          Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào
-          các ô đã định nghĩa sẵn.
+          Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào các ô đã
+          định nghĩa sẵn.
         </p>
       </div>
 
@@ -117,11 +117,7 @@ export function CatalogPage() {
             isSignedIn={!!session}
           />
 
-          <TemplateGrid
-            templates={templates}
-            totalCount={totalCount}
-            isSignedIn={!!session}
-          />
+          <TemplateGrid templates={templates} totalCount={totalCount} isSignedIn={!!session} />
         </>
       )}
     </main>

@@ -8,7 +8,12 @@ interface TemplateGridProps {
   onTemplateClick?: (id: string) => void
 }
 
-export function TemplateGrid({ templates, totalCount, isSignedIn, onTemplateClick }: TemplateGridProps) {
+export function TemplateGrid({
+  templates,
+  totalCount,
+  isSignedIn,
+  onTemplateClick,
+}: TemplateGridProps) {
   return (
     <section className="flex flex-col gap-[0.75rem]">
       <div className="flex items-baseline justify-between gap-4">
@@ -19,7 +24,12 @@ export function TemplateGrid({ templates, totalCount, isSignedIn, onTemplateClic
       </div>
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
         {templates.map((t) => (
-          <TemplateCard key={t.id} template={t} isSignedIn={!!isSignedIn} onClick={onTemplateClick} />
+          <TemplateCard
+            key={t.id}
+            template={t}
+            isSignedIn={!!isSignedIn}
+            onClick={onTemplateClick}
+          />
         ))}
       </div>
     </section>

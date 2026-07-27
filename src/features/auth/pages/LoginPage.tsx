@@ -77,7 +77,9 @@ export function LoginPage() {
   return (
     <AuthLayout>
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">Chào bạn quay lại</h2>
+        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+          Chào bạn quay lại
+        </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
           Điền hai ô trống để mở lại phiên làm việc của bạn.
         </p>
@@ -169,7 +171,10 @@ export function LoginPage() {
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
         Chưa có tài khoản?{' '}
-        <Link to="/register" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+        <Link
+          to="/register"
+          className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
+        >
           Đăng ký ngay
         </Link>{' '}
         — miễn phí, không cần thẻ.

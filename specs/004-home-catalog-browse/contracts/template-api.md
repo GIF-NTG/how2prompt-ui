@@ -14,17 +14,18 @@ GET /api/v1/templates
 
 **Query Parameters**:
 
-| Name     | Type     | Default   | Description                          |
-|----------|----------|-----------|--------------------------------------|
-| `q`      | string   | (none)    | Full-text search (title, description)|
-| `category` | string | (none)   | Category slug, comma-separated       |
-| `tags`   | string   | (none)    | Tag slug, comma-separated            |
-| `model`  | string   | (none)    | Model code (e.g. `claude-opus-4`)    |
-| `sort`   | string   | `popular` | Enum: `popular`, `newest`, `most_used`, `official` |
-| `limit`  | integer  | `20`      | Max 50                               |
-| `cursor` | string   | (none)    | Opaque cursor for next page          |
+| Name       | Type    | Default   | Description                                        |
+| ---------- | ------- | --------- | -------------------------------------------------- |
+| `q`        | string  | (none)    | Full-text search (title, description)              |
+| `category` | string  | (none)    | Category slug, comma-separated                     |
+| `tags`     | string  | (none)    | Tag slug, comma-separated                          |
+| `model`    | string  | (none)    | Model code (e.g. `claude-opus-4`)                  |
+| `sort`     | string  | `popular` | Enum: `popular`, `newest`, `most_used`, `official` |
+| `limit`    | integer | `20`      | Max 50                                             |
+| `cursor`   | string  | (none)    | Opaque cursor for next page                        |
 
 **Response 200**:
+
 ```json
 {
   "data": [TemplateListItem],
@@ -49,9 +50,9 @@ GET /api/v1/templates/trending
 
 **Query Parameters**:
 
-| Name     | Type     | Default | Description                  |
-|----------|----------|---------|------------------------------|
-| `window` | string   | `7d`    | Enum: `24h`, `7d`, `30d`     |
+| Name     | Type   | Default | Description              |
+| -------- | ------ | ------- | ------------------------ |
+| `window` | string | `7d`    | Enum: `24h`, `7d`, `30d` |
 
 **Response 200**: `TemplateListItem[]`
 
@@ -79,10 +80,10 @@ GET /api/v1/tags
 
 **Query Parameters**:
 
-| Name    | Type    | Default | Description          |
-|---------|---------|---------|----------------------|
-| `q`     | string  | (none)  | Search tags by name  |
-| `limit` | integer | `20`    | Max results          |
+| Name    | Type    | Default | Description         |
+| ------- | ------- | ------- | ------------------- |
+| `q`     | string  | (none)  | Search tags by name |
+| `limit` | integer | `20`    | Max results         |
 
 **Response 200**: `Tag[]`
 

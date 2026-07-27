@@ -14,6 +14,7 @@ under `features/auth/` would force the home feature to import from another featu
 internal directory, violating the feature-first architecture.
 
 **Alternatives considered**:
+
 - Creating a duplicate httpClient in `features/home/api/`: rejected (DRY violation, two
   clients to maintain).
 - Keeping httpClient in auth and importing cross-feature: rejected (violates feature
@@ -32,6 +33,7 @@ in this stack. It handles encoding/decoding automatically and triggers re-render
 URL changes (e.g., browser back/forward).
 
 **Alternatives considered**:
+
 - Manual `window.history.pushState` + `popstate` listener: rejected (fragile, misses
   React Router's context).
 - Storing filters only in component state: rejected (breaks deep-linking requirement).
@@ -48,6 +50,7 @@ hook avoids coupling the debounce logic to any specific feature. The hook uses
 dependency needed.
 
 **Alternatives considered**:
+
 - Using lodash.debounce: rejected (adds a dependency for a 10-line utility).
 - Debouncing at the API client level: rejected (the debounce is a UI concern, not an
   API concern).
@@ -64,6 +67,7 @@ mock data before the backend is ready, and switching to the real API requires on
 setting `VITE_API_BASE_URL`.
 
 **Alternatives considered**:
+
 - Using a single client with conditional fetch calls: rejected (harder to test, mixes
   concerns).
 - Using MSW (Mock Service Worker) for API mocking: rejected (adds a dev dependency,
@@ -81,6 +85,7 @@ current `RootLayout` has a minimal session display; this upgrade brings it to ma
 mockup's full top bar (brand mark, nav links, user chip).
 
 **Alternatives considered**:
+
 - Keeping the top bar in each page component: rejected (duplication, inconsistent nav
   state).
 - Creating a new layout wrapper per page group: rejected (over-engineering for a
@@ -98,6 +103,7 @@ the mockup is Vietnamese. A single utility function avoids scattering locale log
 across components.
 
 **Alternatives considered**:
+
 - Using an i18n library (react-intl, i18next): rejected (overkill for a single-language
   app with a simple fallback).
 - Hardcoding `.vi` access: rejected (would break if a field has no Vietnamese

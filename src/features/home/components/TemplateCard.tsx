@@ -57,7 +57,9 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
         )}
       </div>
 
-      <h3 className="m-0 text-[1rem] font-bold tracking-[-0.005em]">{getI18nValue(template.title)}</h3>
+      <h3 className="m-0 text-[1rem] font-bold tracking-[-0.005em]">
+        {getI18nValue(template.title)}
+      </h3>
       <p className="m-0 text-[0.85rem] leading-[1.55] text-[#5B5F58] dark:text-[#A2A79C]">
         {getI18nValue(template.description)}
       </p>

@@ -6,6 +6,7 @@ import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
 import { GoogleCallbackPage } from '@/features/auth/pages/GoogleCallbackPage'
+import { TemplateDetailPage } from '@/features/template-detail/components/TemplateDetailPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
 
 export function App() {
@@ -20,6 +21,7 @@ export function App() {
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route path="auth/google/callback" element={<GoogleCallbackPage />} />
+            <Route path="templates/:slug" element={<TemplateDetailPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -10,8 +10,7 @@ Returned by `AuthClient.requestPasswordReset(email)`.
 
 ```ts
 export type PasswordResetRequestOutcome =
-  | { status: 'success' }
-  | { status: 'error'; errorCode: AuthErrorCode; message: string }
+  { status: 'success' } | { status: 'error'; errorCode: AuthErrorCode; message: string }
 ```
 
 - **`success`**: Always returned for a well-formed email, regardless of whether an
@@ -43,8 +42,7 @@ export type PasswordResetOutcome =
   backend one — set when the real client's request fails with HTTP status `410` (see
   `research.md` Decision 1), since the backend contract doesn't document a specific
   `error.code` string for this case. `ResetPasswordPage` branches on this exact code
-  to show the "link expired, request a new one" message (spec Acceptance Scenario
-  4) instead of a generic error.
+  to show the "link expired, request a new one" message (spec Acceptance Scenario 4) instead of a generic error.
 - **`error` with any other `errorCode`**: Weak-password validation (`422`) or an
   unexpected failure — shown via the same generic inline error pattern
   `LoginPage`/`RegisterPage` already use.
@@ -56,7 +54,7 @@ export type PasswordResetOutcome =
 ```ts
 export class ApiError extends Error {
   code: string
-  status: number       // NEW — the HTTP response status (e.g. 410, 422, 429)
+  status: number // NEW — the HTTP response status (e.g. 410, 422, 429)
   details?: Record<string, string>
 }
 ```
