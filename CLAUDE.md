@@ -137,3 +137,15 @@ catalog/detail/history screens remain **design-only** — nothing under `src/fea
 implements Epic 2/3/4 yet. Still go through `/speckit-specify` → `/speckit-plan` →
 `/speckit-tasks` for any new feature (per Constitution Principle II) — use the
 mockup as the visual reference, not a reason to build straight from its inline JS.
+
+## Spec directory naming
+
+When a feature maps to a single documented user story in
+`how2prompt-agentic/docs/user-stories/us-<epic>.<n>-*.md`, its `specs/` directory MUST
+be named `<seq>-us<epic>.<n>-<slug>` — the same pattern as `001-us1.5-forgot-reset-password`,
+`002-us1.6-verify-email`, and `003-us1.7-manage-profile`. This lets anyone map a spec
+directory straight back to its source-of-truth user story without opening it. For
+features that don't map to one documented story (contract fixes, migrations,
+cross-cutting bugs spanning multiple stories), fall back to a plain `<seq>-<slug>`
+name instead of inventing a story number — e.g. `004-auth-contract-migration`,
+`005-fix-resend-verification`.
