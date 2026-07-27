@@ -24,12 +24,38 @@ interface MockAccountRecord {
   email: string
   /** Absent for accounts that only ever signed in via Google. */
   password?: string
+  emailVerified: boolean
+  /** Epoch ms of the last resend-verification call, for the mock's rate-limit
+   *  simulation (see resendVerificationEmail below). */
+  lastVerificationSentAt?: number
+  /** Profile fields editable via US-1.7 (see getProfile/updateProfile below). */
+  username: string | null
+  bio: string | null
+  locale: 'en' | 'vi'
 }
+
+// Mock cooldown window for the "resend verification email" rate limit — short
+// enough that a test can hit the RATE_LIMITED branch with two back-to-back calls,
+// unlike the real backend's actual 5-minute window (research.md/contracts don't
+// mandate a specific mock duration, just that a rapid second call is rejected).
+const MOCK_RESEND_COOLDOWN_MS = 5 * 60 * 1000
 
 // In-memory mock account store (US2/US4). Reset on page reload — there is no
 // backend yet, only the currently open tab's session persists (localStorage).
 const mockAccounts = new Map<string, MockAccountRecord>([
-  [DEMO_EMAIL, { id: 'demo-account', displayName: DEMO_DISPLAY_NAME, email: DEMO_EMAIL, password: DEMO_PASSWORD }],
+  [
+    DEMO_EMAIL,
+    {
+      id: 'demo-account',
+      displayName: DEMO_DISPLAY_NAME,
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+      emailVerified: true,
+      username: null,
+      bio: null,
+      locale: 'vi',
+    },
+  ],
 ])
 
 function createAccountId(): string {
@@ -54,7 +80,7 @@ function clearStoredSession(): void {
   window.localStorage.removeItem(SESSION_STORAGE_KEY)
 }
 
-function createSession(account: { id: string; displayName: string; email: string }): Session {
+function createSession(account: { id: string; displayName: string; email: string; emailVerified: boolean }): Session {
   const issuedAt = Date.now()
   return {
     accountId: account.id,
@@ -63,6 +89,7 @@ function createSession(account: { id: string; displayName: string; email: string
     token: `mock-token.${issuedAt}.${Math.random().toString(36).slice(2)}`,
     issuedAt,
     expiresAt: issuedAt + SESSION_TTL_MS,
+    emailVerified: account.emailVerified,
   }
 }
 
@@ -71,6 +98,13 @@ export function createMockAuthClient(): AuthClient {
     async login(email, password) {
       const account = mockAccounts.get(email)
       if (account?.password && account.password === password) {
+        if (!account.emailVerified) {
+          return {
+            status: 'error',
+            errorCode: 'EMAIL_NOT_VERIFIED',
+            message: 'Vui lòng xác minh email trước khi đăng nhập.',
+          }
+        }
         const session = createSession(account)
         persistSession(session)
         return { status: 'success', session, accountCreated: false }
@@ -89,7 +123,16 @@ export function createMockAuthClient(): AuthClient {
           message: 'Email này đã được đăng ký, hãy đăng nhập',
         }
       }
-      mockAccounts.set(email, { id: createAccountId(), displayName, email, password })
+      mockAccounts.set(email, {
+        id: createAccountId(),
+        displayName,
+        email,
+        password,
+        emailVerified: false,
+        username: null,
+        bio: null,
+        locale: 'vi',
+      })
       return { status: 'success', session: null, accountCreated: true }
     },
     async signInWithGoogle(options) {
@@ -115,21 +158,16 @@ export function createMockAuthClient(): AuthClient {
         id: createAccountId(),
         displayName: credential.name || credential.email,
         email: credential.email,
+        // Google already verifies account ownership of the email itself.
+        emailVerified: true,
+        username: null,
+        bio: null,
+        locale: 'vi',
       }
       mockAccounts.set(credential.email, account)
       const session = createSession(account)
       persistSession(session)
       return { status: 'success', session, accountCreated: true }
-    },
-    async completeGoogleOAuth() {
-      // The mock has no redirect step to complete — this route should be
-      // unreachable while VITE_API_BASE_URL is unset, but resolve gracefully
-      // rather than throwing if it's ever hit (e.g. a stale bookmarked callback URL).
-      return {
-        status: 'error',
-        errorCode: 'VALIDATION_ERROR',
-        message: 'Không hỗ trợ luồng này ở chế độ mock.',
-      }
     },
     async requestPasswordReset() {
       // Always succeeds for a well-formed email, regardless of whether it matches
@@ -150,6 +188,77 @@ export function createMockAuthClient(): AuthClient {
       const account = [...mockAccounts.values()].find((entry) => entry.password !== undefined)
       if (account) account.password = newPassword
       return { status: 'success' }
+    },
+    async verifyEmail(token) {
+      // Sentinel token to exercise the expired/used-link branch without a real
+      // backend — see contracts/auth-client.md "Mock implementation notes".
+      if (token === 'expired-token') {
+        return {
+          status: 'error',
+          errorCode: 'VERIFY_TOKEN_EXPIRED',
+          message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+        }
+      }
+      // The mock has no real token↔account mapping (it never issued a real token),
+      // so it marks the currently stored session's account verified, if any — mirrors
+      // resetPassword's mock updating "the matching demo account" precedent.
+      const session = readStoredSession()
+      if (session) {
+        const account = [...mockAccounts.values()].find((entry) => entry.email === session.email)
+        if (account) account.emailVerified = true
+        persistSession({ ...session, emailVerified: true })
+      }
+      return { status: 'success' }
+    },
+    async resendVerificationEmail(email) {
+      const account = mockAccounts.get(email)
+      const now = Date.now()
+      if (account?.lastVerificationSentAt && now - account.lastVerificationSentAt < MOCK_RESEND_COOLDOWN_MS) {
+        return {
+          status: 'error',
+          errorCode: 'RATE_LIMITED',
+          message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+        }
+      }
+      if (account) account.lastVerificationSentAt = now
+      return { status: 'success' }
+    },
+    async getProfile() {
+      // Looks up by the currently persisted session's email (same pattern as
+      // verifyEmail) rather than the accessToken value itself, which the mock
+      // never stores on the account record.
+      const session = readStoredSession()
+      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      if (!account) {
+        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+      }
+      return {
+        status: 'success',
+        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+      }
+    },
+    async updateProfile(_accessToken, input) {
+      const session = readStoredSession()
+      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      if (!account) {
+        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+      }
+      if (input.username) {
+        const collision = [...mockAccounts.values()].find(
+          (entry) => entry !== account && entry.username === input.username,
+        )
+        if (collision) {
+          return { status: 'error', errorCode: 'USERNAME_TAKEN', message: 'Tên người dùng này đã được sử dụng.' }
+        }
+      }
+      account.displayName = input.fullName
+      account.username = input.username
+      account.bio = input.bio
+      account.locale = input.locale
+      return {
+        status: 'success',
+        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+      }
     },
     async logout() {
       clearStoredSession()

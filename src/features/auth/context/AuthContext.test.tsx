@@ -17,6 +17,7 @@ function buildSession(overrides: Partial<Session> = {}): Session {
     token: 'test-token',
     issuedAt,
     expiresAt: issuedAt + SEVEN_DAYS_MS,
+    emailVerified: true,
     ...overrides,
   }
 }

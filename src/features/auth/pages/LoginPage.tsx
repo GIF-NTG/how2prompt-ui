@@ -28,10 +28,42 @@ export function LoginPage() {
   const [passwordInvalid, setPasswordInvalid] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [emailNotVerified, setEmailNotVerified] = useState(false)
+  const [resendSending, setResendSending] = useState(false)
+  const [resendStatusMessage, setResendStatusMessage] = useState<string | null>(null)
+  const [resendErrorMessage, setResendErrorMessage] = useState<string | null>(null)
 
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const submittingRef = useRef(false)
+  const resendingRef = useRef(false)
+
+  function resetResendState() {
+    setEmailNotVerified(false)
+    setResendStatusMessage(null)
+    setResendErrorMessage(null)
+  }
+
+  async function handleResend() {
+    if (resendingRef.current) return
+    const trimmedEmail = email.trim()
+    if (!EMAIL_PATTERN.test(trimmedEmail)) return
+    resendingRef.current = true
+    setResendSending(true)
+    setResendStatusMessage(null)
+    setResendErrorMessage(null)
+    try {
+      const outcome = await authClient.resendVerificationEmail(trimmedEmail)
+      if (outcome.status === 'success') {
+        setResendStatusMessage('Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.')
+      } else {
+        setResendErrorMessage(outcome.message)
+      }
+    } finally {
+      resendingRef.current = false
+      setResendSending(false)
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -40,6 +72,7 @@ export function LoginPage() {
     // button — state updates aren't synchronous, this ref read is.
     if (submittingRef.current) return
     setErrorMessage(null)
+    resetResendState()
 
     const trimmedEmail = email.trim()
     const isEmailEmpty = trimmedEmail.length === 0
@@ -67,6 +100,7 @@ export function LoginPage() {
         navigate('/')
       } else {
         setErrorMessage(outcome.message)
+        if (outcome.errorCode === 'EMAIL_NOT_VERIFIED') setEmailNotVerified(true)
       }
     } finally {
       submittingRef.current = false
@@ -112,7 +146,10 @@ export function LoginPage() {
           type="email"
           placeholder="ban@vidu.com"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event) => {
+            setEmail(event.target.value)
+            resetResendState()
+          }}
           invalid={emailInvalid}
           autoComplete="email"
         />{' '}
@@ -133,13 +170,7 @@ export function LoginPage() {
         >
           {passwordVisible ? 'ẩn' : 'hiện'}
         </button>
-        .{' '}
-        <Link
-          to="/forgot-password"
-          className="text-sm text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
-        >
-          Quên mật khẩu?
-        </Link>
+        .
         {errorMessage && (
           <p
             role="alert"
@@ -147,6 +178,28 @@ export function LoginPage() {
           >
             {errorMessage}
           </p>
+        )}
+        {emailNotVerified && (
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() => void handleResend()}
+              disabled={resendSending}
+              className="font-mono text-xs text-[#3652E0] underline underline-offset-2 disabled:no-underline disabled:opacity-60 dark:text-[#8493FF]"
+            >
+              Gửi lại email xác minh
+            </button>
+            {resendStatusMessage && (
+              <p role="status" className="mt-2 text-sm text-[#2E7D4F] dark:text-[#6FCF9A]">
+                {resendStatusMessage}
+              </p>
+            )}
+            {resendErrorMessage && (
+              <p role="alert" className="mt-2 text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
+                {resendErrorMessage}
+              </p>
+            )}
+          </div>
         )}
         <div className="mt-5">
           <button
@@ -158,6 +211,12 @@ export function LoginPage() {
           </button>
         </div>
       </form>
+
+      <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
+        <Link to="/forgot-password" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+          Quên mật khẩu?
+        </Link>
+      </p>
 
       <div className="flex items-center gap-3 text-xs text-[#8B8F86] dark:text-[#6D726A]">
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
