@@ -14,18 +14,21 @@ export function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* AuthLayout-based pages render their own full-page header — nesting them
+              under RootLayout would stack RootLayout's app-shell TopBar on top of it. */}
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
+          <Route path="profile" element={<ProfileSettingsPage />} />
+          {/* Pre-v1.1.0 Google authorization-code callback URL — the backend no
+              longer exposes that flow at all, so a stale bookmark/in-flight link
+              redirects straight to login instead of rendering a dead page. */}
+          <Route path="auth/google/callback" element={<Navigate to="/login" replace />} />
+
           <Route element={<RootLayout />}>
             <Route index element={<CatalogPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="reset-password" element={<ResetPasswordPage />} />
-            <Route path="verify-email" element={<VerifyEmailPage />} />
-            <Route path="profile" element={<ProfileSettingsPage />} />
-            {/* Pre-v1.1.0 Google authorization-code callback URL — the backend no
-                longer exposes that flow at all, so a stale bookmark/in-flight link
-                redirects straight to login instead of rendering a dead page. */}
-            <Route path="auth/google/callback" element={<Navigate to="/login" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
