@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
+import { EmailVerificationBanner } from '@/features/auth/components/EmailVerificationBanner'
 
 export function RootLayout() {
   const { session, signOut } = useAuth()
@@ -18,6 +19,7 @@ export function RootLayout() {
           </button>
         </div>
       )}
+      {session && !session.emailVerified && <EmailVerificationBanner />}
       <Outlet />
     </div>
   )

@@ -1,4 +1,11 @@
-import type { AuthOutcome, PasswordResetOutcome, PasswordResetRequestOutcome, Session } from './types'
+import type {
+  AuthOutcome,
+  PasswordResetOutcome,
+  PasswordResetRequestOutcome,
+  ResendVerificationOutcome,
+  Session,
+  VerifyEmailOutcome,
+} from './types'
 
 /**
  * The single integration point for all authentication communication (FR-009).
@@ -46,6 +53,19 @@ export interface AuthClient {
    * (see PasswordResetOutcome) — never authenticates the visitor on success.
    */
   resetPassword(token: string, newPassword: string): Promise<PasswordResetOutcome>
+  /**
+   * `errorCode: 'VERIFY_TOKEN_EXPIRED'` signals an expired or already-used token.
+   * Works whether or not the visitor has an active session — authenticates via the
+   * token itself, not `Authorization`.
+   */
+  verifyEmail(token: string): Promise<VerifyEmailOutcome>
+  /**
+   * Requires the caller's current `access_token` explicitly — unlike most
+   * `AuthClient` methods, this endpoint requires `Authorization: Bearer` (it acts on
+   * the calling user's own account), and the client itself holds no session state.
+   * `errorCode: 'RATE_LIMITED'` signals the backend's resend cooldown is still active.
+   */
+  resendVerificationEmail(accessToken: string): Promise<ResendVerificationOutcome>
   /**
    * Async because the real implementation must round-trip to the backend
    * (`POST /auth/refresh`, using the httpOnly `refresh_token` cookie, then

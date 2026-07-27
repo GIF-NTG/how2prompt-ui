@@ -12,6 +12,7 @@ export interface Session {
   token: string
   issuedAt: number
   expiresAt: number
+  emailVerified: boolean
 }
 
 // The three literals are the codes this feature's screens actually branch on
@@ -39,3 +40,15 @@ export type PasswordResetRequestOutcome =
 export type PasswordResetOutcome =
   | { status: 'success' }
   | { status: 'error'; errorCode: AuthErrorCode | 'RESET_TOKEN_EXPIRED'; message: string }
+
+// 'VERIFY_TOKEN_EXPIRED' is client-derived from ApiError.status === 410, same
+// convention as 'RESET_TOKEN_EXPIRED' — docs/api/openapi.yaml documents only the
+// status for /auth/verify-email's expired-token case, not a specific error.code.
+export type VerifyEmailOutcome =
+  | { status: 'success' }
+  | { status: 'error'; errorCode: AuthErrorCode | 'VERIFY_TOKEN_EXPIRED'; message: string }
+
+// 'RATE_LIMITED' is client-derived from ApiError.status === 429.
+export type ResendVerificationOutcome =
+  | { status: 'success' }
+  | { status: 'error'; errorCode: AuthErrorCode | 'RATE_LIMITED'; message: string }

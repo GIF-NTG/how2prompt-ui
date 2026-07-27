@@ -60,7 +60,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null)
   }
 
+  async function resendVerificationEmail() {
+    // Invariant: only ever called from UI that itself only renders when `session`
+    // is non-null (EmailVerificationBanner) — not defended, matching signOut()'s
+    // existing assumption pattern.
+    return authClient.resendVerificationEmail(session!.token)
+  }
+
+  async function verifyEmail(token: string) {
+    const outcome = await authClient.verifyEmail(token)
+    if (outcome.status === 'success' && session) {
+      const refreshed = await authClient.restoreSession()
+      setSession(refreshed)
+    }
+    return outcome
+  }
+
   return (
-    <AuthContext.Provider value={{ session, isRestoring, signIn, signOut }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ session, isRestoring, signIn, signOut, resendVerificationEmail, verifyEmail }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }

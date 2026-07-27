@@ -24,12 +24,31 @@ interface MockAccountRecord {
   email: string
   /** Absent for accounts that only ever signed in via Google. */
   password?: string
+  emailVerified: boolean
+  /** Epoch ms of the last resend-verification call, for the mock's rate-limit
+   *  simulation (see resendVerificationEmail below). */
+  lastVerificationSentAt?: number
 }
+
+// Mock cooldown window for the "resend verification email" rate limit — short
+// enough that a test can hit the RATE_LIMITED branch with two back-to-back calls,
+// unlike the real backend's actual 5-minute window (research.md/contracts don't
+// mandate a specific mock duration, just that a rapid second call is rejected).
+const MOCK_RESEND_COOLDOWN_MS = 5 * 60 * 1000
 
 // In-memory mock account store (US2/US4). Reset on page reload — there is no
 // backend yet, only the currently open tab's session persists (localStorage).
 const mockAccounts = new Map<string, MockAccountRecord>([
-  [DEMO_EMAIL, { id: 'demo-account', displayName: DEMO_DISPLAY_NAME, email: DEMO_EMAIL, password: DEMO_PASSWORD }],
+  [
+    DEMO_EMAIL,
+    {
+      id: 'demo-account',
+      displayName: DEMO_DISPLAY_NAME,
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+      emailVerified: true,
+    },
+  ],
 ])
 
 function createAccountId(): string {
@@ -54,7 +73,7 @@ function clearStoredSession(): void {
   window.localStorage.removeItem(SESSION_STORAGE_KEY)
 }
 
-function createSession(account: { id: string; displayName: string; email: string }): Session {
+function createSession(account: { id: string; displayName: string; email: string; emailVerified: boolean }): Session {
   const issuedAt = Date.now()
   return {
     accountId: account.id,
@@ -63,6 +82,7 @@ function createSession(account: { id: string; displayName: string; email: string
     token: `mock-token.${issuedAt}.${Math.random().toString(36).slice(2)}`,
     issuedAt,
     expiresAt: issuedAt + SESSION_TTL_MS,
+    emailVerified: account.emailVerified,
   }
 }
 
@@ -89,7 +109,7 @@ export function createMockAuthClient(): AuthClient {
           message: 'Email này đã được đăng ký, hãy đăng nhập',
         }
       }
-      mockAccounts.set(email, { id: createAccountId(), displayName, email, password })
+      mockAccounts.set(email, { id: createAccountId(), displayName, email, password, emailVerified: false })
       return { status: 'success', session: null, accountCreated: true }
     },
     async signInWithGoogle(options) {
@@ -115,6 +135,8 @@ export function createMockAuthClient(): AuthClient {
         id: createAccountId(),
         displayName: credential.name || credential.email,
         email: credential.email,
+        // Google already verifies account ownership of the email itself.
+        emailVerified: true,
       }
       mockAccounts.set(credential.email, account)
       const session = createSession(account)
@@ -149,6 +171,41 @@ export function createMockAuthClient(): AuthClient {
       }
       const account = [...mockAccounts.values()].find((entry) => entry.password !== undefined)
       if (account) account.password = newPassword
+      return { status: 'success' }
+    },
+    async verifyEmail(token) {
+      // Sentinel token to exercise the expired/used-link branch without a real
+      // backend — see contracts/auth-client.md "Mock implementation notes".
+      if (token === 'expired-token') {
+        return {
+          status: 'error',
+          errorCode: 'VERIFY_TOKEN_EXPIRED',
+          message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+        }
+      }
+      // The mock has no real token↔account mapping (it never issued a real token),
+      // so it marks the currently stored session's account verified, if any — mirrors
+      // resetPassword's mock updating "the matching demo account" precedent.
+      const session = readStoredSession()
+      if (session) {
+        const account = [...mockAccounts.values()].find((entry) => entry.email === session.email)
+        if (account) account.emailVerified = true
+        persistSession({ ...session, emailVerified: true })
+      }
+      return { status: 'success' }
+    },
+    async resendVerificationEmail() {
+      const session = readStoredSession()
+      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      const now = Date.now()
+      if (account?.lastVerificationSentAt && now - account.lastVerificationSentAt < MOCK_RESEND_COOLDOWN_MS) {
+        return {
+          status: 'error',
+          errorCode: 'RATE_LIMITED',
+          message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+        }
+      }
+      if (account) account.lastVerificationSentAt = now
       return { status: 'success' }
     },
     async logout() {

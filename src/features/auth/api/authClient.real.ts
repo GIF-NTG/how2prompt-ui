@@ -8,6 +8,7 @@ interface BackendUser {
   id: string
   email: string
   full_name: string
+  email_verified: boolean
 }
 
 interface AuthResponseBody {
@@ -26,6 +27,7 @@ function toSession(body: AuthResponseBody): Session {
     token: body.access_token,
     issuedAt,
     expiresAt: issuedAt + body.expires_in * 1000,
+    emailVerified: body.user.email_verified,
   }
 }
 
@@ -137,6 +139,41 @@ export function createRealAuthClient(): AuthClient {
           }
         }
         return toErrorOutcome(error, 'Không thể đặt lại mật khẩu, vui lòng thử lại.')
+      }
+    },
+
+    async verifyEmail(token) {
+      try {
+        await apiFetch<void>(`/auth/verify-email?token=${encodeURIComponent(token)}`)
+        return { status: 'success' }
+      } catch (error) {
+        // The contract documents only the 410 status for an expired/already-used
+        // token, not a specific error.code (mirrors research.md Decision 1 from
+        // 001-us1.5-forgot-reset-password's resetPassword) — branch on status.
+        if (error instanceof ApiError && error.status === 410) {
+          return {
+            status: 'error',
+            errorCode: 'VERIFY_TOKEN_EXPIRED',
+            message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể xác minh email, vui lòng thử lại.')
+      }
+    },
+
+    async resendVerificationEmail(accessToken) {
+      try {
+        await apiFetch<void>('/auth/resend-verification', { method: 'POST', accessToken })
+        return { status: 'success' }
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 429) {
+          return {
+            status: 'error',
+            errorCode: 'RATE_LIMITED',
+            message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể gửi lại email xác minh, vui lòng thử lại.')
       }
     },
 
