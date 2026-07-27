@@ -67,7 +67,20 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     return undefined as T
   }
 
-  const data: unknown = await response.json().catch(() => null)
+  // Some endpoints (e.g. /auth/resend-verification's 202) document no response
+  // body at all — the real backend sends a genuinely empty body, not `{}`, so
+  // response.text() resolves '' and JSON.parse would throw. Treat that as "no
+  // data" for a successful response, same as the 204 branch above, rather than
+  // crashing trying to unwrap a non-existent envelope.
+  const rawBody = await response.text()
+  let data: unknown = null
+  if (rawBody) {
+    try {
+      data = JSON.parse(rawBody)
+    } catch {
+      data = null
+    }
+  }
 
   if (!response.ok) {
     const body = data as ApiErrorBody | null
@@ -77,6 +90,10 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
       response.status,
       body?.error?.details,
     )
+  }
+
+  if (data === null) {
+    return undefined as T
   }
 
   return (data as ApiEnvelope<T>).data
