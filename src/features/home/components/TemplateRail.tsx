@@ -18,7 +18,7 @@ export function TemplateRail({ title, subtitle, templates, isSignedIn, onTemplat
           <span className="font-mono text-[0.72rem] text-[#8B8F86] dark:text-[#6D726A]">{subtitle}</span>
         )}
       </div>
-      <div className="group flex gap-[0.9rem] overflow-x-auto pb-[0.35rem] scrollbar-thin [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-[#DBDFD3] dark:[&::-webkit-scrollbar-thumb]:bg-[#2C3130]">
+      <div className="group flex gap-[0.9rem] overflow-x-auto pb-[0.35rem] scrollbar-small [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-[#DBDFD3] dark:[&::-webkit-scrollbar-thumb]:bg-[#2C3130]">
         {templates.map((t) => (
           <div key={t.id} className="min-w-[240px] flex-[0_0_auto]">
             <TemplateCard template={t} isSignedIn={!!isSignedIn} onClick={onTemplateClick} />
