@@ -1,6 +1,6 @@
 import type { AuthClient } from './authClient.types'
 import type { AuthOutcome, Session } from './types'
-import { apiFetch, ApiError } from './httpClient'
+import { apiFetch, ApiError } from '@/shared/utils/httpClient'
 
 const GOOGLE_OAUTH_STATE_KEY = 'how2prompt.auth.google_oauth_state'
 
