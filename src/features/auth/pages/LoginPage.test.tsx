@@ -66,4 +66,50 @@ describe('LoginPage', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(await authClient.restoreSession()).toBeNull()
   })
+
+  it('shows a resend-verification-email action when login fails as unverified', async () => {
+    const user = userEvent.setup()
+    const email = 'unverified@example.com'
+    await authClient.register('Người chưa xác minh', email, 'password123')
+
+    renderLoginPage()
+    await user.type(screen.getByPlaceholderText('ban@vidu.com'), email)
+    await user.type(screen.getByPlaceholderText('••••••••'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Vui lòng xác minh email trước khi đăng nhập')
+    expect(screen.getByRole('button', { name: 'Gửi lại email xác minh' })).toBeInTheDocument()
+  })
+
+  it('resends the verification email using the login form email, then rate-limits a second attempt', async () => {
+    const user = userEvent.setup()
+    const email = 'unverified2@example.com'
+    await authClient.register('Người chưa xác minh', email, 'password123')
+
+    renderLoginPage()
+    await user.type(screen.getByPlaceholderText('ban@vidu.com'), email)
+    await user.type(screen.getByPlaceholderText('••••••••'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
+
+    const resendButton = await screen.findByRole('button', { name: 'Gửi lại email xác minh' })
+    await user.click(resendButton)
+    expect(await screen.findByRole('status')).toHaveTextContent('Yêu cầu gửi lại email xác minh đã được tiếp nhận')
+
+    await user.click(screen.getByRole('button', { name: 'Gửi lại email xác minh' }))
+    expect(
+      await screen.findByText('Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.'),
+    ).toBeInTheDocument()
+  })
+
+  it('does not show the resend action for a wrong-password failure on a verified account', async () => {
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
+    await user.type(screen.getByPlaceholderText('••••••••'), 'wrongpass')
+    await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Email hoặc mật khẩu không chính xác')
+    expect(screen.queryByRole('button', { name: 'Gửi lại email xác minh' })).not.toBeInTheDocument()
+  })
 })

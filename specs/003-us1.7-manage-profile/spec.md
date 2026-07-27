@@ -82,11 +82,19 @@ across a page reload.
 ## Assumptions
 
 - The backend endpoints in `docs/api/openapi.yaml` (`/users/me` GET/PATCH) are
-  already deployed and match that contract; this feature only adds the frontend
-  flows and wiring, not backend work.
+  documented and this feature only adds the frontend flows and wiring, not
+  backend work — however, as of 2026-07-27 `GET /users/me` is known to return
+  `404` on the live deployment (discovered while validating
+  `specs/004-auth-contract-migration`), so real-backend verification of this
+  feature is currently blocked until that's fixed; frontend implementation and
+  testing against the mock client are unaffected (see plan.md's "Known
+  live-backend caveat").
 - Avatar upload (`POST /users/me/avatar`) is out of scope for this feature — profile
   management here covers only the text fields (full name, username, bio, locale)
   from `UpdateProfileRequest`; avatar upload can follow as a separate increment.
+- `timezone` (also present in `UpdateProfileRequest`/`UserProfile`) is likewise
+  out of scope for this feature, for the same reason as avatar upload — not
+  something a user manages from this settings page yet.
 - This spec was split out of a combined "Account Recovery & Profile Management" spec
   (originally covering US-1.5/1.6/1.7 together) into one spec per user story, per the
   project's naming convention (`NNN-us<epic>.<n>-<slug>`) — see

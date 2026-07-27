@@ -47,6 +47,12 @@ export function TopBar() {
               {session.displayName.charAt(0).toUpperCase()}
             </span>
             <span className="text-[0.9rem] font-semibold">{session.displayName}</span>
+            <Link
+              to="/profile"
+              className="font-mono text-[0.78rem] text-[#5B5F58] underline underline-offset-2 hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
+            >
+              Hồ sơ
+            </Link>
             <button
               type="button"
               onClick={() => void signOut()}

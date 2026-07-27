@@ -36,6 +36,7 @@ describe('GoogleSignInButton', () => {
     mockedRequestGoogleCredential.mockResolvedValueOnce({
       email: 'visitor@example.com',
       name: 'Visitor',
+      idToken: 'fake-id-token',
     })
     const user = userEvent.setup()
     renderButton()
@@ -50,15 +51,14 @@ describe('GoogleSignInButton', () => {
     mockedRequestGoogleCredential.mockResolvedValue({
       email: 'linked@example.com',
       name: 'Linked User',
+      idToken: 'fake-id-token',
     })
 
     const first = await authClient.signInWithGoogle()
-    if (first.status !== 'success' || !first.session)
-      throw new Error('expected a successful session')
+    if (first.status !== 'success' || !first.session) throw new Error('expected a successful session')
 
     const second = await authClient.signInWithGoogle()
-    if (second.status !== 'success' || !second.session)
-      throw new Error('expected a successful session')
+    if (second.status !== 'success' || !second.session) throw new Error('expected a successful session')
 
     expect(second.accountCreated).toBe(false)
     expect(second.session.accountId).toBe(first.session.accountId)

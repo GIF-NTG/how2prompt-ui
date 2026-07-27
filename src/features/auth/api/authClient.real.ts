@@ -1,35 +1,56 @@
 import type { AuthClient } from './authClient.types'
-import type { AuthOutcome, Session } from './types'
+import type { AuthErrorCode, Session } from './types'
 import { apiFetch, ApiError } from '@/shared/utils/httpClient'
-
-const GOOGLE_OAUTH_STATE_KEY = 'how2prompt.auth.google_oauth_state'
+import { requestGoogleCredential } from './googleIdentity'
 
 interface BackendUser {
   id: string
   email: string
-  full_name: string
+  fullName: string
+  emailVerified: boolean
 }
 
+/** `GET`/`PATCH /users/me` return the full backend `UserProfile` schema — this
+ *  only names the fields US-1.7 reads/writes (plus what `BackendUser` already
+ *  covers); other fields (avatarUrl, timezone, plan, ...) are ignored. */
+interface BackendUserProfile extends BackendUser {
+  username: string | null
+  bio: string | null
+  locale: 'en' | 'vi'
+}
+
+/** `POST /auth/login`, `POST /auth/oauth/google`, `POST /auth/refresh` all return
+ *  this — no longer embeds `user` (docs/api/openapi.yaml, research.md Decision 1). */
 interface AuthResponseBody {
-  access_token: string
-  expires_in: number
-  token_type: string
-  user: BackendUser
+  accessToken: string
+  expiresIn: number
 }
 
-function toSession(body: AuthResponseBody): Session {
+function fetchUserProfile(accessToken: string): Promise<BackendUser> {
+  return apiFetch<BackendUser>('/users/me', { accessToken })
+}
+
+function toSession(authResponse: AuthResponseBody, profile: BackendUser): Session {
   const issuedAt = Date.now()
   return {
-    accountId: body.user.id,
-    displayName: body.user.full_name,
-    email: body.user.email,
-    token: body.access_token,
+    accountId: profile.id,
+    displayName: profile.fullName,
+    email: profile.email,
+    token: authResponse.accessToken,
     issuedAt,
-    expiresAt: issuedAt + body.expires_in * 1000,
+    expiresAt: issuedAt + authResponse.expiresIn * 1000,
+    emailVerified: profile.emailVerified,
   }
 }
 
-function toErrorOutcome(error: unknown, fallbackMessage: string): AuthOutcome {
+// Typed as just the error branch (not AuthOutcome's full union) so this is
+// structurally assignable to every AuthClient outcome type's error shape
+// (AuthOutcome, ProfileOutcome, VerifyEmailOutcome, ...) — they all share the
+// same `{ status: 'error', errorCode, message }` shape.
+function toErrorOutcome(
+  error: unknown,
+  fallbackMessage: string,
+): { status: 'error'; errorCode: AuthErrorCode; message: string } {
   if (error instanceof ApiError) {
     return { status: 'error', errorCode: error.code, message: error.message }
   }
@@ -45,11 +66,12 @@ export function createRealAuthClient(): AuthClient {
   return {
     async login(email, password) {
       try {
-        const body = await apiFetch<AuthResponseBody>('/auth/login', {
+        const authResponse = await apiFetch<AuthResponseBody>('/auth/login', {
           method: 'POST',
           body: { email, password },
         })
-        return { status: 'success', session: toSession(body), accountCreated: false }
+        const profile = await fetchUserProfile(authResponse.accessToken)
+        return { status: 'success', session: toSession(authResponse, profile), accountCreated: false }
       } catch (error) {
         return toErrorOutcome(error, 'Không thể đăng nhập, vui lòng thử lại.')
       }
@@ -57,12 +79,12 @@ export function createRealAuthClient(): AuthClient {
 
     async register(displayName, email, password) {
       try {
-        // The real endpoint returns a full AuthResponse (with tokens), but per
-        // FR-013 registering must NOT sign the visitor in — those tokens are
-        // deliberately discarded; RegisterPage routes to /login regardless.
-        await apiFetch<AuthResponseBody>('/auth/register', {
+        // The real endpoint returns a RegisterResponse (no tokens at all — per
+        // docs/api/openapi.yaml, registering must NOT sign the visitor in);
+        // RegisterPage routes to /login regardless.
+        await apiFetch<{ user: BackendUser; message: string }>('/auth/register', {
           method: 'POST',
-          body: { email, password, full_name: displayName },
+          body: { email, password, fullName: displayName },
         })
         return { status: 'success', session: null, accountCreated: true }
       } catch (error) {
@@ -70,41 +92,33 @@ export function createRealAuthClient(): AuthClient {
       }
     },
 
-    async signInWithGoogle() {
-      // Authorization-code + redirect flow (docs/api/openapi.yaml), not the mock's
-      // client-side One Tap flow. This call navigates the whole tab away to Google,
-      // so it does not meaningfully resolve — GoogleCallbackPage finishes the flow
-      // via completeGoogleOAuth() once Google redirects back.
-      const { authorization_url, state } = await apiFetch<{
-        authorization_url: string
-        state: string
-      }>('/auth/oauth/google')
-      window.sessionStorage.setItem(GOOGLE_OAUTH_STATE_KEY, state)
-      window.location.href = authorization_url
-      return new Promise<AuthOutcome>(() => {
-        // Intentionally never settles — the browser is navigating away.
-      })
-    },
-
-    async completeGoogleOAuth(code, state) {
-      const expectedState = window.sessionStorage.getItem(GOOGLE_OAUTH_STATE_KEY)
-      window.sessionStorage.removeItem(GOOGLE_OAUTH_STATE_KEY)
-      if (!expectedState || expectedState !== state) {
-        return {
-          status: 'error',
-          errorCode: 'VALIDATION_ERROR',
-          message: 'Phiên đăng nhập Google không hợp lệ, vui lòng thử lại.',
-        }
+    async signInWithGoogle(options) {
+      // Single-request ID-token flow (docs/api/openapi.yaml) — no authorization-code
+      // redirect/callback round trip. `options` (e.g. `simulate: 'cancel'`) is a
+      // mock-only testing hook, ignored here.
+      void options
+      // Deliberately NOT inside the try/catch below: requestGoogleCredential()
+      // throws a specific, actionable diagnostic (misconfigured client id,
+      // unregistered origin, blocked third-party cookies, etc. — see
+      // googleIdentity.ts) that must reach the caller as-is, not get flattened
+      // into toErrorOutcome's generic fallback message. GoogleSignInButton
+      // already catches and displays exactly this kind of rejection.
+      const credential = await requestGoogleCredential()
+      if (!credential) {
+        // Visitor genuinely dismissed/cancelled the prompt — no error shown
+        // (mirrors the mock's identical empty-message outcome).
+        return { status: 'error', errorCode: 'VALIDATION_ERROR', message: '' }
       }
       try {
-        const body = await apiFetch<AuthResponseBody>('/auth/oauth/google/callback', {
+        const authResponse = await apiFetch<AuthResponseBody>('/auth/oauth/google', {
           method: 'POST',
-          body: { code, state },
+          body: { idToken: credential.idToken },
         })
+        const profile = await fetchUserProfile(authResponse.accessToken)
         // The contract doesn't report whether this created a new account or linked
         // an existing one (unlike the mock's accountCreated flag) — default false;
         // FR-019/FR-020's distinct copy isn't reachable via the real flow yet.
-        return { status: 'success', session: toSession(body), accountCreated: false }
+        return { status: 'success', session: toSession(authResponse, profile), accountCreated: false }
       } catch (error) {
         return toErrorOutcome(error, 'Không thể đăng nhập bằng Google.')
       }
@@ -123,7 +137,7 @@ export function createRealAuthClient(): AuthClient {
       try {
         await apiFetch<void>('/auth/reset-password', {
           method: 'POST',
-          body: { token, new_password: newPassword },
+          body: { token, newPassword },
         })
         return { status: 'success' }
       } catch (error) {
@@ -141,6 +155,45 @@ export function createRealAuthClient(): AuthClient {
       }
     },
 
+    async verifyEmail(token) {
+      try {
+        await apiFetch<void>('/auth/verify-email', { method: 'POST', body: { token } })
+        return { status: 'success' }
+      } catch (error) {
+        // The contract documents only the 410 status for an expired/already-used
+        // token, not a specific error.code (mirrors research.md Decision 1 from
+        // 001-us1.5-forgot-reset-password's resetPassword) — branch on status.
+        if (error instanceof ApiError && error.status === 410) {
+          return {
+            status: 'error',
+            errorCode: 'VERIFY_TOKEN_EXPIRED',
+            message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể xác minh email, vui lòng thử lại.')
+      }
+    },
+
+    async resendVerificationEmail(email) {
+      try {
+        // The contract answers 202 Accepted (queued for async delivery), not 200 —
+        // apiFetch's `!response.ok` check already treats any 2xx as success, so no
+        // status-code branching is needed here (research.md Decision 4). Public
+        // request — no accessToken, identifies the account by email in the body.
+        await apiFetch<void>('/auth/resend-verification', { method: 'POST', body: { email } })
+        return { status: 'success' }
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 429) {
+          return {
+            status: 'error',
+            errorCode: 'RATE_LIMITED',
+            message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể gửi lại email xác minh, vui lòng thử lại.')
+      }
+    },
+
     async logout() {
       try {
         await apiFetch<void>('/auth/logout', { method: 'POST' })
@@ -151,19 +204,45 @@ export function createRealAuthClient(): AuthClient {
 
     async restoreSession() {
       try {
-        const refreshed = await apiFetch<{ access_token: string; expires_in: number }>(
-          '/auth/refresh',
-          {
-            method: 'POST',
-          },
-        )
-        const profile = await apiFetch<BackendUser>('/users/me', {
-          accessToken: refreshed.access_token,
-        })
-        return toSession({ ...refreshed, token_type: 'Bearer', user: profile })
+        const authResponse = await apiFetch<AuthResponseBody>('/auth/refresh', { method: 'POST' })
+        const profile = await fetchUserProfile(authResponse.accessToken)
+        return toSession(authResponse, profile)
       } catch {
         // No valid refresh_token cookie (never logged in, logged out, or expired).
         return null
+      }
+    },
+
+    async getProfile(accessToken) {
+      try {
+        const body = await apiFetch<BackendUserProfile>('/users/me', { accessToken })
+        return {
+          status: 'success',
+          profile: { fullName: body.fullName, username: body.username, bio: body.bio, locale: body.locale },
+        }
+      } catch (error) {
+        return toErrorOutcome(error, 'Không thể tải hồ sơ, vui lòng thử lại.')
+      }
+    },
+
+    async updateProfile(accessToken, input) {
+      try {
+        const body = await apiFetch<BackendUserProfile>('/users/me', { method: 'PATCH', accessToken, body: input })
+        return {
+          status: 'success',
+          profile: { fullName: body.fullName, username: body.username, bio: body.bio, locale: body.locale },
+        }
+      } catch (error) {
+        // The contract documents only the 409 status for a duplicate username, not
+        // a specific error.code (research.md Decision 3) — branch on status.
+        if (error instanceof ApiError && error.status === 409) {
+          return {
+            status: 'error',
+            errorCode: 'USERNAME_TAKEN',
+            message: 'Tên người dùng này đã được sử dụng.',
+          }
+        }
+        return toErrorOutcome(error, 'Không thể cập nhật hồ sơ, vui lòng thử lại.')
       }
     },
   }

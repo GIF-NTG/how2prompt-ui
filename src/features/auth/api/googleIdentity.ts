@@ -1,6 +1,10 @@
 export interface GoogleCredential {
   email: string
   name: string
+  /** Raw, undecoded Google ID Token (JWT) — the real backend (`POST
+   *  /auth/oauth/google`) verifies this server-side; the mock ignores it and
+   *  uses the decoded `email`/`name` above instead. */
+  idToken: string
 }
 
 interface GoogleIdConfiguration {
@@ -89,7 +93,7 @@ function base64UrlDecodeUtf8(base64url: string): string {
 function decodeCredential(credential: string): GoogleCredential {
   const payload = credential.split('.')[1] ?? ''
   const decoded = JSON.parse(base64UrlDecodeUtf8(payload)) as { email?: string; name?: string }
-  return { email: decoded.email ?? '', name: decoded.name ?? '' }
+  return { email: decoded.email ?? '', name: decoded.name ?? '', idToken: credential }
 }
 
 /**
@@ -100,8 +104,10 @@ function decodeCredential(credential: string): GoogleCredential {
  * this THROWS with a specific, actionable reason instead of silently
  * resolving `null` — that distinction is the whole point of this function,
  * since "nothing happened when I clicked the button" is otherwise
- * undiagnosable. The credential is decoded client-side only — its signature
- * is NOT verified, since there is no backend yet to do that.
+ * undiagnosable. The credential is decoded client-side only for display
+ * purposes (`email`/`name`) — that decoding does NOT verify its signature;
+ * the raw `idToken` is forwarded untouched to the real backend
+ * (`POST /auth/oauth/google`), which is the only party that verifies it.
  */
 export async function requestGoogleCredential(): Promise<GoogleCredential | null> {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID

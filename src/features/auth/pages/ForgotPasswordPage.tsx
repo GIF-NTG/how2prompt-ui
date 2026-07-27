@@ -66,7 +66,7 @@ export function ForgotPasswordPage() {
       {requestSent ? (
         <p
           role="status"
-          className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-4 py-2 text-sm text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262B4A] dark:text-[#8493FF]"
+          className="rounded-lg border border-[#2E7D4F]/30 bg-[#E4F3EA] px-4 py-2 text-sm text-[#2E7D4F] dark:border-[#6FCF9A]/30 dark:bg-[#1E3327] dark:text-[#6FCF9A]"
         >
           Nếu email này tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi tới.
         </p>
