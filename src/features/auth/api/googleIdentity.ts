@@ -66,7 +66,6 @@ function loadGoogleIdentityScript(): Promise<void> {
     const script = document.createElement('script')
     script.src = GIS_SCRIPT_SRC
     script.async = true
-    script.defer = true
     script.onload = () => resolve()
     script.onerror = () => reject(new Error('Failed to load Google Identity Services script'))
     document.head.appendChild(script)
