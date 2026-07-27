@@ -120,17 +120,19 @@ envelope matches `agent/BA.md` §4.3.
 
 ## Visual design direction
 
-**`docs/design/how2prompt-workspace-mockup.html`** predates the SRS v2.0 restructure
-(it was built around an inline fill-in-the-blank pill/canvas UX that the current
-`agent/BA.md`/`SRS.md` no longer describe — the generate screen is now a standard
-dynamic form, see Epic 3 above). Its color tokens are still valid — cool paper
-neutrals (`#F3F5F0` light / `#14171A` dark), indigo accent (`#3652E0` light / `#8493FF`
-dark), system sans for body/headings, monospace reserved for placeholder/
-template-related content (`{field}` labels, code/error badges) — carry those forward.
-But do **not** use its catalog/prompt-editor/history screens as a structural
-reference anymore; they show the old pill-canvas interaction, not the dynamic-form
-one. The mockup's Login/Register screens are unaffected by this and still match the
-real implementation in `src/features/auth`. Before building Epic 2/3 screens, this
-mockup should be regenerated against the new BA spec — flag that instead of building
-straight from the stale HTML. Still go through `/speckit-specify` → `/speckit-plan` →
-`/speckit-tasks` for any new feature (per Constitution Principle II).
+**`docs/design/how2prompt-workspace-mockup.html`** has been regenerated against the
+SRS v2.0 restructure (2026-07-27) — it now shows the catalog/template-detail/history
+screens as a **dynamic form** (Epic 3), not the old pill/canvas UX. Color tokens:
+cool paper neutrals (`#F3F5F0` light / `#14171A` dark), indigo accent (`#3652E0`
+light / `#8493FF` dark), system sans for body/headings, monospace reserved for
+placeholder/template-related content (`{field}` labels, code/error badges). See
+`docs/design/README.md` for the full status. The auth screens (Login/Register/
+Forgot/Reset) still use the inline fill-in-the-blank pill pattern (per Constitution
+Principle I, that pattern is confined to auth and MUST NOT extend to
+template-generation screens); the catalog/detail/history screens use standard boxed
+form controls instead. Login/Register match the real implementation in
+`src/features/auth`; Forgot/Reset match `001-us1.5-forgot-reset-password`. The
+catalog/detail/history screens remain **design-only** — nothing under `src/features`
+implements Epic 2/3/4 yet. Still go through `/speckit-specify` → `/speckit-plan` →
+`/speckit-tasks` for any new feature (per Constitution Principle II) — use the
+mockup as the visual reference, not a reason to build straight from its inline JS.
