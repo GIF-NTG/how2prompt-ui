@@ -38,7 +38,7 @@ export function TopBar() {
           </Link>
         </nav>
 
-        {session && (
+        {session ? (
           <div className="flex items-center gap-3">
             <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E7EAFC] font-mono text-[0.85rem] font-bold text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
               {session.displayName.charAt(0).toUpperCase()}
@@ -58,6 +58,13 @@ export function TopBar() {
               Đăng xuất
             </button>
           </div>
+        ) : (
+          <Link
+            to="/login"
+            className="font-mono text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+          >
+            Đăng nhập
+          </Link>
         )}
       </div>
     </div>
