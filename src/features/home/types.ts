@@ -2,9 +2,9 @@ import type { I18nString, PageMeta } from '@/shared/types/api'
 
 export interface AuthorBrief {
   id: string | null
-  full_name: string | null
+  fullName: string | null
   username: string | null
-  avatar_url: string | null
+  avatarUrl: string | null
   type: 'admin' | 'user' | 'system' | 'forked'
 }
 
@@ -15,16 +15,16 @@ export interface Category {
   description: I18nString
   icon: string | null
   color: string | null
-  parent_id: string | null
-  sort_order: number
-  template_count: number
+  parentId: string | null
+  sortOrder: number
+  templateCount: number
 }
 
 export interface Tag {
   id: string
   slug: string
   name: string
-  usage_count: number
+  usageCount: number
 }
 
 export interface AiModel {
@@ -32,12 +32,12 @@ export interface AiModel {
   code: string
   name: string
   provider: string
-  model_type: 'text' | 'image' | 'video' | 'audio' | 'multimodal'
+  modelType: 'text' | 'image' | 'video' | 'audio' | 'multimodal'
   description: string | null
   capabilities: Record<string, unknown>
-  icon_url: string | null
-  is_active: boolean
-  sort_order: number
+  iconUrl: string | null
+  isActive: boolean
+  sortOrder: number
 }
 
 export interface TemplateListItem {
@@ -45,16 +45,16 @@ export interface TemplateListItem {
   slug: string
   title: I18nString
   description: I18nString
-  cover_image: string | null
-  is_official: boolean
+  coverImage: string | null
+  isOfficial: boolean
   author: AuthorBrief
   categories: Category[]
   tags: Tag[]
-  supported_models: string[]
-  usage_count: number
-  favorite_count: number
-  is_favorited: boolean
-  created_at: string
+  supportedModels: string[]
+  usageCount: number
+  favoriteCount: number
+  isFavorited: boolean
+  createdAt: string
 }
 
 export interface CatalogFilters {

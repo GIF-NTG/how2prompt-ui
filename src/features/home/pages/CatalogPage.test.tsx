@@ -27,16 +27,16 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
     slug: 'slug',
     title: { en: 'Title', vi: 'Tiêu đề' },
     description: { en: 'Description', vi: 'Mô tả' },
-    cover_image: null,
-    is_official: false,
-    author: { id: null, full_name: null, username: null, avatar_url: null, type: 'admin' },
+    coverImage: null,
+    isOfficial: false,
+    author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: [],
     tags: [],
-    supported_models: [],
-    usage_count: 0,
-    favorite_count: 0,
-    is_favorited: false,
-    created_at: '2026-01-01T00:00:00Z',
+    supportedModels: [],
+    usageCount: 0,
+    favoriteCount: 0,
+    isFavorited: false,
+    createdAt: '2026-01-01T00:00:00Z',
     ...overrides,
   }
 }
@@ -129,13 +129,13 @@ describe('CatalogPage', () => {
           id: 't1',
           slug: 't1',
           title: { en: 'Official template', vi: 'Official template' },
-          is_official: true,
+          isOfficial: true,
         }),
         makeTemplate({
           id: 't2',
           slug: 't2',
           title: { en: 'Community template', vi: 'Community template' },
-          is_official: false,
+          isOfficial: false,
         }),
       ],
       meta: { page: 0, size: 20, totalElements: 2, totalPages: 1, hasNext: false, hasPrevious: false },
@@ -179,12 +179,12 @@ describe('CatalogPage', () => {
         code: 'claude',
         name: 'Claude',
         provider: 'anthropic',
-        model_type: 'text',
+        modelType: 'text',
         description: null,
         capabilities: {},
-        icon_url: null,
-        is_active: true,
-        sort_order: 1,
+        iconUrl: null,
+        isActive: true,
+        sortOrder: 1,
       },
     ])
     mockedClient.getTemplates.mockResolvedValue({
@@ -215,10 +215,10 @@ describe('CatalogPage', () => {
 
   it('composes Category and Tag filters with AND logic, updating the URL independently', async () => {
     mockedClient.getCategories.mockResolvedValue([
-      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parent_id: null, sort_order: 1, template_count: 1 },
+      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parentId: null, sortOrder: 1, templateCount: 1 },
     ])
     mockedClient.getTags.mockResolvedValue([
-      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usage_count: 1 },
+      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
       data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
@@ -259,10 +259,10 @@ describe('CatalogPage', () => {
 
   it('pre-selects Category and Tag filters when the catalog is opened with both in the URL', async () => {
     mockedClient.getCategories.mockResolvedValue([
-      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parent_id: null, sort_order: 1, template_count: 1 },
+      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parentId: null, sortOrder: 1, templateCount: 1 },
     ])
     mockedClient.getTags.mockResolvedValue([
-      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usage_count: 1 },
+      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
       data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],

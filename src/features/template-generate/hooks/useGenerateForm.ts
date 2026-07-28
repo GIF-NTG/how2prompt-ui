@@ -6,8 +6,8 @@ import type {
 } from '../types'
 
 function getInitialModelCode(template: TemplateDetail): string {
-  if (template.supported_models.length > 0) {
-    return template.supported_models[0]
+  if (template.supportedModels.length > 0) {
+    return template.supportedModels[0]
   }
   return ''
 }
@@ -16,13 +16,13 @@ function getActiveVariables(
   template: TemplateDetail,
   modelCode: string,
 ): TemplateVariable[] {
-  const variant = template.current_version.variants.find(
+  const variant = template.currentVersion.variants.find(
     (v) => v.aiModelCode === modelCode,
   )
   if (variant?.promptBodyOverride) {
-    return template.current_version.variables
+    return template.currentVersion.variables
   }
-  return template.current_version.variables
+  return template.currentVersion.variables
 }
 
 function validateVariable(

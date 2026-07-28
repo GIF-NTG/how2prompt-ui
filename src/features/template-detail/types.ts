@@ -3,9 +3,9 @@ import type { TemplateVariable, TemplateVariant } from '@/features/template-gene
 
 export interface AuthorBrief {
   id: string | null
-  full_name: string | null
+  fullName: string | null
   username: string | null
-  avatar_url: string | null
+  avatarUrl: string | null
   type: 'admin' | 'user' | 'system' | 'forked'
 }
 
@@ -16,17 +16,16 @@ export interface Category {
   description: I18nString
   icon: string | null
   color: string | null
-  parent_id: string | null
-  sort_order: number
-  template_count: number
+  parentId: string | null
+  sortOrder: number
+  templateCount: number
 }
 
 export interface TemplateVersion {
   version: number
-  prompt_body: string
+  promptBody: string
   guide: I18nString
-  example_output: I18nString
-  created_at: string
+  exampleOutput: I18nString
   variables: TemplateVariable[]
   variants: TemplateVariant[]
 }
@@ -36,15 +35,15 @@ export interface TemplateDetail {
   slug: string
   title: I18nString
   description: I18nString
-  cover_image: string | null
-  is_official: boolean
+  coverImage: string | null
+  isOfficial: boolean
   author: AuthorBrief
   categories: Category[]
-  supported_models: string[]
-  usage_count: number
-  favorite_count: number
-  is_favorited: boolean
-  view_count: number
-  created_at: string
-  current_version: TemplateVersion
+  supportedModels: string[]
+  usageCount: number
+  favoriteCount: number
+  isFavorited: boolean
+  viewCount: number
+  createdAt: string
+  currentVersion: TemplateVersion
 }
