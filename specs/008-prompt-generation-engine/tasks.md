@@ -114,23 +114,23 @@ is valid (quickstart.md step 2).
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create `src/features/template-generate/components/ModelVariantSelect.tsx`
+- [X] T012 [P] [US1] Create `src/features/template-generate/components/ModelVariantSelect.tsx`
       — dropdown over the template's `supported_models`, hidden and
       auto-selected when only one model is supported (spec.md Acceptance
       Scenario 1.2/1.3)
-- [ ] T013 [P] [US1] Create `src/features/template-generate/components/FormField.tsx`
+- [X] T013 [P] [US1] Create `src/features/template-generate/components/FormField.tsx`
       — one control per `inputType` (text, textarea, select, multiselect,
       number, boolean, slider), plain-text-input fallback for any other enum
       value (date/file/url/color), i18n label/placeholder/help text, inline
       validation message from `useGenerateForm`'s `errors`
-- [ ] T014 [US1] Create `src/features/template-generate/components/DynamicForm.tsx`
+- [X] T014 [US1] Create `src/features/template-generate/components/DynamicForm.tsx`
       — maps `activeVariables` to `FormField` instances, sorted by
       `sortOrder` (depends on T012, T013)
-- [ ] T015 [US1] Wire `ModelVariantSelect` and `DynamicForm` into the
+- [X] T015 [US1] Wire `ModelVariantSelect` and `DynamicForm` into the
       designated slots of `TemplateGenerateSection.tsx` (depends on T014;
       touches the shared container file — keep this a small, additive
       change to avoid conflicting with Developer B's own wiring task)
-- [ ] T016 [US1] Add test cases in
+- [X] T016 [US1] Add test cases in
       `src/features/template-generate/components/DynamicForm.test.tsx`
       covering: one control per variable type renders; a required-but-empty
       field keeps Generate disabled; a regex/min/max violation keeps
@@ -139,7 +139,7 @@ is valid (quickstart.md step 2).
       `varKey` preserves that field's already-entered value, and clears/
       resets only the fields that don't exist in the new model's variant
       (FR-012)
-- [ ] T017 [US1] Manually verify against `quickstart.md` step 2 (form
+- [X] T017 [US1] Manually verify against `quickstart.md` step 2 (form
       rendering, validation gating, model-switch variable preservation),
       confirming the relevant parts of spec.md's Acceptance Scenarios
 
@@ -236,12 +236,12 @@ with text (text appears appended) (quickstart.md step 4).
 
 ### Implementation for User Story 4
 
-- [ ] T029 [US4] Create `src/features/template-generate/components/ExtraInstructionsField.tsx`
+- [X] T029 [US4] Create `src/features/template-generate/components/ExtraInstructionsField.tsx`
       — optional textarea bound to `useGenerateForm.state.extraInstructions`
-- [ ] T030 [US4] Wire `ExtraInstructionsField` into `TemplateGenerateSection.tsx`'s
+- [X] T030 [US4] Wire `ExtraInstructionsField` into `TemplateGenerateSection.tsx`'s
       designated slot, below the dynamic form (depends on T029; same
       conflict-avoidance note as T015)
-- [ ] T031 [US4] Manually verify against `quickstart.md` step 4 (empty vs.
+- [X] T031 [US4] Manually verify against `quickstart.md` step 4 (empty vs.
       filled field effect on the generated result), confirming FR-005
 
 **Checkpoint**: All four user stories complete and demonstrable together.

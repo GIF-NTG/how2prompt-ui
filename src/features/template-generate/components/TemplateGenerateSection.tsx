@@ -1,12 +1,16 @@
 import type { TemplateDetail } from '@/features/template-detail/types'
 import { useGenerateForm } from '../hooks/useGenerateForm'
+import { ModelVariantSelect } from './ModelVariantSelect'
+import { DynamicForm } from './DynamicForm'
+import { ExtraInstructionsField } from './ExtraInstructionsField'
 
 interface TemplateGenerateSectionProps {
   template: TemplateDetail
 }
 
 export function TemplateGenerateSection({ template }: TemplateGenerateSectionProps) {
-  useGenerateForm(template)
+  const { state, setModelCode, setValue, setExtraInstructions, activeVariables } =
+    useGenerateForm(template)
 
   return (
     <section className="flex flex-col gap-6 rounded-[10px] border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
@@ -15,13 +19,25 @@ export function TemplateGenerateSection({ template }: TemplateGenerateSectionPro
       </h2>
 
       {/* Developer A: ModelVariantSelect slot */}
-      <div data-slot="model-select" />
+      <ModelVariantSelect
+        supportedModels={template.supportedModels}
+        selectedModelCode={state.selectedModelCode}
+        onChange={setModelCode}
+      />
 
       {/* Developer A: DynamicForm slot */}
-      <div data-slot="dynamic-form" />
+      <DynamicForm
+        variables={activeVariables}
+        inputValues={state.inputValues}
+        errors={state.errors}
+        onValueChange={setValue}
+      />
 
       {/* Developer A: ExtraInstructionsField slot */}
-      <div data-slot="extra-instructions" />
+      <ExtraInstructionsField
+        value={state.extraInstructions}
+        onChange={setExtraInstructions}
+      />
 
       {/* Developer B: PreviewPanel slot */}
       <div data-slot="preview-panel" />
