@@ -158,22 +158,22 @@ updates immediately with unfilled required spots visually distinguished
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Create `src/features/template-generate/utils/renderTemplate.ts`
+- [X] T018 [P] [US2] Create `src/features/template-generate/utils/renderTemplate.ts`
       — substitutes `{{varKey}}` in the active `prompt_body` with current
       `inputValues`, returns unfilled placeholders as a distinct marker the
       UI can style separately (pure function, no React)
-- [ ] T019 [US2] Create `src/features/template-generate/components/PreviewPanel.tsx`
+- [X] T019 [US2] Create `src/features/template-generate/components/PreviewPanel.tsx`
       — monospace rendering of `renderTemplate`'s output, unfilled spots
       visually distinct, character count + token estimate shown alongside
       (depends on T018)
-- [ ] T020 [US2] Wire `PreviewPanel` into `TemplateGenerateSection.tsx`'s
+- [X] T020 [US2] Wire `PreviewPanel` into `TemplateGenerateSection.tsx`'s
       designated slot (depends on T019; small additive change, same
       conflict-avoidance note as T015)
-- [ ] T021 [US2] Add test cases in
+- [X] T021 [US2] Add test cases in
       `src/features/template-generate/utils/renderTemplate.test.ts`
       covering: filled placeholder substitution, unfilled placeholder
       marking, and multiselect/boolean value formatting
-- [ ] T022 [US2] Manually verify against `quickstart.md` step 3 (live
+- [X] T022 [US2] Manually verify against `quickstart.md` step 3 (live
       update with no network activity, unfilled-spot styling, size
       indicator), confirming SC-003
 
@@ -193,22 +193,22 @@ confirm quota/error paths render clearly (quickstart.md step 5).
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Extend `src/features/template-generate/api/generateClient.mock.ts`
+- [X] T023 [US3] Extend `src/features/template-generate/api/generateClient.mock.ts`
       (from T007) with a simulated guest-quota-exceeded path and a simulated
       generic-failure path, both toggleable for dev/testing (contracts/generate-endpoint.md)
-- [ ] T024 [P] [US3] Create `src/features/template-generate/components/GenerateActions.tsx`
+- [X] T024 [P] [US3] Create `src/features/template-generate/components/GenerateActions.tsx`
       — Generate button (disabled per `useGenerateForm.state.isValid`),
       Copy button with confirmation toast, and an error banner branching on
       `ApiError.code`/`status` (`GUEST_QUOTA_EXCEEDED` message vs. generic
       retry message) (depends on T023)
-- [ ] T025 [P] [US3] Create `src/features/template-generate/components/OutputBox.tsx`
+- [X] T025 [P] [US3] Create `src/features/template-generate/components/OutputBox.tsx`
       — displays `GenerateResponse.finalPrompt` once generation succeeds
-- [ ] T026 [US3] Wire `GenerateActions` and `OutputBox` into
+- [X] T026 [US3] Wire `GenerateActions` and `OutputBox` into
       `TemplateGenerateSection.tsx`'s designated slot, calling
       `generateClient.generate(...)` and holding the `GenerateResponse`
       result in local state (depends on T024, T025; same
       conflict-avoidance note as T015/T020)
-- [ ] T027 [US3] Add test cases in
+- [X] T027 [US3] Add test cases in
       `src/features/template-generate/components/GenerateActions.test.tsx`
       covering: success shows `finalPrompt` and a working Copy button;
       `GUEST_QUOTA_EXCEEDED` shows the quota message; a generic failure
@@ -217,7 +217,7 @@ confirm quota/error paths render clearly (quickstart.md step 5).
       call, the mock response's `generatedPromptId` is non-null, and for an
       unauthenticated (guest) call it is `null` — asserting the FE surfaces
       whatever the mock returns rather than assuming either case (FR-009)
-- [ ] T028 [US3] Manually verify against `quickstart.md` step 5 (generate
+- [X] T028 [US3] Manually verify against `quickstart.md` step 5 (generate
       uses the authoritative response, not the preview; copy confirmation;
       guest quota message; generic-failure handling), confirming FR-006,
       FR-009–FR-011, SC-001, SC-004, SC-005
