@@ -38,7 +38,7 @@ mount point only).
 
 ## Phase 1: Setup
 
-- [ ] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
+- [X] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
       at the repo root and confirm all three currently pass, establishing
       the pre-feature baseline
 
@@ -56,42 +56,42 @@ their halves.
 **⚠️ CRITICAL**: Whoever does this (one person, or both together) must land
 it first. Do not start US1–US4 work before this phase is merged.
 
-- [ ] T002 [P] Create `src/features/template-generate/types.ts` with
+- [X] T002 [P] Create `src/features/template-generate/types.ts` with
       `TemplateVariable`, `TemplateVariableOption`, and `TemplateVariant`
       (camelCase, matching `docs/api/openapi.yaml` exactly per
       research.md's contract-mismatch decision — data-model.md)
-- [ ] T003 [P] Create `src/features/template-generate/api/generateClient.types.ts`
+- [X] T003 [P] Create `src/features/template-generate/api/generateClient.types.ts`
       with `GenerateRequest`/`GenerateResponse` (data-model.md,
       contracts/generate-endpoint.md)
-- [ ] T004 Extend `TemplateVersion` in
+- [X] T004 Extend `TemplateVersion` in
       `src/features/template-detail/types.ts` with `variables:
       TemplateVariable[]` and `variants: TemplateVariant[]` (depends on T002;
       data-model.md)
-- [ ] T005 Add `variables`/`variants` values to
+- [X] T005 Add `variables`/`variants` values to
       `MOCK_TEMPLATE.current_version` in
       `src/features/template-detail/api/templateDetailClient.mock.ts` — at
       least 3 variables spanning text/select/number/boolean per
       quickstart.md's prerequisites (depends on T004)
-- [ ] T006 [P] Create `src/features/template-generate/utils/guestFingerprint.ts`
+- [X] T006 [P] Create `src/features/template-generate/utils/guestFingerprint.ts`
       — generates and persists a random UUID in `localStorage`, returns the
       same value on every call (research.md's guest-fingerprint decision)
-- [ ] T007 Create `src/features/template-generate/api/generateClient.mock.ts`
+- [X] T007 Create `src/features/template-generate/api/generateClient.mock.ts`
       with a working success path only (echo `inputValues` substituted into
       the mock template's `prompt_body`) — quota/failure simulation is added
       later in US3 (T023) (depends on T002, T003)
-- [ ] T008 Create `src/features/template-generate/api/generateClient.real.ts`
+- [X] T008 Create `src/features/template-generate/api/generateClient.real.ts`
       — `POST /templates/{id}/generate` via `apiFetch`, attaching
       `X-Guest-Fingerprint` from T006 when no session token is present
       (depends on T003, T006; contracts/generate-endpoint.md)
-- [ ] T009 Create `src/features/template-generate/api/generateClient.ts`
+- [X] T009 Create `src/features/template-generate/api/generateClient.ts`
       (mock/real switch, mirroring `templateClient.ts`'s existing pattern)
       (depends on T007, T008)
-- [ ] T010 Create `src/features/template-generate/hooks/useGenerateForm.ts`
+- [X] T010 Create `src/features/template-generate/hooks/useGenerateForm.ts`
       implementing `GenerateFormState` + per-field validation +
       variant-aware `activeVariables` recomputation on model change,
       preserving still-applicable `inputValues` (depends on T002, T004;
       data-model.md's state-transition rules)
-- [ ] T011 Create `src/features/template-generate/components/TemplateGenerateSection.tsx`
+- [X] T011 Create `src/features/template-generate/components/TemplateGenerateSection.tsx`
       (owns `useGenerateForm`, renders placeholder slots for the A/B pieces
       below) and mount `<TemplateGenerateSection templateSlug={slug} />`
       below the existing read-only content in

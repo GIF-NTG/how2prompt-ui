@@ -1,4 +1,5 @@
 import type { I18nString } from '@/shared/types/api'
+import type { TemplateVariable, TemplateVariant } from '@/features/template-generate/types'
 
 export interface AuthorBrief {
   id: string | null
@@ -26,6 +27,8 @@ export interface TemplateVersion {
   guide: I18nString
   example_output: I18nString
   created_at: string
+  variables: TemplateVariable[]
+  variants: TemplateVariant[]
 }
 
 export interface TemplateDetail {
