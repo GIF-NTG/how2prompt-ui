@@ -6,8 +6,8 @@ describe('createMockTemplateClient().getTemplates', () => {
     const client = createMockTemplateClient()
     const { data } = await client.getTemplates({ size: 50 })
 
-    const firstNonOfficialIndex = data.findIndex((t) => !t.is_official)
-    const lastOfficialIndex = data.map((t) => t.is_official).lastIndexOf(true)
+    const firstNonOfficialIndex = data.findIndex((t) => !t.isOfficial)
+    const lastOfficialIndex = data.map((t) => t.isOfficial).lastIndexOf(true)
 
     expect(firstNonOfficialIndex).toBeGreaterThan(-1)
     expect(lastOfficialIndex).toBeGreaterThan(-1)
@@ -44,8 +44,8 @@ describe('createMockTemplateClient().getTemplates', () => {
     expect(popular.data.map((t) => t.id)).not.toEqual(newest.data.map((t) => t.id))
 
     for (const { data } of [popular, newest]) {
-      const firstNonOfficialIndex = data.findIndex((t) => !t.is_official)
-      const lastOfficialIndex = data.map((t) => t.is_official).lastIndexOf(true)
+      const firstNonOfficialIndex = data.findIndex((t) => !t.isOfficial)
+      const lastOfficialIndex = data.map((t) => t.isOfficial).lastIndexOf(true)
       expect(lastOfficialIndex).toBeLessThan(firstNonOfficialIndex)
     }
   })

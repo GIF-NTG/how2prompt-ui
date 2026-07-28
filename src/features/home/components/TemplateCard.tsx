@@ -16,13 +16,13 @@ interface TemplateCardProps {
 }
 
 export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProps) {
-  const [isFavorited, setIsFavorited] = useState(template.is_favorited)
+  const [isFavorited, setIsFavorited] = useState(template.isFavorited)
 
   async function handleFavorite(e: React.MouseEvent) {
     e.stopPropagation()
     try {
       const result = await templateClient.toggleFavorite(template.id)
-      setIsFavorited(result.is_favorited)
+      setIsFavorited(result.isFavorited)
     } catch {
       // silently fail
     }
@@ -36,7 +36,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap gap-1.5">
-          {template.is_official && (
+          {template.isOfficial && (
             <span className="rounded-[5px] bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
               Chính thức
             </span>
@@ -66,7 +66,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
 
       <div className="mt-1 flex items-center justify-between gap-2">
         <div className="flex flex-wrap gap-1.5">
-          {template.supported_models.map((m) => (
+          {template.supportedModels.map((m) => (
             <span
               key={m}
               className="rounded-full bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] text-[#8B8F86] dark:bg-[#23282C] dark:text-[#6D726A]"
@@ -76,7 +76,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
           ))}
         </div>
         <span className="whitespace-nowrap font-mono text-[0.7rem] text-[#8B8F86] dark:text-[#6D726A]">
-          {template.usage_count.toLocaleString()} lượt dùng
+          {template.usageCount.toLocaleString()} lượt dùng
         </span>
       </div>
     </button>

@@ -54,19 +54,19 @@ export function TemplateDetailPage() {
         title={template.title}
         description={template.description}
         categories={template.categories}
-        isOfficial={template.is_official}
+        isOfficial={template.isOfficial}
       />
 
-      <ModelTags models={template.supported_models} />
+      <ModelTags models={template.supportedModels} />
 
-      <UsageGuide guide={template.current_version.guide} />
+      <UsageGuide guide={template.currentVersion.guide} />
 
-      <ExampleOutput exampleOutput={template.current_version.example_output} />
+      <ExampleOutput exampleOutput={template.currentVersion.exampleOutput} />
 
       <TemplateMeta
         templateId={template.id}
-        usageCount={template.usage_count}
-        isFavorited={template.is_favorited}
+        usageCount={template.usageCount}
+        isFavorited={template.isFavorited}
         isSignedIn={!!session}
       />
     </main>
