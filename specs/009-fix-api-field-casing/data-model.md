@@ -32,7 +32,7 @@ Extends `TemplateListItem`'s fields (same renames as above) plus:
 | --- | --- | --- |
 | `prompt_body` | `promptBody` | |
 | `example_output` | `exampleOutput` | |
-| `created_at` | `createdAt` | |
+| `created_at` | **removed** | `TemplateVersion` has no `createdAt`/`created_at` field in `docs/api/openapi.yaml` at all (found during review, corrected post-merge) — the field was never real, so it's dropped rather than renamed. It was unused by any component. |
 | `guide` | unchanged | |
 | `version` | **unchanged in this fix** | OpenAPI names this `versionNumber`, a substantive (non-casing) rename — out of scope per `research.md`; keep `version` for now |
 

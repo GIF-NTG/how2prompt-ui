@@ -43,7 +43,6 @@ const MOCK_TEMPLATE: TemplateDetail = {
       en: '## Root Cause Analysis\n\nThe error `TypeError: Cannot read property "id" of undefined` at line 42 indicates...\n\n## Suggested Fix\n\nAdd optional chaining: `user?.id`\n\n## Edge Cases\n- Handle null user in auth middleware',
       vi: '## Phân tích nguyên nhân gốc\n\nLỗi `TypeError: Cannot read property "id" of undefined` tại dòng 42 cho thấy...\n\n## Gợi ý sửa lỗi\n\nThêm optional chaining: `user?.id`\n\n## Edge Case\n- Xử lý user null trong auth middleware',
     },
-    createdAt: '2026-07-20T10:00:00Z',
   },
 }
 

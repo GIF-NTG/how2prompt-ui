@@ -25,7 +25,6 @@ export interface TemplateVersion {
   promptBody: string
   guide: I18nString
   exampleOutput: I18nString
-  createdAt: string
 }
 
 export interface TemplateDetail {
