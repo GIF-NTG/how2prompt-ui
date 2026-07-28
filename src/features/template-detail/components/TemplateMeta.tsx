@@ -22,7 +22,7 @@ export function TemplateMeta({
     setToggling(true)
     try {
       const result = await templateDetailClient.toggleFavorite(templateId)
-      setFavorited(result.is_favorited)
+      setFavorited(result.isFavorited)
     } catch {
       // silently fail
     } finally {

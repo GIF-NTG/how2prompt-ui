@@ -51,7 +51,7 @@ export function createRealTemplateClient(): TemplateClient {
     },
 
     async toggleFavorite(templateId) {
-      return apiFetch<{ is_favorited: boolean }>(`/templates/${templateId}/favorite`, {
+      return apiFetch<{ isFavorited: boolean }>(`/templates/${templateId}/favorite`, {
         method: 'POST',
       })
     },
