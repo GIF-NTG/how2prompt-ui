@@ -250,13 +250,13 @@ with text (text appears appended) (quickstart.md step 4).
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T032 [P] Run `npm run lint` at the repo root and fix any issues
+- [X] T032 [P] Run `npm run lint` at the repo root and fix any issues
       introduced above
-- [ ] T033 [P] Run `npm run build` at the repo root and fix any type/build
+- [X] T033 [P] Run `npm run build` at the repo root and fix any type/build
       errors introduced above
-- [ ] T034 [P] Run `npm run test -- --run` at the repo root and confirm
+- [X] T034 [P] Run `npm run test -- --run` at the repo root and confirm
       100% pass, including every new test file from T016/T021/T027
-- [ ] T035 Run the full `quickstart.md` validation end-to-end (all of
+- [X] T035 Run the full `quickstart.md` validation end-to-end (all of
       spec.md's Acceptance Scenarios, SC-001–SC-005) in a running browser
       against the mock client, exercising the complete form → preview →
       generate → copy flow together (depends on T017, T022, T028, T031,
