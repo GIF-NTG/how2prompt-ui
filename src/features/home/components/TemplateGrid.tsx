@@ -5,7 +5,7 @@ interface TemplateGridProps {
   templates: TemplateListItem[]
   totalCount: number
   isSignedIn?: boolean
-  onTemplateClick?: (id: string) => void
+  onTemplateClick?: (slug: string) => void
 }
 
 export function TemplateGrid({

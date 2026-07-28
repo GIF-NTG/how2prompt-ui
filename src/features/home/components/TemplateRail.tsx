@@ -6,7 +6,7 @@ interface TemplateRailProps {
   subtitle?: string
   templates: TemplateListItem[]
   isSignedIn?: boolean
-  onTemplateClick?: (id: string) => void
+  onTemplateClick?: (slug: string) => void
 }
 
 export function TemplateRail({

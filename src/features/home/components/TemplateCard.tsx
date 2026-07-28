@@ -12,7 +12,7 @@ const MODEL_LABEL: Record<string, string> = {
 interface TemplateCardProps {
   template: TemplateListItem
   isSignedIn: boolean
-  onClick?: (id: string) => void
+  onClick?: (slug: string) => void
 }
 
 export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProps) {
@@ -32,7 +32,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
     <button
       type="button"
       className="group relative flex w-full flex-col gap-[0.55rem] rounded-[14px] border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
-      onClick={() => onClick?.(template.id)}
+      onClick={() => onClick?.(template.slug)}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap gap-1.5">

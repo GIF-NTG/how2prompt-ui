@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { templateClient } from '@/features/home/api/templateClient'
 import { useCatalogFilters } from '@/features/home/hooks/useCatalogFilters'
@@ -11,6 +12,7 @@ import { EmptyState } from '@/features/home/components/EmptyState'
 import type { TemplateListItem } from '@/features/home/types'
 
 export function CatalogPage() {
+  const navigate = useNavigate()
   const { session } = useAuth()
   const { filters, setTag, setModel, setSearch } = useCatalogFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
@@ -57,6 +59,13 @@ export function CatalogPage() {
   useEffect(() => {
     void loadData()
   }, [loadData])
+
+  const handleTemplateClick = useCallback(
+    (slug: string) => {
+      navigate(`/templates/${slug}`)
+    },
+    [navigate],
+  )
 
   const greeting = session
     ? `Chào ${session.displayName}, tìm mẫu prompt phù hợp`
@@ -108,6 +117,7 @@ export function CatalogPage() {
             subtitle="chọn bởi Admin"
             templates={featured}
             isSignedIn={!!session}
+            onTemplateClick={handleTemplateClick}
           />
 
           <TemplateRail
@@ -115,9 +125,15 @@ export function CatalogPage() {
             subtitle={trending.length > 0 ? `${trending.length} mẫu` : undefined}
             templates={trending}
             isSignedIn={!!session}
+            onTemplateClick={handleTemplateClick}
           />
 
-          <TemplateGrid templates={templates} totalCount={totalCount} isSignedIn={!!session} />
+          <TemplateGrid
+            templates={templates}
+            totalCount={totalCount}
+            isSignedIn={!!session}
+            onTemplateClick={handleTemplateClick}
+          />
         </>
       )}
     </main>
