@@ -31,7 +31,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
   return (
     <button
       type="button"
-      className="group relative flex w-full flex-col gap-[0.55rem] rounded-[14px] border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
+      className="group relative flex w-full cursor-pointer flex-col gap-[0.55rem] rounded-[14px] border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
       onClick={() => onClick?.(template.slug)}
     >
       <div className="flex items-start justify-between gap-2">
@@ -46,7 +46,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
           <button
             type="button"
             onClick={handleFavorite}
-            className={`flex h-[1.7rem] w-[1.7rem] flex-shrink-0 items-center justify-center rounded-lg border text-[0.85rem] leading-none transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
+            className={`flex h-[1.7rem] w-[1.7rem] flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border text-[0.85rem] leading-none transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
               isFavorited
                 ? 'border-[#C23A2E] bg-[#FBE7E4] text-[#C23A2E] dark:border-[#FF7A6B] dark:bg-[#3A2224] dark:text-[#FF7A6B]'
                 : 'border-[#DBDFD3] bg-white text-[#8B8F86] hover:border-[#C23A2E] hover:text-[#C23A2E] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#6D726A] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]'

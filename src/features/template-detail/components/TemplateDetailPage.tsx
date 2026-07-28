@@ -8,6 +8,7 @@ import { UsageGuide } from './UsageGuide'
 import { ExampleOutput } from './ExampleOutput'
 import { TemplateMeta } from './TemplateMeta'
 import { NotFoundState } from './NotFoundState'
+import { TemplateGenerateSection } from '@/features/template-generate/components/TemplateGenerateSection'
 
 export function TemplateDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -69,6 +70,8 @@ export function TemplateDetailPage() {
         isFavorited={template.isFavorited}
         isSignedIn={!!session}
       />
+
+      <TemplateGenerateSection template={template} />
     </main>
   )
 }
