@@ -1,12 +1,11 @@
 import { apiFetch } from '@/shared/utils/httpClient'
 import type { TemplateClient } from './templateClient.types'
 import type { TemplateListItem, AiModel, Category, Tag } from '../types'
-import type { PageInfo } from '@/shared/types/api'
+import type { PageMeta } from '@/shared/types/api'
 
 interface TemplatesResponse {
   data: TemplateListItem[]
-  page_info: PageInfo
-  total_count: number
+  meta: PageMeta
 }
 
 export function createRealTemplateClient(): TemplateClient {
@@ -18,8 +17,8 @@ export function createRealTemplateClient(): TemplateClient {
       if (params.tags) searchParams.set('tags', params.tags)
       if (params.model) searchParams.set('model', params.model)
       if (params.sort) searchParams.set('sort', params.sort)
-      if (params.limit) searchParams.set('limit', String(params.limit))
-      if (params.cursor) searchParams.set('cursor', params.cursor)
+      if (params.page !== undefined) searchParams.set('page', String(params.page))
+      if (params.size !== undefined) searchParams.set('size', String(params.size))
       const qs = searchParams.toString()
       return apiFetch<TemplatesResponse>(`/templates${qs ? `?${qs}` : ''}`)
     },

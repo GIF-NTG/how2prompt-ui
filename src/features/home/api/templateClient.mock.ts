@@ -1,5 +1,5 @@
 import type { TemplateClient } from './templateClient.types'
-import type { TemplateListItem, AiModel, Category } from '../types'
+import type { TemplateListItem, AiModel, Category, Tag } from '../types'
 
 const MOCK_MODELS: AiModel[] = [
   {
@@ -87,6 +87,13 @@ const MOCK_CATEGORIES: Category[] = [
   },
 ]
 
+const MOCK_TAGS: Tag[] = [
+  { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usage_count: 20 },
+  { id: 'tg2', slug: 'nhanh', name: 'Nhanh gọn', usage_count: 15 },
+  { id: 'tg3', slug: 'chuyen-nghiep', name: 'Chuyên nghiệp', usage_count: 18 },
+  { id: 'tg4', slug: 'sang-tao', name: 'Sáng tạo', usage_count: 10 },
+]
+
 const MOCK_TEMPLATES: TemplateListItem[] = [
   {
     id: 't1',
@@ -100,6 +107,7 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
     is_official: true,
     author: { id: null, full_name: 'Admin', username: 'admin', avatar_url: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[0]],
+    tags: [MOCK_TAGS[0], MOCK_TAGS[1]],
     supported_models: ['gpt-4o', 'claude'],
     usage_count: 482,
     favorite_count: 12,
@@ -118,6 +126,7 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
     is_official: true,
     author: { id: null, full_name: 'Admin', username: 'admin', avatar_url: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[2]],
+    tags: [MOCK_TAGS[2]],
     supported_models: ['gpt-4o', 'claude', 'gemini'],
     usage_count: 311,
     favorite_count: 8,
@@ -136,6 +145,7 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
     is_official: true,
     author: { id: null, full_name: 'Admin', username: 'admin', avatar_url: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[3]],
+    tags: [MOCK_TAGS[3], MOCK_TAGS[2]],
     supported_models: ['gpt-4o', 'gemini'],
     usage_count: 205,
     favorite_count: 5,
@@ -154,11 +164,37 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
     is_official: true,
     author: { id: null, full_name: 'Admin', username: 'admin', avatar_url: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[1]],
+    tags: [MOCK_TAGS[0]],
     supported_models: ['claude'],
     usage_count: 158,
     favorite_count: 3,
     is_favorited: false,
     created_at: '2026-07-17T00:00:00Z',
+  },
+  {
+    id: 't5',
+    slug: 'tom-tat-cuoc-hop',
+    title: { en: 'Summarize meeting notes', vi: 'Tóm tắt cuộc họp' },
+    description: {
+      en: 'Turn raw meeting notes into a structured summary with action items.',
+      vi: 'Biến ghi chú cuộc họp thô thành bản tóm tắt có cấu trúc kèm việc cần làm.',
+    },
+    cover_image: null,
+    is_official: false,
+    author: {
+      id: 'u1',
+      full_name: 'Nguyễn Văn A',
+      username: 'nguyenvana',
+      avatar_url: null,
+      type: 'user',
+    },
+    categories: [MOCK_CATEGORIES[2]],
+    tags: [MOCK_TAGS[1]],
+    supported_models: ['gpt-4o'],
+    usage_count: 600,
+    favorite_count: 2,
+    is_favorited: false,
+    created_at: '2026-07-21T00:00:00Z',
   },
 ]
 
@@ -181,15 +217,43 @@ export function createMockTemplateClient(): TemplateClient {
       if (params.model) {
         filtered = filtered.filter((t) => t.supported_models.includes(params.model!))
       }
+      if (params.category) {
+        const categorySlugs = params.category.split(',')
+        filtered = filtered.filter((t) => t.categories.some((c) => categorySlugs.includes(c.slug)))
+      }
       if (params.tags) {
         const tagSlugs = params.tags.split(',')
-        filtered = filtered.filter((t) => t.categories.some((c) => tagSlugs.includes(c.slug)))
+        filtered = filtered.filter((t) => t.tags.some((tag) => tagSlugs.includes(tag.slug)))
       }
+
+      if (params.sort === 'newest') {
+        filtered.sort((a, b) => b.created_at.localeCompare(a.created_at))
+      } else {
+        filtered.sort((a, b) => b.usage_count - a.usage_count)
+      }
+      filtered = [
+        ...filtered.filter((t) => t.is_official),
+        ...filtered.filter((t) => !t.is_official),
+      ]
+
       filtered = filtered.map((t) => ({ ...t, is_favorited: favorites.has(t.id) }))
+
+      const page = params.page ?? 0
+      const size = params.size ?? 20
+      const totalElements = filtered.length
+      const totalPages = Math.max(1, Math.ceil(totalElements / size))
+      const pageData = filtered.slice(page * size, page * size + size)
+
       return {
-        data: filtered,
-        page_info: { next_cursor: null, has_next: false },
-        total_count: filtered.length,
+        data: pageData,
+        meta: {
+          page,
+          size,
+          totalElements,
+          totalPages,
+          hasNext: (page + 1) * size < totalElements,
+          hasPrevious: page > 0,
+        },
       }
     },
 
@@ -214,8 +278,10 @@ export function createMockTemplateClient(): TemplateClient {
       return MOCK_CATEGORIES
     },
 
-    async getTags() {
-      return []
+    async getTags(params) {
+      if (!params?.q) return MOCK_TAGS
+      const q = params.q.toLowerCase()
+      return MOCK_TAGS.filter((t) => t.name.toLowerCase().includes(q))
     },
 
     async toggleFavorite(templateId) {
