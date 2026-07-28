@@ -130,7 +130,7 @@ function MultiselectInput({
             key={opt.value}
             type="button"
             onClick={() => toggle(opt.value)}
-            className={`cursor-pointer rounded-full border px-[0.75rem] py-[0.35rem] text-[0.8rem] transition-colors duration-150 ${
+            className={`cursor-pointer rounded-full border px-[0.75rem] py-[0.35rem] text-[0.8rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
               active
                 ? 'border-[#3652E0] bg-[#3652E0] text-white dark:border-[#8493FF] dark:bg-[#8493FF]'
                 : 'border-[#DBDFD3] bg-white text-[#4A4F4A] hover:border-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#A8ADA7] dark:hover:border-[#8493FF]'
@@ -196,7 +196,7 @@ function BooleanInput({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-[1.35rem] w-[2.4rem] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 ${
+        className={`relative inline-flex h-[1.35rem] w-[2.4rem] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
           checked
             ? 'bg-[#3652E0] dark:bg-[#8493FF]'
             : 'bg-[#DBDFD3] dark:bg-[#2C3130]'
@@ -335,7 +335,7 @@ export function FormField({
         </p>
       )}
       {error && (
-        <p className="m-0 text-[0.75rem] text-[#C23A2A] dark:text-[#FF7A6B]">
+        <p className="m-0 animate-[fade-slide-up_150ms_ease] text-[0.75rem] text-[#C23A2A] dark:text-[#FF7A6B]">
           {error}
         </p>
       )}

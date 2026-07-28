@@ -1,1 +1,73 @@
 @import 'tailwindcss';
+
+/* Switch `dark:` from Tailwind's default prefers-color-scheme media query to
+   a manual class strategy, so ThemeProvider can toggle independent of the OS
+   setting (see src/shared/context/ThemeProvider.tsx). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Two radius steps this design actually uses that fall between Tailwind's
+   built-in scale (lg=8px, xl=12px) — named so `rounded-panel`/`rounded-card`
+   replace the arbitrary `rounded-[10px]`/`rounded-[14px]` sprinkled
+   throughout src/features, consolidating them to one shared value each. */
+@theme {
+  --radius-panel: 0.625rem; /* 10px */
+  --radius-card: 0.875rem; /* 14px */
+}
+
+/* Route transitions: native View Transitions API, triggered via React
+   Router's `viewTransition` option on navigate()/<Link> (CatalogPage,
+   BackLink, NotFoundState). Cross-fade + slight slide-up — a single
+   direction-agnostic animation, since React Router's plain
+   `viewTransition` flag has no forward/back transition-types API. */
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: 160ms cubic-bezier(0.4, 0, 1, 1) both vt-fade-out;
+}
+::view-transition-new(root) {
+  animation: 220ms cubic-bezier(0, 0, 0.2, 1) both vt-fade-in;
+}
+
+/* Micro-interaction keyframes reused across features (favorite toggle,
+   generate result reveal). */
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

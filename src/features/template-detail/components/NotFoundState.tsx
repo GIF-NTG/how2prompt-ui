@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 export function NotFoundState() {
   return (
@@ -12,9 +13,11 @@ export function NotFoundState() {
       </p>
       <Link
         to="/"
+        viewTransition
         className="mt-2 inline-flex items-center gap-1 text-[0.88rem] text-[#3652E0] underline underline-offset-2 hover:text-[#2a3fb0] dark:text-[#8493FF] dark:hover:text-[#a3b0ff]"
       >
-        ← Quay lại thư viện
+        <ArrowLeft size={14} />
+        Quay lại thư viện
       </Link>
     </main>
   )

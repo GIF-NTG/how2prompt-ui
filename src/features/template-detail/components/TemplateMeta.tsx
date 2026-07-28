@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Heart } from 'lucide-react'
 import { templateDetailClient } from '../api/templateDetailClient'
 
 interface TemplateMetaProps {
@@ -40,13 +41,20 @@ export function TemplateMeta({
           type="button"
           onClick={() => void handleToggle()}
           disabled={toggling}
-          className={`flex h-[1.9rem] w-[1.9rem] items-center justify-center rounded-lg border text-[1rem] leading-none transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
+          aria-label={favorited ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
+          aria-pressed={favorited}
+          className={`flex h-[1.9rem] w-[1.9rem] cursor-pointer items-center justify-center rounded-lg border transition-colors duration-150 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-60 ${
             favorited
               ? 'border-[#C23A2E] bg-[#FBE7E4] text-[#C23A2E] dark:border-[#FF7A6B] dark:bg-[#3A2224] dark:text-[#FF7A6B]'
               : 'border-[#DBDFD3] bg-white text-[#8B8F86] hover:border-[#C23A2E] hover:text-[#C23A2E] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#6D726A] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]'
           }`}
         >
-          {favorited ? '♥' : '♡'}
+          <Heart
+            key={String(favorited)}
+            size={16}
+            fill={favorited ? 'currentColor' : 'none'}
+            className="animate-[pop_300ms_ease]"
+          />
         </button>
       )}
     </div>

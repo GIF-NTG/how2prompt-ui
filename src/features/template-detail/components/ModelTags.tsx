@@ -1,8 +1,4 @@
-const MODEL_LABEL: Record<string, string> = {
-  'gpt-4o': 'GPT-4o',
-  claude: 'Claude',
-  gemini: 'Gemini',
-}
+import { getModelLabel } from '@/shared/utils/modelLabel'
 
 interface ModelTagsProps {
   models: string[]
@@ -16,7 +12,7 @@ export function ModelTags({ models }: ModelTagsProps) {
           key={m}
           className="rounded-full bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] text-[#8B8F86] dark:bg-[#23282C] dark:text-[#6D726A]"
         >
-          {MODEL_LABEL[m] ?? m}
+          {getModelLabel(m)}
         </span>
       ))}
     </div>

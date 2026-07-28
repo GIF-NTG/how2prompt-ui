@@ -56,7 +56,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
               <div
                 aria-hidden
-                className="rounded-[14px] border border-[#DBDFD3] bg-white p-5 text-sm leading-relaxed text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
+                className="rounded-card border border-[#DBDFD3] bg-white p-5 text-sm leading-relaxed text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
               >
                 <span className="mb-2 block font-mono text-[0.68rem] tracking-wider text-[#8B8F86] uppercase dark:text-[#6D726A]">
                   raw_template preview

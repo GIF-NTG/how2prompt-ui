@@ -40,7 +40,7 @@ export function TemplateGenerateSection({ template }: TemplateGenerateSectionPro
   }, [generateClient, template.id, state.selectedModelCode, state.inputValues, state.extraInstructions])
 
   return (
-    <section className="flex flex-col gap-6 rounded-[10px] border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
+    <section className="flex flex-col gap-6 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
       <h2 className="m-0 text-[1.1rem] font-semibold text-[#14171A] dark:text-[#F3F5F0]">
         Tạo prompt từ template
       </h2>

@@ -88,7 +88,7 @@ export function RegisterPage() {
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="rounded-[14px] border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
+        className="rounded-card border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
       >
         Tôi tên là{' '}
         <InlineBlank
@@ -123,7 +123,7 @@ export function RegisterPage() {
         <button
           type="button"
           onClick={() => setPasswordVisible((visible) => !visible)}
-          className="font-mono text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+          className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF]"
         >
           {passwordVisible ? 'ẩn' : 'hiện'}
         </button>{' '}
@@ -140,7 +140,7 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+            className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
             Đăng ký →
           </button>

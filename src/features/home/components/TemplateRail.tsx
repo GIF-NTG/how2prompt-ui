@@ -1,4 +1,5 @@
 import type { TemplateListItem } from '../types'
+import { useDragScroll } from '@/shared/hooks/useDragScroll'
 import { TemplateCard } from './TemplateCard'
 
 interface TemplateRailProps {
@@ -16,6 +17,8 @@ export function TemplateRail({
   isSignedIn,
   onTemplateClick,
 }: TemplateRailProps) {
+  const drag = useDragScroll<HTMLDivElement>()
+
   return (
     <section className="flex flex-col gap-[0.75rem]">
       <div className="flex items-baseline justify-between gap-4">
@@ -26,10 +29,24 @@ export function TemplateRail({
           </span>
         )}
       </div>
-      <div className="group flex gap-[0.9rem] overflow-x-auto pb-[0.35rem] scrollbar-small [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-[#DBDFD3] dark:[&::-webkit-scrollbar-thumb]:bg-[#2C3130]">
-        {templates.map((t) => (
+      <div
+        ref={drag.ref}
+        onPointerDown={drag.onPointerDown}
+        onPointerMove={drag.onPointerMove}
+        onPointerUp={drag.onPointerUp}
+        onPointerLeave={drag.onPointerLeave}
+        onPointerCancel={drag.onPointerCancel}
+        onClickCapture={drag.onClickCapture}
+        className="flex cursor-grab gap-[0.9rem] overflow-x-auto pb-[0.35rem] select-none [scrollbar-width:none] active:cursor-grabbing [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {templates.map((t, index) => (
           <div key={t.id} className="min-w-[240px] flex-[0_0_auto]">
-            <TemplateCard template={t} isSignedIn={!!isSignedIn} onClick={onTemplateClick} />
+            <TemplateCard
+              template={t}
+              isSignedIn={!!isSignedIn}
+              onClick={onTemplateClick}
+              index={index}
+            />
           </div>
         ))}
       </div>

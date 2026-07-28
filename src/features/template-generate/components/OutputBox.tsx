@@ -10,7 +10,7 @@ export function OutputBox({ result }: OutputBoxProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-[8px] border border-[#E2E5DC] bg-[#F3F5F0] p-4 dark:border-[#2C3130] dark:bg-[#14171A]">
+    <div className="flex animate-[fade-slide-up_250ms_ease] flex-col gap-2 rounded-lg border border-[#E2E5DC] bg-[#F3F5F0] p-4 dark:border-[#2C3130] dark:bg-[#14171A]">
       <h3 className="m-0 text-sm font-semibold text-[#14171A] dark:text-[#F3F5F0]">Kết quả</h3>
       <pre className="m-0 whitespace-pre-wrap font-mono text-sm text-[#14171A] dark:text-[#F3F5F0]">
         {result.finalPrompt}

@@ -56,7 +56,7 @@ export function EmailVerificationBanner() {
           type="button"
           onClick={() => void handleResend()}
           disabled={sending || secondsLeft > 0}
-          className="font-mono text-xs text-[#3652E0] underline underline-offset-2 disabled:no-underline disabled:opacity-60 dark:text-[#8493FF]"
+          className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:no-underline disabled:opacity-60 dark:text-[#8493FF]"
         >
           {secondsLeft > 0 ? `Gửi lại email (${countdownLabel})` : 'Gửi lại email'}
         </button>

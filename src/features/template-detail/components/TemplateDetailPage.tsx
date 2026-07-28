@@ -41,8 +41,8 @@ export function TemplateDetailPage() {
           <div className="h-[1.5rem] w-[4rem] animate-pulse rounded-full bg-[#DBDFD3] dark:bg-[#2C3130]" />
           <div className="h-[1.5rem] w-[5rem] animate-pulse rounded-full bg-[#DBDFD3] dark:bg-[#2C3130]" />
         </div>
-        <div className="h-[8rem] animate-pulse rounded-[10px] bg-[#DBDFD3] dark:bg-[#2C3130]" />
-        <div className="h-[10rem] animate-pulse rounded-[10px] bg-[#DBDFD3] dark:bg-[#2C3130]" />
+        <div className="h-[8rem] animate-pulse rounded-panel bg-[#DBDFD3] dark:bg-[#2C3130]" />
+        <div className="h-[10rem] animate-pulse rounded-panel bg-[#DBDFD3] dark:bg-[#2C3130]" />
       </main>
     )
   }

@@ -1,3 +1,4 @@
+import { ApiError } from '@/shared/utils/httpClient'
 import type { TemplateDetailClient } from './templateDetailClient.types'
 import type { TemplateDetail } from '../types'
 
@@ -486,7 +487,7 @@ export function createMockTemplateDetailClient(): TemplateDetailClient {
     async getDetail(slug) {
       const template = MOCK_TEMPLATES_BY_SLUG.get(slug)
       if (!template) {
-        throw new Error('TEMPLATE_NOT_FOUND')
+        throw new ApiError('TEMPLATE_NOT_FOUND', 'Không tìm thấy mẫu.', 404)
       }
       return { ...template, isFavorited: favorites.has(template.id) }
     },

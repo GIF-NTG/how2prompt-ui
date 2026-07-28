@@ -8,6 +8,7 @@ import { SearchBox } from '@/features/home/components/SearchBox'
 import { FilterBar } from '@/features/home/components/FilterBar'
 import { TemplateRail } from '@/features/home/components/TemplateRail'
 import { TemplateGrid } from '@/features/home/components/TemplateGrid'
+import { TemplateGridSkeleton } from '@/features/home/components/TemplateGridSkeleton'
 import { EmptyState } from '@/features/home/components/EmptyState'
 import type { TemplateListItem } from '@/features/home/types'
 
@@ -107,7 +108,7 @@ export function CatalogPage() {
 
   const handleTemplateClick = useCallback(
     (slug: string) => {
-      navigate(`/templates/${slug}`)
+      navigate(`/templates/${slug}`, { viewTransition: true })
     },
     [navigate],
   )
@@ -131,7 +132,7 @@ export function CatalogPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
-      <div className="flex flex-col gap-2">
+      <div className="flex animate-[fade-slide-up_450ms_ease] flex-col gap-2">
         <span className="before:mr-1.5 before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3652E0] font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF] dark:before:bg-[#8493FF]">
           templates · guest & member
         </span>
@@ -144,17 +145,22 @@ export function CatalogPage() {
         </p>
       </div>
 
-      <FilterBar
-        filters={filters}
-        onModelChange={setModel}
-        onCategoryChange={setCategory}
-        onTagChange={setTag}
-        onSortChange={setSort}
-        search={<SearchBox value={filters.search} onChange={setSearch} />}
-      />
+      <div
+        className="animate-[fade-slide-up_450ms_ease_backwards]"
+        style={{ animationDelay: '80ms' }}
+      >
+        <FilterBar
+          filters={filters}
+          onModelChange={setModel}
+          onCategoryChange={setCategory}
+          onTagChange={setTag}
+          onSortChange={setSort}
+          search={<SearchBox value={filters.search} onChange={setSearch} />}
+        />
+      </div>
 
       {loading && !error ? (
-        <p className="text-[0.88rem] text-[#8B8F86] dark:text-[#6D726A]">Đang tải...</p>
+        <TemplateGridSkeleton />
       ) : templates.length === 0 ? (
         <EmptyState />
       ) : (

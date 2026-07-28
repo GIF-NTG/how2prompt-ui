@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
+import { ThemeToggle } from './ThemeToggle'
 
 export function TopBar() {
   const { session, signOut } = useAuth()
@@ -41,6 +42,8 @@ export function TopBar() {
           </Link>
         </nav>
 
+        <ThemeToggle />
+
         {session ? (
           <div className="flex items-center gap-3">
             <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E7EAFC] font-mono text-[0.85rem] font-bold text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
@@ -56,7 +59,7 @@ export function TopBar() {
             <button
               type="button"
               onClick={() => void signOut()}
-              className="font-mono text-[0.78rem] text-[#5B5F58] underline underline-offset-2 hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
+              className="font-mono text-[0.78rem] text-[#5B5F58] underline underline-offset-2 hover:text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
             >
               Đăng xuất
             </button>
