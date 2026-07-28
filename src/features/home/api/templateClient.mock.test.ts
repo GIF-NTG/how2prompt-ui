@@ -35,4 +35,18 @@ describe('createMockTemplateClient().getTemplates', () => {
     const lastPage = await client.getTemplates({ page: meta.totalPages - 1, size: 50 })
     expect(lastPage.meta.hasNext).toBe(false)
   })
+
+  it('orders differently for "popular" vs "newest", both still official-first', async () => {
+    const client = createMockTemplateClient()
+    const popular = await client.getTemplates({ sort: 'popular', size: 50 })
+    const newest = await client.getTemplates({ sort: 'newest', size: 50 })
+
+    expect(popular.data.map((t) => t.id)).not.toEqual(newest.data.map((t) => t.id))
+
+    for (const { data } of [popular, newest]) {
+      const firstNonOfficialIndex = data.findIndex((t) => !t.is_official)
+      const lastOfficialIndex = data.map((t) => t.is_official).lastIndexOf(true)
+      expect(lastOfficialIndex).toBeLessThan(firstNonOfficialIndex)
+    }
+  })
 })

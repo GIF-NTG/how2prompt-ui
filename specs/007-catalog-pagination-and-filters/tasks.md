@@ -136,21 +136,21 @@ active filter preserved (`quickstart.md` step 3).
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Add a sort `<select>` (Phổ biến nhất / Mới nhất) to
+- [X] T012 [US2] Add a sort `<select>` (Phổ biến nhất / Mới nhất) to
       `src/features/home/components/FilterBar.tsx`, styled per the existing
       `.model-select` token pattern
-- [ ] T013 [US2] Add `sort: 'popular' | 'newest'` URL-synced state
+- [X] T013 [US2] Add `sort: 'popular' | 'newest'` URL-synced state
       (`?sort=`, default `'popular'`) to
       `src/features/home/hooks/useCatalogFilters.ts`
-- [ ] T014 [US2] In `src/features/home/pages/CatalogPage.tsx`, wire the
+- [X] T014 [US2] In `src/features/home/pages/CatalogPage.tsx`, wire the
       selected sort value into the `getTemplates` call and trigger the
       pagination reset from T009 whenever `sort` changes (depends on T009,
       T012, T013)
-- [ ] T015 [US2] Add test cases to
+- [X] T015 [US2] Add test cases to
       `src/features/home/pages/CatalogPage.test.tsx` covering: selecting
       "Mới nhất" re-orders the grid and resets to page one; an active filter
       survives a sort change
-- [ ] T016 [US2] Manually verify sort switching against `quickstart.md` step
+- [X] T016 [US2] Manually verify sort switching against `quickstart.md` step
       3, confirming SC-002
 
 **Checkpoint**: User Stories 1 and 2 both work independently and together.
@@ -171,30 +171,30 @@ the exact same filtered view restores (`quickstart.md` step 4).
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Add a `category: string` URL-synced state (`?category=`) to
+- [X] T017 [US3] Add a `category: string` URL-synced state (`?category=`) to
       `src/features/home/hooks/useCatalogFilters.ts` alongside the existing
       `tag` field, and repoint `tag` to represent the Tag filter (not
       Category) going forward (depends on T013, same file)
-- [ ] T018 [US3] Generalize
+- [X] T018 [US3] Generalize
       `src/features/home/components/TagFilterChips.tsx` into a reusable
       chip-group component parameterized by `{ items, value, onChange,
       label }`, preserving its current visual/ARIA behavior
-- [ ] T019 [US3] In `src/features/home/components/FilterBar.tsx`, compose
+- [X] T019 [US3] In `src/features/home/components/FilterBar.tsx`, compose
       two chip-group instances — one fed by `getCategories()` driving
       `category`, one fed by `getTags()` driving `tag` — alongside the
       existing model filter and the sort control from T012 (depends on
       T012, T018)
-- [ ] T020 [US3] In `src/features/home/pages/CatalogPage.tsx`, pass
+- [X] T020 [US3] In `src/features/home/pages/CatalogPage.tsx`, pass
       `category: queryKey.category` and `tags: queryKey.tag` to
       `getTemplates` (previously both were incorrectly sent as `tags`), and
       include `category`/`tag` in the pagination-reset dependency list from
       T009/T014 (depends on T014, T017, T019)
-- [ ] T021 [US3] Add test cases to
+- [X] T021 [US3] Add test cases to
       `src/features/home/pages/CatalogPage.test.tsx` covering: selecting a
       Category and a Tag together narrows results with AND logic; clearing
       one preserves the other; loading a URL with both params pre-selects
       both filters
-- [ ] T022 [US3] Manually verify Category/Tag composition and URL
+- [X] T022 [US3] Manually verify Category/Tag composition and URL
       deep-linking against `quickstart.md` step 4, confirming SC-004 and
       SC-005
 
@@ -205,15 +205,20 @@ combination.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T023 [P] Run `npm run lint` at the repo root and fix any issues
+- [X] T023 [P] Run `npm run lint` at the repo root and fix any issues
       introduced above
-- [ ] T024 [P] Run `npm run build` at the repo root and fix any type/build
+- [X] T024 [P] Run `npm run build` at the repo root and fix any type/build
       errors introduced above
-- [ ] T025 [P] Run `npm run test -- --run` at the repo root and confirm
+- [X] T025 [P] Run `npm run test -- --run` at the repo root and confirm
       100% pass, including the new cases from T010/T015/T021
-- [ ] T026 Run the full `quickstart.md` validation end-to-end (SC-001
+- [X] T026 Run the full `quickstart.md` validation end-to-end (SC-001
       through SC-005) in a running browser against the mock client (depends
-      on T011, T016, T022, T023, T024, T025)
+      on T011, T016, T022, T023, T024, T025) (final combined pass: applied
+      Category filter + sort=newest together in the same session, light and
+      dark themes, via Playwright against the real dev server — correct
+      narrowed+ordered result, correct URL, zero console errors in both
+      themes; individual SC-001–SC-005 evidence already captured in
+      T011/T016/T022)
 
 ---
 

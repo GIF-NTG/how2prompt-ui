@@ -16,7 +16,7 @@ const PAGE_SIZE = 20
 export function CatalogPage() {
   const navigate = useNavigate()
   const { session } = useAuth()
-  const { filters, setTag, setModel, setSearch } = useCatalogFilters()
+  const { filters, setCategory, setTag, setModel, setSearch, setSort } = useCatalogFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
   const [featured, setFeatured] = useState<TemplateListItem[]>([])
   const [trending, setTrending] = useState<TemplateListItem[]>([])
@@ -30,8 +30,14 @@ export function CatalogPage() {
   const requestGeneration = useRef(0)
 
   const queryKey = useMemo(
-    () => ({ model: filters.model, tag: filters.tag, q: debouncedSearch }),
-    [filters.model, filters.tag, debouncedSearch],
+    () => ({
+      model: filters.model,
+      category: filters.category,
+      tag: filters.tag,
+      sort: filters.sort,
+      q: debouncedSearch,
+    }),
+    [filters.model, filters.category, filters.tag, filters.sort, debouncedSearch],
   )
 
   const loadData = useCallback(async () => {
@@ -44,11 +50,12 @@ export function CatalogPage() {
         templateClient.getFeatured(),
         templateClient.getTrending(),
         templateClient.getTemplates({
-          sort: 'popular',
+          sort: queryKey.sort,
           page: 0,
           size: PAGE_SIZE,
           q: queryKey.q || undefined,
           model: queryKey.model || undefined,
+          category: queryKey.category || undefined,
           tags: queryKey.tag || undefined,
         }),
       ])
@@ -78,11 +85,12 @@ export function CatalogPage() {
     setIsLoadingMore(true)
     try {
       const allData = await templateClient.getTemplates({
-        sort: 'popular',
+        sort: queryKey.sort,
         page: nextPage,
         size: PAGE_SIZE,
         q: queryKey.q || undefined,
         model: queryKey.model || undefined,
+        category: queryKey.category || undefined,
         tags: queryKey.tag || undefined,
       })
       if (generation !== requestGeneration.current) return
@@ -139,7 +147,9 @@ export function CatalogPage() {
       <FilterBar
         filters={filters}
         onModelChange={setModel}
+        onCategoryChange={setCategory}
         onTagChange={setTag}
+        onSortChange={setSort}
         search={<SearchBox value={filters.search} onChange={setSearch} />}
       />
 

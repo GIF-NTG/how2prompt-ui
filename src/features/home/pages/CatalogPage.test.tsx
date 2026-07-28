@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -41,10 +41,10 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
   }
 }
 
-function renderPage() {
+function renderPage(initialEntries: string[] = ['/']) {
   return render(
     <AuthProvider>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={initialEntries}>
         <CatalogPage />
       </MemoryRouter>
     </AuthProvider>,
@@ -148,5 +148,137 @@ describe('CatalogPage', () => {
     expect(
       officialCard.compareDocumentPosition(communityCard) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
+  })
+
+  it('re-fetches sorted by newest and resets to page one when the sort control changes', async () => {
+    mockedClient.getTemplates.mockResolvedValueOnce({
+      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+    })
+
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('First')
+
+    mockedClient.getTemplates.mockResolvedValueOnce({
+      data: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest', vi: 'Newest' } })],
+      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+    })
+
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp theo' }), 'newest')
+
+    await screen.findByText('Newest')
+    const lastCall = mockedClient.getTemplates.mock.calls.at(-1)?.[0]
+    expect(lastCall).toMatchObject({ sort: 'newest', page: 0 })
+  })
+
+  it('keeps an active model filter applied after changing the sort order', async () => {
+    mockedClient.getModels.mockResolvedValue([
+      {
+        id: 'm1',
+        code: 'claude',
+        name: 'Claude',
+        provider: 'anthropic',
+        model_type: 'text',
+        description: null,
+        capabilities: {},
+        icon_url: null,
+        is_active: true,
+        sort_order: 1,
+      },
+    ])
+    mockedClient.getTemplates.mockResolvedValue({
+      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+    })
+
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('First')
+
+    // ModelFilter's <select> is rendered before the sort <select> and has no
+    // accessible name of its own.
+    await user.selectOptions(screen.getAllByRole('combobox')[0], 'claude')
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({ model: 'claude' }),
+    )
+
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp theo' }), 'newest')
+
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
+        model: 'claude',
+        sort: 'newest',
+      }),
+    )
+  })
+
+  it('composes Category and Tag filters with AND logic, updating the URL independently', async () => {
+    mockedClient.getCategories.mockResolvedValue([
+      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parent_id: null, sort_order: 1, template_count: 1 },
+    ])
+    mockedClient.getTags.mockResolvedValue([
+      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usage_count: 1 },
+    ])
+    mockedClient.getTemplates.mockResolvedValue({
+      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+    })
+
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('First')
+
+    await user.click(await screen.findByRole('button', { name: 'Debugging' }))
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
+        category: 'debugging',
+        tags: undefined,
+      }),
+    )
+    expect(screen.getByRole('group', { name: 'Lọc theo chủ đề' })).toHaveTextContent('Debugging')
+
+    await user.click(screen.getByRole('button', { name: 'Chi tiết' }))
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
+        category: 'debugging',
+        tags: 'chi-tiet',
+      }),
+    )
+
+    // clearing only the Category filter (its own "Tất cả") preserves the Tag filter
+    const categoryGroup = screen.getByRole('group', { name: 'Lọc theo chủ đề' })
+    await user.click(within(categoryGroup).getByRole('button', { name: 'Tất cả' }))
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
+        category: undefined,
+        tags: 'chi-tiet',
+      }),
+    )
+  })
+
+  it('pre-selects Category and Tag filters when the catalog is opened with both in the URL', async () => {
+    mockedClient.getCategories.mockResolvedValue([
+      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parent_id: null, sort_order: 1, template_count: 1 },
+    ])
+    mockedClient.getTags.mockResolvedValue([
+      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usage_count: 1 },
+    ])
+    mockedClient.getTemplates.mockResolvedValue({
+      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+    })
+
+    renderPage(['/?category=debugging&tag=chi-tiet'])
+
+    await waitFor(() =>
+      expect(mockedClient.getTemplates).toHaveBeenCalledWith(
+        expect.objectContaining({ category: 'debugging', tags: 'chi-tiet' }),
+      ),
+    )
+    const categoryButton = await screen.findByRole('button', { name: 'Debugging' })
+    const tagButton = screen.getByRole('button', { name: 'Chi tiết' })
+    expect(categoryButton).toHaveAttribute('aria-pressed', 'true')
+    expect(tagButton).toHaveAttribute('aria-pressed', 'true')
   })
 })

@@ -1,18 +1,42 @@
 import { useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+export type CatalogSort = 'popular' | 'newest'
+
 export interface CatalogFilterState {
+  category: string
   tag: string
   model: string
   search: string
+  sort: CatalogSort
 }
 
 export function useCatalogFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
+  const category = searchParams.get('category') ?? ''
   const tag = searchParams.get('tag') ?? ''
   const model = searchParams.get('model') ?? ''
   const search = searchParams.get('q') ?? ''
+  const sort: CatalogSort = searchParams.get('sort') === 'newest' ? 'newest' : 'popular'
+
+  const setCategory = useCallback(
+    (slug: string) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (slug) {
+            next.set('category', slug)
+          } else {
+            next.delete('category')
+          }
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setSearchParams],
+  )
 
   const setTag = useCallback(
     (slug: string) => {
@@ -68,15 +92,35 @@ export function useCatalogFilters() {
     [setSearchParams],
   )
 
+  const setSort = useCallback(
+    (value: CatalogSort) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (value && value !== 'popular') {
+            next.set('sort', value)
+          } else {
+            next.delete('sort')
+          }
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setSearchParams],
+  )
+
   const resetFilters = useCallback(() => {
     setSearchParams({}, { replace: true })
   }, [setSearchParams])
 
   return {
-    filters: { tag, model, search } as CatalogFilterState,
+    filters: { category, tag, model, search, sort } as CatalogFilterState,
+    setCategory,
     setTag,
     setModel,
     setSearch,
+    setSort,
     resetFilters,
   }
 }

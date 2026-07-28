@@ -169,7 +169,7 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
     usage_count: 158,
     favorite_count: 3,
     is_favorited: false,
-    created_at: '2026-07-17T00:00:00Z',
+    created_at: '2026-07-22T00:00:00Z',
   },
   {
     id: 't5',
