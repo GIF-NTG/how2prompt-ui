@@ -37,7 +37,7 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap gap-1.5">
           {template.is_official && (
-            <span className="rounded-[5px] bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold uppercase tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
+            <span className="rounded-[5px] bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
               Chính thức
             </span>
           )}
@@ -48,8 +48,8 @@ export function TemplateCard({ template, isSignedIn, onClick }: TemplateCardProp
             onClick={handleFavorite}
             className={`flex h-[1.7rem] w-[1.7rem] flex-shrink-0 items-center justify-center rounded-lg border text-[0.85rem] leading-none transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
               isFavorited
-                ? 'border-[#C23A2A] bg-[#FBE7E4] text-[#C23A2A] dark:border-[#FF7A6B] dark:bg-[#3A2224] dark:text-[#FF7A6B]'
-                : 'border-[#DBDFD3] bg-white text-[#8B8F86] hover:border-[#C23A2A] hover:text-[#C23A2A] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#6D726A] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]'
+                ? 'border-[#C23A2E] bg-[#FBE7E4] text-[#C23A2E] dark:border-[#FF7A6B] dark:bg-[#3A2224] dark:text-[#FF7A6B]'
+                : 'border-[#DBDFD3] bg-white text-[#8B8F86] hover:border-[#C23A2E] hover:text-[#C23A2E] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#6D726A] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]'
             }`}
           >
             {isFavorited ? '♥' : '♡'}

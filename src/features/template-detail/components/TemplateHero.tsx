@@ -14,7 +14,7 @@ export function TemplateHero({ title, description, categories, isOfficial }: Tem
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
         {isOfficial && (
-          <span className="rounded-[5px] bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold uppercase tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
+          <span className="rounded-[5px] bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
             Chính thức
           </span>
         )}

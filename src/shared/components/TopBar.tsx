@@ -23,8 +23,8 @@ export function TopBar() {
             to="/"
             className={`text-[0.88rem] border-b border-transparent transition-colors duration-150 ${
               location.pathname === '/'
-                ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8]'
-                : 'text-[#5B5F58] hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]'
+                ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8] dark:border-b-[#6D726A]'
+                : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
             }`}
           >
             Thư viện
@@ -33,8 +33,8 @@ export function TopBar() {
             to="/history"
             className={`text-[0.88rem] border-b border-transparent transition-colors duration-150 ${
               location.pathname === '/history'
-                ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8]'
-                : 'text-[#5B5F58] hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]'
+                ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8] dark:border-b-[#6D726A]'
+                : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
             }`}
           >
             Lịch sử

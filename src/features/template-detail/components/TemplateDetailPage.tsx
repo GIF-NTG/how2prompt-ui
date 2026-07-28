@@ -20,7 +20,7 @@ export function TemplateDetailPage() {
 
   if (error) {
     return (
-      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-5 pb-16 pt-8 sm:px-[clamp(1.25rem,4vw,3rem)]">
+      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
         <BackLink />
         <p className="m-0 text-[0.88rem] text-[#C23A2A] dark:text-[#FF7A6B]">{error}</p>
       </main>
@@ -29,7 +29,7 @@ export function TemplateDetailPage() {
 
   if (isLoading || !template) {
     return (
-      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-5 pb-16 pt-8 sm:px-[clamp(1.25rem,4vw,3rem)]">
+      <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
         <div className="h-[1rem] w-[12rem] animate-pulse rounded bg-[#DBDFD3] dark:bg-[#2C3130]" />
         <div className="flex flex-col gap-3">
           <div className="h-[1rem] w-[6rem] animate-pulse rounded bg-[#DBDFD3] dark:bg-[#2C3130]" />
@@ -47,7 +47,7 @@ export function TemplateDetailPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-5 pb-16 pt-8 sm:px-[clamp(1.25rem,4vw,3rem)]">
+    <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
       <BackLink />
 
       <TemplateHero
