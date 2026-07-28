@@ -8,7 +8,7 @@
 
 **Input**: User description: "Hoàn thiện Epic 1 còn thiếu theo how2prompt-agentic/agent/BA.md US-1.5: forgot/reset password." (split out of the original combined "Account Recovery & Profile Management" spec — see Assumptions)
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Recover access via forgotten password (Priority: P1)
 
@@ -63,7 +63,7 @@ old one.
   the page loads; an already-used token is treated as expired (scenario already
   covered).
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -87,7 +87,7 @@ old one.
   short-lived, single-use, not directly visible to the user beyond the confirmation
   message.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

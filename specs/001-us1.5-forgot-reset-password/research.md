@@ -17,17 +17,18 @@ returning `410 Gone` for an expired/already-used token, but gives no example
 `error.code` string for that case (unlike, say, `EMAIL_ALREADY_EXISTS` or
 `TOKEN_EXPIRED`, which the contract does show). Per Constitution Principle III,
 `docs/api/openapi.yaml` is the literal wire-contract source of truth — since it only
-documents the *status code* for this case, not a specific `error.code`, the frontend
+documents the _status code_ for this case, not a specific `error.code`, the frontend
 should branch on the HTTP status (`410`) rather than guess an unconfirmed
 `error.code` string. Guessing wrong would silently misclassify a real "link expired"
 response as a generic error, breaking spec FR-004's "clear message and a path back to
 requesting a new one" requirement.
 
 **Alternatives considered**:
-- *Assume a specific `error.code` (e.g. `RESET_TOKEN_EXPIRED`) without confirming
-  it against the contract* — rejected: not documented, risks a false negative the
+
+- _Assume a specific `error.code` (e.g. `RESET_TOKEN_EXPIRED`) without confirming
+  it against the contract_ — rejected: not documented, risks a false negative the
   first time this runs against the real backend.
-- *Leave `ApiError` unchanged and treat all reset-password failures identically* —
+- _Leave `ApiError` unchanged and treat all reset-password failures identically_ —
   rejected: fails spec Acceptance Scenario 4 (expired/used link needs a distinct,
   actionable message, not a generic error).
 
@@ -50,7 +51,8 @@ Assumptions), and the show/hide toggle already gives the user a way to check wha
 they typed.
 
 **Alternatives considered**:
-- *Add a confirm-password field* — rejected: inconsistent with Register's existing
+
+- _Add a confirm-password field_ — rejected: inconsistent with Register's existing
   pattern for no stated reason in the spec; would need its own justification the spec
   doesn't provide.
 
@@ -68,7 +70,8 @@ visual tokens rather than introducing new UI patterns per screen. Both new pages
 auth screens in the same Epic 1 identity surface as Login/Register.
 
 **Alternatives considered**:
-- *Build a plain (non-pill) form for these two screens* — rejected: would introduce a
+
+- _Build a plain (non-pill) form for these two screens_ — rejected: would introduce a
   second, inconsistent visual pattern within the same feature slice for no
   spec-driven reason.
 
@@ -85,6 +88,7 @@ travels as a query parameter, consistent with how `GoogleCallbackPage` already r
 token" flow.
 
 **Alternatives considered**:
-- *Nest both under `/auth/...`* (matching `auth/google/callback`) — rejected: `login`
+
+- _Nest both under `/auth/...`_ (matching `auth/google/callback`) — rejected: `login`
   and `register` are already top-level, not nested under `/auth`; nesting only the
   new two would be inconsistent with its closer siblings.

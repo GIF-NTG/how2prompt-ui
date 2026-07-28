@@ -55,7 +55,9 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout>
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">Quên mật khẩu</h2>
+        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+          Quên mật khẩu
+        </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
           Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
         </p>
@@ -107,7 +109,10 @@ export function ForgotPasswordPage() {
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
         Nhớ ra mật khẩu rồi?{' '}
-        <Link to="/login" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+        <Link
+          to="/login"
+          className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
+        >
           Đăng nhập
         </Link>
       </p>

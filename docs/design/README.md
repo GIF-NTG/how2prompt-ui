@@ -5,6 +5,7 @@ approved visual direction for How2Prompt, updated for the SRS v2.0 restructure. 
 it directly in a browser — no build step needed.
 
 It covers:
+
 - Login / Register / Forgot password / Reset password (the screens implemented in
   `src/features/auth`, including `001-us1.5-forgot-reset-password`)
 - Post-login workspace, redrawn to match `how2prompt-agentic/agent/BA.md` (not the
@@ -24,6 +25,7 @@ This is the reference an agent (or a human) should check before building or
 restyling any screen in this app, so the result matches what was already designed
 and approved instead of re-deriving a look from scratch. Treat it as the source of
 truth for:
+
 - **Color tokens** (`:root` custom properties — cool paper neutrals, indigo accent,
   full light/dark support via `prefers-color-scheme` and a `data-theme` override)
 - **Typography** (system sans for body/headings, monospace reserved specifically for

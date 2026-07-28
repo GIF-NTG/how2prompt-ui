@@ -94,11 +94,11 @@ only, not verified against a backend (documented limitation, see
 
 ### 9. Google sign-in, linked to existing account (US4, scenario 2)
 
-1. Register a password-based account using the *same* email address as the Google
+1. Register a password-based account using the _same_ email address as the Google
    account you'll use in the next step.
 2. Sign out.
 3. Choose "Đăng nhập bằng Google" and pick that same Google account.
-4. **Expect**: signed into the *same* account (not a second, duplicate one) — confirm
+4. **Expect**: signed into the _same_ account (not a second, duplicate one) — confirm
    via the displayed identifier matching the original account's display name.
 
 ### 10. Dismiss the Google prompt (US4, scenario 3)

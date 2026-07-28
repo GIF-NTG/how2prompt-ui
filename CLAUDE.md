@@ -7,6 +7,7 @@ variables, get a rendered prompt back to copy.
 
 Full specs live in the `how2prompt-agentic` submodule (SRS v2.0) — treat these as
 source of truth, not this file:
+
 - `how2prompt-agentic/docs/SRS.md` — software requirements spec (epics, roadmap
   phases, non-functional requirements).
 - `how2prompt-agentic/docs/use-cases.md` — detailed use cases per epic.
@@ -103,7 +104,7 @@ envelope matches `agent/BA.md` §4.3.
   React Router 7, Vitest + Testing Library (jsdom environment).
 - **Structure**: feature-first under `src/features/<feature>/pages` (see
   `src/features/home`); shared cross-feature code under `src/shared/{components,hooks,
-  types,utils}`; app shell/routing under `src/app`.
+types,utils}`; app shell/routing under `src/app`.
 - **Path alias**: `@` → `src/`.
 - **Lint/format**: `oxlint` (rules in `.oxlintrc.json`: `react/rules-of-hooks` error,
   `react/only-export-components` warn) and `prettier` (`.prettierrc`: no semicolons,

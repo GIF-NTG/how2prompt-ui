@@ -54,21 +54,21 @@ and auth-state primitives they depend on. No multi-tenant, no concurrency concer
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Status | Notes |
-|---|---|---|
-| I. Fill-the-Blank Interaction Integrity | **PASS** | Auto-resize MUST reuse the single hidden-span technique — implemented once as a shared hook (`src/shared/hooks`), not duplicated inside the auth feature. Tab/Shift+Tab order and empty-required-field block+highlight+autofocus are carried over from the existing pattern (spec FR-004, FR-006). |
-| II. Spec-Before-Code | **PASS** | This plan follows the approved `spec.md` (clarified 2026-07-24); no implementation starts before `/speckit-tasks` breaks it into tasks. |
-| III. Contract & Error Consistency | **PASS (amended 2026-07-24, real client implemented same day)** | Backend supplied `docs/api/openapi.yaml`: error envelope is `{ error: { code, message, details, trace_id } }` (not RFC-7807). `authClient.real.ts` now implements the real contract directly — `errorCode` values (`INVALID_CREDENTIALS`, `EMAIL_ALREADY_EXISTS`) match exactly, and the real nested envelope is mapped onto `AuthOutcome`'s flat shape inside that one file via `httpClient.ts`'s `ApiError`. |
-| IV. Security Non-Negotiables | **PASS (scoped)** | BCrypt/HTTPS apply once a real backend exists; until then, the equivalent obligation is: the mock `AuthClient` MUST NOT persist or log a raw password anywhere (not to `localStorage`, not to console) — only the resulting mocked session token is stored. |
-| V. Verified Before Done | **PASS (enforced at implement time)** | `oxlint`, `tsc -b && vite build`, and `vitest` must pass, and both screens must be exercised in a running browser (light + dark), before any task is marked done. |
+| Principle                               | Status                                                          | Notes                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I. Fill-the-Blank Interaction Integrity | **PASS**                                                        | Auto-resize MUST reuse the single hidden-span technique — implemented once as a shared hook (`src/shared/hooks`), not duplicated inside the auth feature. Tab/Shift+Tab order and empty-required-field block+highlight+autofocus are carried over from the existing pattern (spec FR-004, FR-006).                                                                                                             |
+| II. Spec-Before-Code                    | **PASS**                                                        | This plan follows the approved `spec.md` (clarified 2026-07-24); no implementation starts before `/speckit-tasks` breaks it into tasks.                                                                                                                                                                                                                                                                        |
+| III. Contract & Error Consistency       | **PASS (amended 2026-07-24, real client implemented same day)** | Backend supplied `docs/api/openapi.yaml`: error envelope is `{ error: { code, message, details, trace_id } }` (not RFC-7807). `authClient.real.ts` now implements the real contract directly — `errorCode` values (`INVALID_CREDENTIALS`, `EMAIL_ALREADY_EXISTS`) match exactly, and the real nested envelope is mapped onto `AuthOutcome`'s flat shape inside that one file via `httpClient.ts`'s `ApiError`. |
+| IV. Security Non-Negotiables            | **PASS (scoped)**                                               | BCrypt/HTTPS apply once a real backend exists; until then, the equivalent obligation is: the mock `AuthClient` MUST NOT persist or log a raw password anywhere (not to `localStorage`, not to console) — only the resulting mocked session token is stored.                                                                                                                                                    |
+| V. Verified Before Done                 | **PASS (enforced at implement time)**                           | `oxlint`, `tsc -b && vite build`, and `vitest` must pass, and both screens must be exercised in a running browser (light + dark), before any task is marked done.                                                                                                                                                                                                                                              |
 
 No violations — Complexity Tracking table is not needed.
 
 **Post-Phase 1 re-check**: `data-model.md`, `contracts/auth-client.md`, and
 `quickstart.md` (Phase 1 outputs) introduce nothing that changes the table above —
-the `AuthClient` contract *is* the single integration point Principle III/FR-009
+the `AuthClient` contract _is_ the single integration point Principle III/FR-009
 require, the shared `useAutoResizeBlank` hook placement satisfies Principle I, and no
 new dependency or persistence mechanism beyond one `localStorage` key was introduced.
 Gate remains **PASS**.
@@ -145,4 +145,4 @@ pattern — never committed). Setting `VITE_API_BASE_URL` (added 2026-07-24) swi
 
 ## Complexity Tracking
 
-*No constitution violations — not applicable.*
+_No constitution violations — not applicable._

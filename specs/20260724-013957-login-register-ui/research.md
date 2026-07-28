@@ -17,7 +17,8 @@ in the app can point straight at `/register`), and keeps each view's test file f
 on one form.
 
 **Alternatives considered**:
-- *Single `/auth` route with a tab toggle in local state* — rejected: works, but
+
+- _Single `/auth` route with a tab toggle in local state_ — rejected: works, but
   produces one large component mixing two forms' validation and mock-call logic, and
   loses direct linkability to "just the register form."
 
@@ -33,10 +34,11 @@ requires changes at exactly one integration point") a literal, checkable meaning
 which implementation `authClient.ts` re-exports.
 
 **Alternatives considered**:
-- *Calling `fetch`/Axios directly from each form component, pointed at a not-yet-real
-  URL* — rejected: violates FR-009 outright (communication logic embedded in forms)
+
+- _Calling `fetch`/Axios directly from each form component, pointed at a not-yet-real
+  URL_ — rejected: violates FR-009 outright (communication logic embedded in forms)
   and would need every form touched again once a real backend exists.
-- *A feature flag / environment variable toggling mock vs. real inline in each form* —
+- _A feature flag / environment variable toggling mock vs. real inline in each form_ —
   rejected: still duplicates the branching logic per call site instead of in one place.
 
 ## Decision: Mock failure shape uses `error_code` strings matching `agent/BA.md` §4.2
@@ -51,20 +53,22 @@ RFC-7807 `problem+json` body starts arriving — only where the code is read fro
 alone.
 
 **Alternatives considered**:
-- *Ad hoc boolean + free-text message per mock failure* — rejected: no stable key for
+
+- _Ad hoc boolean + free-text message per mock failure_ — rejected: no stable key for
   the UI to switch on, so adopting a real backend's `error_code` later would require
   rewriting every call site's error handling instead of one adapter.
 
 ## Decision: Auto-resize measuring technique lives in `src/shared/hooks`, not in the auth feature
 
 **Rationale**: Constitution Principle I is explicit that every placeholder/pill
-surface — present and future — must use the *same* hidden-span measuring technique
+surface — present and future — must use the _same_ hidden-span measuring technique
 (`agent/BA.md` §4.3). The auth forms are the second consumer of this technique after
 the (not-yet-built) Variable Canvas; putting it in `src/shared/hooks` from the start
 avoids a near-certain future duplication (and drift) once the Canvas is built.
 
 **Alternatives considered**:
-- *Copy a small measuring function into `features/auth/components`* — rejected:
+
+- _Copy a small measuring function into `features/auth/components`_ — rejected:
   exactly the duplication Principle I exists to prevent; the second real usage would
   either diverge from or be refactored out of the auth feature later anyway.
 
@@ -79,7 +83,8 @@ session-restore logic will not need behavioral changes when a real JWT replaces 
 mock token — only how the token is validated changes.
 
 **Alternatives considered**:
-- *Session lasts for the browser tab's lifetime only (sessionStorage, no expiry math)*
+
+- _Session lasts for the browser tab's lifetime only (sessionStorage, no expiry math)_
   — rejected: does not exercise the "restore across reload for a bounded period" path
   the real system needs (FR-011), so Story 3's demo-readiness goal would not actually
   prove that behavior.
@@ -94,7 +99,8 @@ that choosing the option resolves to a mocked signed-in (or first-time =
 account-creation) outcome, per FR-017-FR-019.
 
 **Alternatives considered**:
-- *Integrate `@react-oauth/google` now, pointed at a placeholder client ID* — rejected:
+
+- _Integrate `@react-oauth/google` now, pointed at a placeholder client ID_ — rejected:
   adds a real external dependency and a Google Cloud console setup step for a flow
   that cannot be verified end-to-end without a backend anyway; revisit when the real
   backend exists to exchange the Google token.
@@ -105,7 +111,7 @@ The user supplied a real Google OAuth Client ID mid-implementation and asked for
 actual Google account picker instead of a fixed mock identity. Revised decision:
 `signInWithGoogle()` now opens the real Google Identity Services (One Tap) prompt via
 `src/features/auth/api/googleIdentity.ts`, using `VITE_GOOGLE_CLIENT_ID` (a public
-value, safe in frontend code — **never** the OAuth client *secret*, which must only
+value, safe in frontend code — **never** the OAuth client _secret_, which must only
 ever live server-side and was explicitly not used here). The returned ID token is
 decoded client-side for its `email`/`name` claims **without signature verification**,
 since there is still no backend to verify it against — this remains a documented,
@@ -144,7 +150,7 @@ build it ahead of time so connecting a real backend is just setting one env var.
 New/changed files:
 
 - `src/features/auth/api/httpClient.ts` — thin `fetch` wrapper: `credentials:
-  'include'` (so the httpOnly `refresh_token` cookie flows automatically), parses
+'include'` (so the httpOnly `refresh_token` cookie flows automatically), parses
   the real `{ error: {...} }` envelope into a throwable `ApiError`, and exposes
   `isApiConfigured()` (true iff `VITE_API_BASE_URL` is set).
 - `src/features/auth/api/authClient.real.ts` — implements `AuthClient` against

@@ -45,7 +45,9 @@ describe('RegisterPage', () => {
     await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhau123')
     await user.click(screen.getByRole('button', { name: 'Đăng ký →' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Email này đã được đăng ký, hãy đăng nhập')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Email này đã được đăng ký, hãy đăng nhập',
+    )
   })
 
   it('blocks submission for empty name, malformed email, and short password', async () => {

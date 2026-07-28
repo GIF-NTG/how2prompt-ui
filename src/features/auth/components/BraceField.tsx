@@ -24,7 +24,12 @@ export function BraceField() {
         <span
           key={`${glyph.text}-${glyph.top}-${glyph.left}`}
           className="absolute whitespace-nowrap"
-          style={{ top: glyph.top, left: glyph.left, fontSize: glyph.size, transform: `rotate(${glyph.rotate})` }}
+          style={{
+            top: glyph.top,
+            left: glyph.left,
+            fontSize: glyph.size,
+            transform: `rotate(${glyph.rotate})`,
+          }}
         >
           {glyph.text}
         </span>

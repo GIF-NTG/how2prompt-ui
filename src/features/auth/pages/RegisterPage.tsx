@@ -157,7 +157,10 @@ export function RegisterPage() {
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
         Đã có tài khoản?{' '}
-        <Link to="/login" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+        <Link
+          to="/login"
+          className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
+        >
           Đăng nhập
         </Link>
       </p>

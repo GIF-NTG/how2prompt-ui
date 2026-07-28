@@ -8,7 +8,7 @@
 
 **Input**: User description: "Hoàn thiện Epic 1 còn thiếu theo how2prompt-agentic/agent/BA.md US-1.7: manage personal profile." (split out of the original combined "Account Recovery & Profile Management" spec — see Assumptions)
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Manage personal profile (Priority: P1)
 
@@ -48,7 +48,7 @@ across a page reload.
   nullable per the backend contract, so an empty value is a valid "no username set"
   state, not a validation error.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -71,7 +71,7 @@ across a page reload.
   bio, locale — distinct from account-security fields (email, password) which are
   not editable through this feature.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

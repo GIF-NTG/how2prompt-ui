@@ -37,15 +37,15 @@ Data comes from `GET /api/v1/templates`, `/templates/featured`, `/templates/tren
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Status | Notes |
-|-----------|--------|-------|
+| Principle                           | Status  | Notes                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | I. Dynamic Form Rendering Integrity | ✅ PASS | This feature is Epic 2 (catalog/browse), not Epic 3 (template generation). The catalog page uses standard boxed form controls (search, dropdown, chips), NOT the inline fill-in-the-blank pattern. The spec explicitly states FR-019: "standard boxed form controls — NOT the inline fill-in-the-blank pattern." No conflict. |
-| II. Spec-Before-Code | ✅ PASS | Spec exists at `specs/004-home-catalog-browse/spec.md`. This plan follows the spec → plan → tasks chain. |
-| III. Contract & Error Consistency | ✅ PASS | All endpoints use `/api/v1/...` namespace. Error responses follow `{ error: { code, message, details?, trace_id? } }`. The catalog endpoints are Guest-accessible (no auth token required). |
-| IV. Security Non-Negotiables | ✅ PASS | No passwords or credentials involved. No sensitive data in catalog responses. |
-| V. Verified Before Done | ✅ PASS | Will run `oxlint`, `tsc -b && vite build`, and `vitest` before reporting complete. |
+| II. Spec-Before-Code                | ✅ PASS | Spec exists at `specs/004-home-catalog-browse/spec.md`. This plan follows the spec → plan → tasks chain.                                                                                                                                                                                                                      |
+| III. Contract & Error Consistency   | ✅ PASS | All endpoints use `/api/v1/...` namespace. Error responses follow `{ error: { code, message, details?, trace_id? } }`. The catalog endpoints are Guest-accessible (no auth token required).                                                                                                                                   |
+| IV. Security Non-Negotiables        | ✅ PASS | No passwords or credentials involved. No sensitive data in catalog responses.                                                                                                                                                                                                                                                 |
+| V. Verified Before Done             | ✅ PASS | Will run `oxlint`, `tsc -b && vite build`, and `vitest` before reporting complete.                                                                                                                                                                                                                                            |
 
 **Post-Phase 1 Re-check**: Will re-evaluate after data model and contracts are defined.
 
@@ -126,5 +126,5 @@ so it lives in `shared/components/`.
 > No constitution violations — no complexity tracking needed.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| (none) | — | — |
+| --------- | ---------- | ------------------------------------ |
+| (none)    | —          | —                                    |

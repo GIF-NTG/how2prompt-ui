@@ -5,6 +5,7 @@ import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
+import { TemplateDetailPage } from '@/features/template-detail/components/TemplateDetailPage'
 import { VerifyEmailPage } from '@/features/auth/pages/VerifyEmailPage'
 import { ProfileSettingsPage } from '@/features/auth/pages/ProfileSettingsPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
@@ -29,6 +30,7 @@ export function App() {
 
           <Route element={<RootLayout />}>
             <Route index element={<CatalogPage />} />
+            <Route path="templates/:slug" element={<TemplateDetailPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

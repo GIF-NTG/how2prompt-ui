@@ -1,6 +1,5 @@
 ---
-
-description: "Task list for Login & Register UI (API-ready)"
+description: 'Task list for Login & Register UI (API-ready)'
 ---
 
 # Tasks: Login & Register UI (API-ready)
@@ -38,7 +37,7 @@ Frontend-only, feature-first (see plan.md Project Structure):
 dependencies are required (React Router, Tailwind, Vitest, Testing Library are
 already installed per `package.json`).
 
-- [X] T001 Create the feature directory skeleton: `src/features/auth/pages/`,
+- [x] T001 Create the feature directory skeleton: `src/features/auth/pages/`,
       `src/features/auth/components/`, `src/features/auth/api/`,
       `src/features/auth/context/` (empty dirs, per plan.md Project Structure)
 
@@ -47,14 +46,14 @@ already installed per `package.json`).
 ## Phase 2: Foundational (Blocking Prerequisites)
 
 **Purpose**: The shared contract, state, and interaction primitives every user story
-depends on. No story-specific auth *behavior* (login/register/Google logic) is
+depends on. No story-specific auth _behavior_ (login/register/Google logic) is
 implemented yet — only the seams the stories will fill in.
 
 **⚠️ CRITICAL**: No user story task may start until this phase is complete.
 
-- [X] T002 [P] Define `Account`, `Session`, `AuthOutcome`, `AuthErrorCode` types in
+- [x] T002 [P] Define `Account`, `Session`, `AuthOutcome`, `AuthErrorCode` types in
       `src/features/auth/api/types.ts` per data-model.md
-- [X] T003 Define the `AuthClient` interface (`login`, `register`,
+- [x] T003 Define the `AuthClient` interface (`login`, `register`,
       `signInWithGoogle`, `logout`, `restoreSession`) and a stub
       `createMockAuthClient()` in `src/features/auth/api/authClient.mock.ts` whose
       methods return/throw clearly-marked "not yet implemented" placeholders — this
@@ -63,14 +62,14 @@ implemented yet — only the seams the stories will fill in.
       _Implementation note: the `AuthClient` interface itself lives in
       `src/features/auth/api/authClient.types.ts` (not the mock file), so a future
       `authClient.real.ts` can implement it without importing from the mock module._
-- [X] T004 Re-export the active implementation as the single integration point in
+- [x] T004 Re-export the active implementation as the single integration point in
       `src/features/auth/api/authClient.ts`
       (`export const authClient = createMockAuthClient()`), per
       contracts/auth-client.md. Depends on T003.
-- [X] T005 [P] Implement the shared auto-resize measuring hook
+- [x] T005 [P] Implement the shared auto-resize measuring hook
       `useAutoResizeBlank` (hidden-span technique per Constitution Principle I /
       `agent/BA.md` §4.3) in `src/shared/hooks/useAutoResizeBlank.ts`
-- [X] T006 Implement `AuthContext` (`AuthProvider`, `useAuth()`): calls
+- [x] T006 Implement `AuthContext` (`AuthProvider`, `useAuth()`): calls
       `authClient.restoreSession()` on mount, exposes `session`, `signIn(session)`,
       and `signOut()` that delegate session persistence to `authClient`, in
       `src/features/auth/context/{AuthContext.ts,AuthProvider.tsx,useAuth.ts}`.
@@ -78,15 +77,15 @@ implemented yet — only the seams the stories will fill in.
       _Implementation note: split into 3 files (context object, provider component,
       hook) instead of 1, to satisfy the `react/only-export-components` lint rule
       (fast-refresh) — same public API as planned, just file layout._
-- [X] T007 Wrap the app in `AuthProvider` and add `/login` and `/register` routes
+- [x] T007 Wrap the app in `AuthProvider` and add `/login` and `/register` routes
       (rendering placeholder elements for now) in `src/app/App.tsx`. Depends on T006.
-- [X] T008 [P] Implement the shared `InlineBlankForm` presentational component
+- [x] T008 [P] Implement the shared `InlineBlankForm` presentational component
       (renders a sentence with `useAutoResizeBlank`-backed inline inputs; supports
       Tab/Shift+Tab order; on a submit attempt with empty required blanks, blocks,
       applies a red-highlight class, and autofocuses the first empty blank per
       FR-004/FR-006) in `src/features/auth/components/InlineBlankForm.tsx`.
       Depends on T005.
-- [X] T009 [P] Add a "Tiếp tục với vai trò Khách" link (dismisses authentication and
+- [x] T009 [P] Add a "Tiếp tục với vai trò Khách" link (dismisses authentication and
       navigates back to `/`) to the shared auth layout, satisfying FR-015 — rendered
       on both `LoginPage` and `RegisterPage`, in
       `src/features/auth/components/GuestContinueLink.tsx`. Depends on T007.
@@ -108,14 +107,14 @@ required blanks blocked — fully working end-to-end without any real backend.
 "Email hoặc mật khẩu không chính xác"; submit with the password blank empty →
 blocked, focused, no call made.
 
-- [X] T010 [US1] Implement `login(email, password)` in
+- [x] T010 [US1] Implement `login(email, password)` in
       `src/features/auth/api/authClient.mock.ts`: known-valid demo credentials →
       `{ status: 'success', session, accountCreated: false }`; anything else →
       `{ status: 'error', errorCode: 'INVALID_CREDENTIALS', message: 'Email hoặc mật
-      khẩu không chính xác' }`, per contracts/auth-client.md. Depends on T003.
+    khẩu không chính xác' }`, per contracts/auth-client.md. Depends on T003.
       _Demo credentials: `demo@how2prompt.dev` / `demo1234` (documented here since no
       other artifact pinned a concrete value — see spec-analysis finding C1)._
-- [X] T011 [US1] Build `LoginPage` using `InlineBlankForm` and
+- [x] T011 [US1] Build `LoginPage` using `InlineBlankForm` and
       `GuestContinueLink` (email + password blanks in a sentence), with pre-submit
       validation blocking empty blanks (FR-006) and malformed email (FR-007),
       calling `authClient.login` via `AuthContext.signIn` on submit, and rendering
@@ -133,12 +132,12 @@ blocked, focused, no call made.
       research.md while matching the visual design 1:1. `RegisterPage`'s placeholder
       in `App.tsx` also wraps in `AuthLayout` so the tabs look consistent before
       User Story 2 builds the real page._
-- [X] T012 [P] [US1] Add a password reveal/hide toggle to the password blank in
+- [x] T012 [P] [US1] Add a password reveal/hide toggle to the password blank in
       `LoginPage.tsx` (FR-005)
-- [X] T013 [P] [US1] Show the signed-in identifier and a sign-out control in the
+- [x] T013 [P] [US1] Show the signed-in identifier and a sign-out control in the
       primary navigation when `AuthContext` has a session, in
       `src/app/layout/RootLayout.tsx`. Depends on T006.
-- [X] T014 [US1] Write `src/features/auth/pages/LoginPage.test.tsx`: valid login
+- [x] T014 [US1] Write `src/features/auth/pages/LoginPage.test.tsx`: valid login
       shows signed-in state; invalid credentials show the Vietnamese message without
       clearing input; empty password blank blocks submission, flags it, and moves
       focus, with no call attempted. Depends on T011.
@@ -158,12 +157,12 @@ against the mock.
 submit → redirected to `/login` with an "account created" confirmation; repeat with
 an email the mock already knows → inline "Email này đã được đăng ký, hãy đăng nhập".
 
-- [X] T015 [US2] Implement `register(displayName, email, password)` in
+- [x] T015 [US2] Implement `register(displayName, email, password)` in
       `src/features/auth/api/authClient.mock.ts`: new email →
       `{ status: 'success', session: null, accountCreated: true }` and records the
       mock account; already-used email →
       `{ status: 'error', errorCode: 'EMAIL_ALREADY_EXISTS', message: 'Email
-      này đã được đăng ký, hãy đăng nhập' }`, per contracts/auth-client.md. Depends
+    này đã được đăng ký, hãy đăng nhập' }`, per contracts/auth-client.md. Depends
       on T003.
       _Implementation note: added a shared in-memory `mockAccounts` Map (seeded with
       the T010 demo account) and revised `login()` to check it, so an account
@@ -172,7 +171,7 @@ an email the mock already knows → inline "Email này đã được đăng ký,
       **Amended 2026-07-24**: error code renamed from `EMAIL_ALREADY_REGISTERED` to
       `EMAIL_ALREADY_EXISTS` to match the real backend contract
       (`docs/api/openapi.yaml`), received after this task was originally completed._
-- [X] T016 [US2] Build `RegisterPage` using `InlineBlankForm` and
+- [x] T016 [US2] Build `RegisterPage` using `InlineBlankForm` and
       `GuestContinueLink` (display name + email + password blanks), with pre-submit
       validation for empty blanks (FR-006), malformed email (FR-007), and password
       shorter than 8 characters (FR-008); on success navigates to `/login` with a
@@ -183,9 +182,9 @@ an email the mock already knows → inline "Email này đã được đăng ký,
       (`navigate('/login', { state: { justRegistered: true } })`); `LoginPage` reads
       it to show the "Đã tạo tài khoản thành công!" banner. `GuestContinueLink` is
       rendered by the shared `AuthLayout`, not duplicated in this page._
-- [X] T017 [P] [US2] Add a password reveal/hide toggle to the password blank in
+- [x] T017 [P] [US2] Add a password reveal/hide toggle to the password blank in
       `RegisterPage.tsx` (FR-005)
-- [X] T018 [US2] Write `src/features/auth/pages/RegisterPage.test.tsx`: successful
+- [x] T018 [US2] Write `src/features/auth/pages/RegisterPage.test.tsx`: successful
       registration redirects to `/login` with confirmation copy; duplicate email
       shows the Vietnamese message; empty blank, malformed email, and
       under-8-character password are each blocked before any call is attempted.
@@ -207,7 +206,7 @@ no existing matching account → signed in, treated as account creation; repeat 
 email matching an existing mock account → signed into that same account; trigger the
 mock's cancel path → back to signed-out, no error shown.
 
-- [X] T019 [US4] Implement `signInWithGoogle()` in
+- [x] T019 [US4] Implement `signInWithGoogle()` in
       `src/features/auth/api/authClient.mock.ts`: no matching account →
       `{ status: 'success', accountCreated: true, ... }`; email matches an existing
       mock account → `{ status: 'success', accountCreated: false, ... }` with that
@@ -227,7 +226,7 @@ mock's cancel path → back to signed-out, no error shown.
       real email instead of a fixed one. `MockAccountRecord.password` remains
       optional so a Google-only account has no password and can never be logged
       into via the password flow._
-- [X] T020 [P] [US4] Build `GoogleSignInButton` (triggers the mocked flow via
+- [x] T020 [P] [US4] Build `GoogleSignInButton` (triggers the mocked flow via
       `AuthContext`/`authClient.signInWithGoogle`, including a way to trigger the
       mock's cancel path for manual/testing purposes, and treats an empty-message
       error outcome as "no error to show") in
@@ -236,10 +235,10 @@ mock's cancel path → back to signed-out, no error shown.
       "cancel (demo)" control was removed since dismissing the real Google prompt
       now produces the same empty-message outcome naturally. Tests mock
       `googleIdentity.ts`'s `requestGoogleCredential` rather than hitting Google._
-- [X] T021 [US4] Wire `GoogleSignInButton` into both `LoginPage.tsx` and
+- [x] T021 [US4] Wire `GoogleSignInButton` into both `LoginPage.tsx` and
       `RegisterPage.tsx` (FR-017). Depends on T011, T016, T020.
       _Implementation note: rendered below each form behind an "hoặc" divider._
-- [X] T022 [US4] Write
+- [x] T022 [US4] Write
       `src/features/auth/components/GoogleSignInButton.test.tsx`: new-account
       sign-in reaches a signed-in state; matching-email sign-in reaches the same
       existing account (not a duplicate); cancelling shows no error banner. Depends
@@ -263,14 +262,14 @@ mock session's `expiresAt` into the past and reload → treated as signed out; t
 light/dark presentation on both views → everything stays legible; double-click
 submit → only one call fires.
 
-- [X] T023 [US3] Implement expiry checking in `restoreSession()` in
+- [x] T023 [US3] Implement expiry checking in `restoreSession()` in
       `src/features/auth/api/authClient.mock.ts`: return the stored session only if
       `expiresAt > Date.now()`, otherwise clear it and return `null`, per
       data-model.md Session lifecycle. Depends on T006.
       _Implementation note: `SESSION_STORAGE_KEY` is now exported from
       `authClient.mock.ts` — for tests only (T026), not for production code, which
       must still go through `AuthContext`/`authClient` per contracts/auth-client.md._
-- [X] T024 [P] [US3] Review and adjust `LoginPage.tsx`, `RegisterPage.tsx`, and
+- [x] T024 [P] [US3] Review and adjust `LoginPage.tsx`, `RegisterPage.tsx`, and
       `InlineBlankForm.tsx` styling against the approved design tokens (cool paper
       neutrals, indigo accent, monospace reserved for placeholder motifs) to confirm
       legibility under both `prefers-color-scheme: light` and `dark` (FR-016, SC-005)
@@ -279,7 +278,7 @@ submit → only one call fires.
       approved `#F3F5F0`/`#1B1D1B` tokens (only its dark variant had been tokenized).
       `LoginPage`/`RegisterPage`/`InlineBlankForm`/`AuthLayout` were already fully
       tokenized with a `dark:` pair for every color._
-- [X] T025 [US3] Add an in-flight guard to `LoginPage.tsx` and `RegisterPage.tsx`
+- [x] T025 [US3] Add an in-flight guard to `LoginPage.tsx` and `RegisterPage.tsx`
       so a second submit is ignored while a call is pending (Edge Case:
       double-submit). Depends on T011, T016.
       _Implementation note: the existing `submitting`/`pending` React state guard
@@ -287,7 +286,7 @@ submit → only one call fires.
       aren't synchronous, so two calls arriving in the same tick could both read the
       pre-update value. Hardened with a `useRef` guard, checked/set synchronously,
       in `LoginPage.tsx`, `RegisterPage.tsx`, and `GoogleSignInButton.tsx`._
-- [X] T026 [US3] Write `src/features/auth/context/AuthContext.test.tsx`: a valid
+- [x] T026 [US3] Write `src/features/auth/context/AuthContext.test.tsx`: a valid
       stored session is restored on mount; an expired stored session is cleared and
       treated as signed-out. Depends on T023.
 
@@ -300,7 +299,7 @@ fully demo-ready without any backend, per SC-004 (swap-in-later guarantee).
 
 **Purpose**: Final verification that spans all stories.
 
-- [X] T027 Run `quickstart.md`'s 10 validation scenarios manually in a running
+- [x] T027 Run `quickstart.md`'s 10 validation scenarios manually in a running
       browser (`npm run dev`), in both light and dark presentation
       _Implementation note: no headless-browser driver (chromium-cli/Playwright) is
       available in this environment. Scenarios 1-5 and 8-9's account-linking/create
@@ -313,10 +312,10 @@ fully demo-ready without any backend, per SC-004 (swap-in-later guarantee).
       by the dev server (`/`, `/login`, `/register` all return 200), but were **not**
       visually confirmed pixel-by-pixel in a live browser — this is an open item for
       the user or a follow-up session with real browser tooling._
-- [X] T028 Run `npm run lint`, `npm run build`, and `npm run test`; fix any failures
+- [x] T028 Run `npm run lint`, `npm run build`, and `npm run test`; fix any failures
       (Constitution Principle V — all three must pass before this feature is done)
       _Result: lint 0 errors/warnings; build succeeds; 12/12 tests pass._
-- [X] T029 Confirm no second implementation of the hidden-span auto-resize
+- [x] T029 Confirm no second implementation of the hidden-span auto-resize
       technique exists anywhere in `src/` outside `useAutoResizeBlank`
       (Constitution Principle I)
       _Result: confirmed via grep for `getBoundingClientRect`, `getComputedStyle`,
@@ -337,7 +336,7 @@ fully demo-ready without any backend, per SC-004 (swap-in-later guarantee).
   `InlineBlankForm`/`GuestContinueLink` from Foundational.
 - **User Story 4 (Phase 5)**: Depends on Foundational, and on T015 (US2's
   `register`) for the mock's account-matching store — but is independently
-  *testable* per its own acceptance scenarios once that store exists.
+  _testable_ per its own acceptance scenarios once that store exists.
 - **User Story 3 (Phase 6)**: Depends on Foundational (T006) and touches files
   already created by US1/US2 (T011/T016) for the double-submit guard — sequence
   after US1/US2 to avoid conflicting edits, even though its acceptance scenarios
@@ -398,6 +397,7 @@ Task: "Show signed-in identifier + sign-out control in src/app/layout/RootLayout
 ### Parallel Team Strategy
 
 With multiple developers, after Foundational is done:
+
 - Developer A: User Story 1 (Login)
 - Developer B: User Story 2 (Register) — must land T015 before Developer C starts
   US4's account-matching work
@@ -413,29 +413,29 @@ With multiple developers, after Foundational is done:
 contract now, so connecting one later is just setting `VITE_API_BASE_URL`, with zero
 UI-facing changes (SC-004 extended to the real client, not just the mock-swap case).
 
-- [X] T030 Add `httpClient.ts`: `fetch` wrapper with `credentials: 'include'` (for the
+- [x] T030 Add `httpClient.ts`: `fetch` wrapper with `credentials: 'include'` (for the
       httpOnly `refresh_token` cookie), parses `{ error: {...} }` into a throwable
       `ApiError`, and `isApiConfigured()` gate. Add `VITE_API_BASE_URL` to
       `vite-env.d.ts` and `.env.example`.
-- [X] T031 Extend `AuthClient` (`authClient.types.ts`): `restoreSession()` → `Promise<
-      Session | null>` (async, both implementations); add
+- [x] T031 Extend `AuthClient` (`authClient.types.ts`): `restoreSession()` → `Promise<
+    Session | null>` (async, both implementations); add
       `completeGoogleOAuth(code, state): Promise<AuthOutcome>`. Update
       `authClient.mock.ts` to match (trivial async wrap; `completeGoogleOAuth` stub
       returns an error — unreachable in mock mode).
-- [X] T032 Add `authClient.real.ts`: `login`/`register` against `/auth/login`,
+- [x] T032 Add `authClient.real.ts`: `login`/`register` against `/auth/login`,
       `/auth/register`; `signInWithGoogle` fetches `/auth/oauth/google` and redirects
       the page (never resolves — tab navigates away); `completeGoogleOAuth` posts to
       `/auth/oauth/google/callback`; `restoreSession` calls `/auth/refresh` then
       `/users/me`; `logout` calls `/auth/logout`. Errors mapped via `httpClient.ts`'s
       `ApiError` onto this feature's flat `AuthOutcome` shape.
-- [X] T033 Wire the switch in `authClient.ts`: `isApiConfigured() ? createRealAuthClient() : createMockAuthClient()`.
-- [X] T034 Add `GoogleCallbackPage.tsx` + route `/auth/google/callback` in `App.tsx` —
+- [x] T033 Wire the switch in `authClient.ts`: `isApiConfigured() ? createRealAuthClient() : createMockAuthClient()`.
+- [x] T034 Add `GoogleCallbackPage.tsx` + route `/auth/google/callback` in `App.tsx` —
       reads `code`/`state` from the URL, calls `completeGoogleOAuth`, signs in on
       success.
-- [X] T035 Update `AuthProvider.tsx`: handle async `restoreSession()`, add
+- [x] T035 Update `AuthProvider.tsx`: handle async `restoreSession()`, add
       `isRestoring` to context, and schedule a silent `restoreSession()` call ~60s
       before `session.expiresAt` so a real 15-minute `access_token` self-renews.
-- [X] T036 Update the 3 tests that called `authClient.restoreSession()` synchronously
+- [x] T036 Update the 3 tests that called `authClient.restoreSession()` synchronously
       (`AuthContext.test.tsx`, `GoogleSignInButton.test.tsx`, `LoginPage.test.tsx`) to
       `await` it.
 
@@ -456,6 +456,6 @@ contract implies after `/auth/register`; forgot/reset-password.
 - Each `authClient.mock.ts` task (T003, T010, T015, T019, T023) edits the same file
   across phases by design — it is the single integration point (FR-009); this is
   intentional shared-file sequencing, not an independence violation, since each
-  story's *acceptance scenarios* remain testable without the others.
+  story's _acceptance scenarios_ remain testable without the others.
 - Commit after each task or logical group, per this repo's normal git conventions.
 - Stop at any checkpoint to validate a story independently before continuing.

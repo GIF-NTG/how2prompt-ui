@@ -52,10 +52,13 @@ const NOT_DISPLAYED_HINTS: Record<NotDisplayedReason, string> = {
   invalid_client: 'VITE_GOOGLE_CLIENT_ID không hợp lệ hoặc không tồn tại.',
   missing_client_id: 'Thiếu client_id khi gọi initialize().',
   secure_http_required: 'Cần chạy trên HTTPS (hoặc localhost) — Google từ chối HTTP thường.',
-  opt_out_or_no_session: 'Trình duyệt không có phiên Google nào đang đăng nhập, hoặc người dùng đã opt-out.',
+  opt_out_or_no_session:
+    'Trình duyệt không có phiên Google nào đang đăng nhập, hoặc người dùng đã opt-out.',
   browser_not_supported: 'Trình duyệt này không được Google Identity Services hỗ trợ.',
-  suppressed_by_user: 'Người dùng đã từ chối One Tap nhiều lần trước đó nên Google tạm ẩn (cooldown).',
-  unknown_reason: 'Không rõ nguyên nhân — thử kiểm tra console của trình duyệt để biết thêm chi tiết.',
+  suppressed_by_user:
+    'Người dùng đã từ chối One Tap nhiều lần trước đó nên Google tạm ẩn (cooldown).',
+  unknown_reason:
+    'Không rõ nguyên nhân — thử kiểm tra console của trình duyệt để biết thêm chi tiết.',
 }
 
 function loadGoogleIdentityScript(): Promise<void> {
@@ -122,7 +125,9 @@ export async function requestGoogleCredential(): Promise<GoogleCredential | null
     window.google!.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed()) {
         const reason = notification.getNotDisplayedReason()
-        reject(new Error(`Google không hiện được popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`))
+        reject(
+          new Error(`Google không hiện được popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`),
+        )
         return
       }
       if (notification.isSkippedMoment() && notification.getSkippedReason() !== 'user_cancel') {

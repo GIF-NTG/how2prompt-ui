@@ -24,7 +24,7 @@ by `GET /api/v1/templates`, `/templates/featured`, and `/templates/trending`.
 
 ```typescript
 interface TemplateListItem {
-  id: string            // UUID
+  id: string // UUID
   slug: string
   title: I18nString
   description: I18nString
@@ -32,11 +32,11 @@ interface TemplateListItem {
   is_official: boolean
   author: AuthorBrief
   categories: Category[]
-  supported_models: string[]   // e.g. ["gpt-4o", "claude-opus-4"]
+  supported_models: string[] // e.g. ["gpt-4o", "claude-opus-4"]
   usage_count: number
   favorite_count: number
-  is_favorited: boolean        // true if current user has favorited
-  created_at: string           // ISO 8601
+  is_favorited: boolean // true if current user has favorited
+  created_at: string // ISO 8601
 }
 ```
 
@@ -92,8 +92,8 @@ An AI model that templates can target. Returned by `GET /api/v1/ai-models`.
 ```typescript
 interface AiModel {
   id: string
-  code: string          // e.g. "claude-opus-4"
-  name: string          // e.g. "Claude Opus 4"
+  code: string // e.g. "claude-opus-4"
+  name: string // e.g. "Claude Opus 4"
   provider: string
   model_type: 'text' | 'image' | 'video' | 'audio' | 'multimodal'
   description: string | null
@@ -110,9 +110,9 @@ The local state representing the current filter/search combination. Synced to UR
 
 ```typescript
 interface CatalogFilters {
-  search: string        // raw search input (pre-debounce)
-  tag: string           // active tag slug, or '' for "all"
-  model: string         // active model code, or '' for "all"
+  search: string // raw search input (pre-debounce)
+  tag: string // active tag slug, or '' for "all"
+  model: string // active model code, or '' for "all"
 }
 ```
 
@@ -122,14 +122,14 @@ The aggregated data fetched on page load.
 
 ```typescript
 interface CatalogPageData {
-  templates: TemplateListItem[]    // full grid (paginated)
-  featured: TemplateListItem[]     // featured rail
-  trending: TemplateListItem[]     // trending rail
-  categories: Category[]           // for tag chips (categories serve as the chip taxonomy)
-  tags: Tag[]                      // additional tag options
-  models: AiModel[]                // for model dropdown
-  total_count: number              // for count badges
-  page_info: PageInfo              // cursor-based pagination
+  templates: TemplateListItem[] // full grid (paginated)
+  featured: TemplateListItem[] // featured rail
+  trending: TemplateListItem[] // trending rail
+  categories: Category[] // for tag chips (categories serve as the chip taxonomy)
+  tags: Tag[] // additional tag options
+  models: AiModel[] // for model dropdown
+  total_count: number // for count badges
+  page_info: PageInfo // cursor-based pagination
 }
 ```
 
