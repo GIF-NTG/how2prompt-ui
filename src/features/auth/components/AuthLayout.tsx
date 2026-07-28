@@ -50,33 +50,39 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               </h1>
 
               <p className="max-w-[40ch] text-sm leading-relaxed text-[#5B5F58] dark:text-[#A2A79C]">
-                Tài khoản Member lưu lại mọi prompt bạn đã ghép — Vai trò, Bối cảnh, Ràng
-                buộc — để dùng lại bất cứ lúc nào.
+                Tài khoản Member lưu lại mọi prompt bạn đã ghép — Vai trò, Bối cảnh, Ràng buộc — để
+                dùng lại bất cứ lúc nào.
               </p>
 
               <div
                 aria-hidden
-                className="rounded-[14px] border border-[#DBDFD3] bg-white p-5 text-sm leading-relaxed text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
+                className="rounded-card border border-[#DBDFD3] bg-white p-5 text-sm leading-relaxed text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
               >
                 <span className="mb-2 block font-mono text-[0.68rem] tracking-wider text-[#8B8F86] uppercase dark:text-[#6D726A]">
                   raw_template preview
                 </span>
-                Với vai trò <span className={BLANK_TAG}>{'{role}'}</span>, hãy debug đoạn
-                log sau trong bối cảnh <span className={BLANK_TAG}>{'{context}'}</span>,
-                tuân thủ ràng buộc <span className={BLANK_TAG}>{'{constraints}'}</span>.
+                Với vai trò <span className={BLANK_TAG}>{'{role}'}</span>, hãy debug đoạn log sau
+                trong bối cảnh <span className={BLANK_TAG}>{'{context}'}</span>, tuân thủ ràng buộc{' '}
+                <span className={BLANK_TAG}>{'{constraints}'}</span>.
               </div>
 
               <ul className="flex flex-col gap-3 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">＋</span>
+                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
+                    ＋
+                  </span>
                   Tự động lưu lịch sử prompt vào tài khoản của bạn
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">↻</span>
+                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
+                    ↻
+                  </span>
                   Copy nhanh một prompt cũ, không cần điền lại
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">✓</span>
+                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
+                    ✓
+                  </span>
                   Mật khẩu băm BCrypt, phiên đăng nhập qua JWT
                 </li>
               </ul>
@@ -85,8 +91,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <span className="rounded-full bg-[#1B1D1B] px-2 py-0.5 font-semibold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
                   JWT
                 </span>
-                phiên đăng nhập được ghi nhớ trên trình duyệt này, không cần đăng nhập
-                lại mỗi lần quay lại
+                phiên đăng nhập được ghi nhớ trên trình duyệt này, không cần đăng nhập lại mỗi lần
+                quay lại
               </div>
             </section>
 

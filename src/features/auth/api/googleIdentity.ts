@@ -1,6 +1,10 @@
 export interface GoogleCredential {
   email: string
   name: string
+  /** Raw, undecoded Google ID Token (JWT) — the real backend (`POST
+   *  /auth/oauth/google`) verifies this server-side; the mock ignores it and
+   *  uses the decoded `email`/`name` above instead. */
+  idToken: string
 }
 
 interface GoogleIdConfiguration {
@@ -48,10 +52,13 @@ const NOT_DISPLAYED_HINTS: Record<NotDisplayedReason, string> = {
   invalid_client: 'VITE_GOOGLE_CLIENT_ID không hợp lệ hoặc không tồn tại.',
   missing_client_id: 'Thiếu client_id khi gọi initialize().',
   secure_http_required: 'Cần chạy trên HTTPS (hoặc localhost) — Google từ chối HTTP thường.',
-  opt_out_or_no_session: 'Trình duyệt không có phiên Google nào đang đăng nhập, hoặc người dùng đã opt-out.',
+  opt_out_or_no_session:
+    'Trình duyệt không có phiên Google nào đang đăng nhập, hoặc người dùng đã opt-out.',
   browser_not_supported: 'Trình duyệt này không được Google Identity Services hỗ trợ.',
-  suppressed_by_user: 'Người dùng đã từ chối One Tap nhiều lần trước đó nên Google tạm ẩn (cooldown).',
-  unknown_reason: 'Không rõ nguyên nhân — thử kiểm tra console của trình duyệt để biết thêm chi tiết.',
+  suppressed_by_user:
+    'Người dùng đã từ chối One Tap nhiều lần trước đó nên Google tạm ẩn (cooldown).',
+  unknown_reason:
+    'Không rõ nguyên nhân — thử kiểm tra console của trình duyệt để biết thêm chi tiết.',
 }
 
 function loadGoogleIdentityScript(): Promise<void> {
@@ -86,7 +93,7 @@ function base64UrlDecodeUtf8(base64url: string): string {
 function decodeCredential(credential: string): GoogleCredential {
   const payload = credential.split('.')[1] ?? ''
   const decoded = JSON.parse(base64UrlDecodeUtf8(payload)) as { email?: string; name?: string }
-  return { email: decoded.email ?? '', name: decoded.name ?? '' }
+  return { email: decoded.email ?? '', name: decoded.name ?? '', idToken: credential }
 }
 
 /**
@@ -97,8 +104,10 @@ function decodeCredential(credential: string): GoogleCredential {
  * this THROWS with a specific, actionable reason instead of silently
  * resolving `null` — that distinction is the whole point of this function,
  * since "nothing happened when I clicked the button" is otherwise
- * undiagnosable. The credential is decoded client-side only — its signature
- * is NOT verified, since there is no backend yet to do that.
+ * undiagnosable. The credential is decoded client-side only for display
+ * purposes (`email`/`name`) — that decoding does NOT verify its signature;
+ * the raw `idToken` is forwarded untouched to the real backend
+ * (`POST /auth/oauth/google`), which is the only party that verifies it.
  */
 export async function requestGoogleCredential(): Promise<GoogleCredential | null> {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -116,7 +125,9 @@ export async function requestGoogleCredential(): Promise<GoogleCredential | null
     window.google!.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed()) {
         const reason = notification.getNotDisplayedReason()
-        reject(new Error(`Google không hiện được popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`))
+        reject(
+          new Error(`Google không hiện được popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`),
+        )
         return
       }
       if (notification.isSkippedMoment() && notification.getSkippedReason() !== 'user_cancel') {

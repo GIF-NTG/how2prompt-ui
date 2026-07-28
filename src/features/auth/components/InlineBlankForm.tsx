@@ -1,7 +1,10 @@
 import { forwardRef, type InputHTMLAttributes } from 'react'
 import { useAutoResizeBlank } from '@/shared/hooks/useAutoResizeBlank'
 
-interface InlineBlankProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'className' | 'style'> {
+interface InlineBlankProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'className' | 'style'
+> {
   /** Highlights the blank red when it failed validation (FR-006). */
   invalid?: boolean
 }
@@ -17,7 +20,10 @@ export const InlineBlank = forwardRef<HTMLInputElement, InlineBlankProps>(functi
   { invalid = false, value, placeholder, ...rest },
   forwardedRef,
 ) {
-  const autoResizeRef = useAutoResizeBlank(typeof value === 'string' ? value : '', String(placeholder ?? ''))
+  const autoResizeRef = useAutoResizeBlank(
+    typeof value === 'string' ? value : '',
+    String(placeholder ?? ''),
+  )
 
   return (
     <input

@@ -1,1668 +1,2371 @@
 <!doctype html>
 <html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How2Prompt — Design Reference (Auth + Workspace)</title>
-<style>
-  :root {
-    --bg: #F3F5F0;
-    --surface: #FFFFFF;
-    --surface-2: #EAEDE6;
-    --ink: #1B1D1B;
-    --ink-soft: #5B5F58;
-    --ink-faint: #8B8F86;
-    --accent: #3652E0;
-    --accent-ink: #FFFFFF;
-    --accent-soft: #E7EAFC;
-    --line: #DBDFD3;
-    --danger: #C23A2E;
-    --danger-soft: #FBE7E4;
-    --focus: #3652E0;
-    --shadow: 0 24px 60px -30px rgba(27, 29, 27, 0.35);
-    --font-sans: ui-sans-serif, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", monospace;
-  }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How2Prompt — Design Reference (Auth + Workspace, SRS v2.0)</title>
+    <style>
+      :root {
+        --bg: #f3f5f0;
+        --surface: #ffffff;
+        --surface-2: #eaede6;
+        --ink: #1b1d1b;
+        --ink-soft: #5b5f58;
+        --ink-faint: #8b8f86;
+        --accent: #3652e0;
+        --accent-ink: #ffffff;
+        --accent-soft: #e7eafc;
+        --line: #dbdfd3;
+        --danger: #c23a2e;
+        --danger-soft: #fbe7e4;
+        --good: #2e7d4f;
+        --good-soft: #e4f3ea;
+        --focus: #3652e0;
+        --shadow: 0 24px 60px -30px rgba(27, 29, 27, 0.35);
+        --font-sans: ui-sans-serif, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        --font-mono:
+          ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+      }
 
-  :root[data-theme="dark"] {
-    --bg: #14171A;
-    --surface: #1C2024;
-    --surface-2: #23282C;
-    --ink: #ECEEE8;
-    --ink-soft: #A2A79C;
-    --ink-faint: #6D726A;
-    --accent: #8493FF;
-    --accent-ink: #14171A;
-    --accent-soft: #262C4A;
-    --line: #2C3130;
-    --danger: #FF7A6B;
-    --danger-soft: #3A2224;
-    --focus: #8493FF;
-    --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
-  }
+      :root[data-theme='dark'] {
+        --bg: #14171a;
+        --surface: #1c2024;
+        --surface-2: #23282c;
+        --ink: #eceee8;
+        --ink-soft: #a2a79c;
+        --ink-faint: #6d726a;
+        --accent: #8493ff;
+        --accent-ink: #14171a;
+        --accent-soft: #262c4a;
+        --line: #2c3130;
+        --danger: #ff7a6b;
+        --danger-soft: #3a2224;
+        --good: #6fcf9a;
+        --good-soft: #1e3327;
+        --focus: #8493ff;
+        --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+      }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14171A;
-      --surface: #1C2024;
-      --surface-2: #23282C;
-      --ink: #ECEEE8;
-      --ink-soft: #A2A79C;
-      --ink-faint: #6D726A;
-      --accent: #8493FF;
-      --accent-ink: #14171A;
-      --accent-soft: #262C4A;
-      --line: #2C3130;
-      --danger: #FF7A6B;
-      --danger-soft: #3A2224;
-      --focus: #8493FF;
-      --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
-    }
-  }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #14171a;
+          --surface: #1c2024;
+          --surface-2: #23282c;
+          --ink: #eceee8;
+          --ink-soft: #a2a79c;
+          --ink-faint: #6d726a;
+          --accent: #8493ff;
+          --accent-ink: #14171a;
+          --accent-soft: #262c4a;
+          --line: #2c3130;
+          --danger: #ff7a6b;
+          --danger-soft: #3a2224;
+          --good: #6fcf9a;
+          --good-soft: #1e3327;
+          --focus: #8493ff;
+          --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+        }
+      }
 
-  * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-  }
+      html,
+      body {
+        overflow-x: hidden;
+      }
 
-  .brace-field {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-    font-family: var(--font-mono);
-    color: var(--ink);
-    opacity: 0.035;
-  }
-  .brace-field span {
-    position: absolute;
-    font-weight: 600;
-    white-space: nowrap;
-  }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        position: relative;
+      }
 
-  .shell {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+      .brace-field {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        font-family: var(--font-mono);
+        color: var(--ink);
+        opacity: 0.035;
+      }
+      .brace-field span {
+        position: absolute;
+        font-weight: 600;
+        white-space: nowrap;
+      }
 
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem clamp(1.25rem, 4vw, 3rem);
-  }
+      a {
+        color: inherit;
+      }
+      button {
+        font-family: inherit;
+      }
 
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-  }
-  .brand .mark {
-    font-family: var(--font-mono);
-    background: var(--ink);
-    color: var(--bg);
-    border-radius: 6px;
-    padding: 0.15rem 0.45rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-  }
+      /* ============ shared top bar ============ */
+      .topbar {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem clamp(1.25rem, 4vw, 3rem);
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+      }
+      .brand .mark {
+        font-family: var(--font-mono);
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 6px;
+        padding: 0.15rem 0.45rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .guest-link {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+      .guest-link:hover {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .guest-link:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
 
-  .guest-link {
-    font-size: 0.85rem;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.15s ease, color 0.15s ease;
-  }
-  .guest-link:hover { color: var(--ink); border-color: var(--ink-faint); }
-  .guest-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+        flex-wrap: wrap;
+      }
+      .app-nav {
+        display: flex;
+        gap: 1.25rem;
+      }
+      .app-nav a {
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition:
+          color 0.15s ease,
+          border-color 0.15s ease;
+        cursor: pointer;
+      }
+      .app-nav a:hover,
+      .app-nav a[aria-current='page'] {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .app-nav a:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
 
-  main.stage {
-    flex: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    place-items: center;
-    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 3rem;
-  }
+      .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .link-btn {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .link-btn:hover {
+        color: var(--ink);
+      }
+      .link-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
 
-  .panelwrap {
-    width: 100%;
-    max-width: 1000px;
-    display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--line);
-    background: var(--surface);
-  }
+      /* ============ auth shell ============ */
+      main.stage {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        padding: 1rem clamp(1.25rem, 4vw, 3rem) 3rem;
+      }
+      .panelwrap {
+        width: 100%;
+        max-width: 1000px;
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .context {
+        background: var(--surface-2);
+        padding: clamp(1.75rem, 3.4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        border-right: 1px solid var(--line);
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .context h1 {
+        font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin: 0;
+        text-wrap: balance;
+      }
+      .context p.lede {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-width: 40ch;
+      }
+      .demo-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+        font-size: 0.92rem;
+        line-height: 1.75;
+        color: var(--ink);
+      }
+      .demo-card .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .demo-card .blank {
+        font-family: var(--font-mono);
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 0.05rem 0.4rem;
+        font-size: 0.88em;
+      }
+      .feature-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        font-size: 0.86rem;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+      .feature-list .glyph {
+        font-family: var(--font-mono);
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+        width: 1.1rem;
+      }
+      .session-note {
+        margin-top: auto;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px dashed var(--line);
+      }
+      .session-note .pill {
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 999px;
+        padding: 0.1rem 0.55rem;
+        font-weight: 600;
+      }
 
-  /* ---- Left: context panel ---- */
-  .context {
-    background: var(--surface-2);
-    padding: clamp(1.75rem, 3.4vw, 3rem);
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-    border-right: 1px solid var(--line);
-  }
+      .auth {
+        padding: clamp(1.75rem, 3.4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.6rem;
+      }
+      .tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.25rem;
+      }
+      .tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.55rem 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border-radius: 9px;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition:
+          background 0.18s ease,
+          color 0.18s ease,
+          box-shadow 0.18s ease;
+        font-family: inherit;
+      }
+      .tab[aria-selected='true'] {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 1px 0 var(--line);
+      }
+      .tab:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .form-head h2 {
+        margin: 0 0 0.35rem;
+        font-size: 1.3rem;
+        letter-spacing: -0.01em;
+      }
+      .form-head p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.86rem;
+      }
 
-  .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .eyebrow::before {
-    content: "";
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
+      .sentence-form {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.3rem 1.35rem;
+        font-size: 1.05rem;
+        line-height: 2.2;
+      }
+      .sentence-form .static {
+        color: var(--ink-soft);
+      }
+      .blank-input {
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--ink-faint);
+        color: var(--ink);
+        padding: 0.05rem 0.15rem;
+        min-width: 1.5ch;
+        max-width: 100%;
+        outline: none;
+        transition: border-color 0.15s ease;
+      }
+      .blank-input::placeholder {
+        color: var(--ink-faint);
+        opacity: 0.8;
+      }
+      .blank-input:focus {
+        border-color: var(--accent);
+      }
+      .blank-input.invalid {
+        border-color: var(--danger);
+      }
+      .pw-wrap {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        vertical-align: baseline;
+      }
+      .pw-toggle {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--accent);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .pw-toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+      .measure {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        white-space: pre;
+        font-family: var(--font-mono);
+        font-size: 0.92rem;
+      }
 
-  .context h1 {
-    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
-    line-height: 1.2;
-    letter-spacing: -0.015em;
-    margin: 0;
-    text-wrap: balance;
-  }
+      .banner {
+        display: none;
+        align-items: flex-start;
+        gap: 0.6rem;
+        border-radius: 10px;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.83rem;
+        line-height: 1.5;
+      }
+      .banner.show {
+        display: flex;
+      }
+      .banner.err {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+      }
+      .banner.ok {
+        background: var(--good-soft);
+        color: var(--good);
+        border: 1px solid color-mix(in srgb, var(--good) 35%, transparent);
+      }
+      .banner code {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        opacity: 0.85;
+      }
 
-  .context p.lede {
-    margin: 0;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    max-width: 40ch;
-  }
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .submit-btn {
+        font-weight: 700;
+        font-size: 0.92rem;
+        background: var(--accent);
+        color: var(--accent-ink);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition:
+          transform 0.12s ease,
+          filter 0.12s ease;
+      }
+      .submit-btn:hover {
+        filter: brightness(1.08);
+      }
+      .submit-btn:active {
+        transform: translateY(1px);
+      }
+      .submit-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+      .submit-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .ghost-btn {
+        font-weight: 600;
+        font-size: 0.92rem;
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.7rem 1.3rem;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .ghost-btn:hover {
+        border-color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+      .ghost-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+      .demo-error-toggle {
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        color: var(--ink-faint);
+        background: none;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 0.4rem 0.65rem;
+        cursor: pointer;
+      }
+      .demo-error-toggle:hover {
+        color: var(--ink-soft);
+        border-color: var(--ink-faint);
+      }
+      .demo-error-toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .fineprint {
+        font-size: 0.76rem;
+        color: var(--ink-faint);
+        text-align: center;
+        line-height: 1.6;
+      }
+      .fineprint a {
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+      .demo-hint {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        text-align: center;
+        margin-top: 0.6rem;
+      }
+      .fp-link {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+      }
+      .fp-link:hover {
+        color: var(--ink);
+      }
 
-  .demo-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-    font-size: 0.92rem;
-    line-height: 1.75;
-    color: var(--ink);
-  }
-  .demo-card .tag {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: block;
-    margin-bottom: 0.6rem;
-  }
-  .demo-card .blank {
-    font-family: var(--font-mono);
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: 4px;
-    padding: 0.05rem 0.4rem;
-    font-size: 0.88em;
-  }
+      [hidden] {
+        display: none !important;
+      }
 
-  .feature-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-  .feature-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    font-size: 0.86rem;
-    color: var(--ink-soft);
-    line-height: 1.5;
-  }
-  .feature-list .glyph {
-    font-family: var(--font-mono);
-    color: var(--accent);
-    font-weight: 700;
-    flex-shrink: 0;
-    width: 1.1rem;
-  }
+      /* ============ app shell (post-login) ============ */
+      .app-view {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 1120px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
+      }
+      .page-head {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .page-head h1 {
+        font-size: clamp(1.4rem, 2.4vw, 1.7rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin: 0;
+        text-wrap: balance;
+      }
+      .page-head .lede {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.94rem;
+        line-height: 1.6;
+        max-width: 62ch;
+      }
 
-  .session-note {
-    margin-top: auto;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px dashed var(--line);
-  }
-  .session-note .pill {
-    background: var(--ink);
-    color: var(--bg);
-    border-radius: 999px;
-    padding: 0.1rem 0.55rem;
-    font-weight: 600;
-  }
+      /* search + filters */
+      .filter-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+      .search-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .search-box {
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        transition: border-color 0.15s ease;
+      }
+      .search-box:focus-within {
+        border-color: var(--accent);
+      }
+      .search-box .glyph {
+        color: var(--ink-faint);
+        font-family: var(--font-mono);
+      }
+      .search-box input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: none;
+        font-family: inherit;
+        font-size: 0.92rem;
+        color: var(--ink);
+      }
+      .search-box input::placeholder {
+        color: var(--ink-faint);
+      }
+      .model-select {
+        font-family: inherit;
+        font-size: 0.86rem;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.62rem 0.9rem;
+        cursor: pointer;
+      }
+      .filter-chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .chip {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.4rem 0.85rem;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease,
+          background 0.15s ease;
+      }
+      .chip:hover {
+        border-color: var(--ink-faint);
+      }
+      .chip[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      .chip:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
 
-  /* ---- Right: auth panel ---- */
-  .auth {
-    padding: clamp(1.75rem, 3.4vw, 3rem);
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
-  }
+      /* sections */
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .section-head h2 {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: -0.005em;
+      }
+      .section-head .count {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+      }
+      .rail {
+        display: flex;
+        gap: 0.9rem;
+        overflow-x: auto;
+        padding-bottom: 0.35rem;
+        scrollbar-width: thin;
+      }
+      .rail::-webkit-scrollbar {
+        height: 6px;
+      }
+      .rail::-webkit-scrollbar-thumb {
+        background: var(--line);
+        border-radius: 3px;
+      }
+      .rail .template-card {
+        min-width: 240px;
+        flex: 0 0 auto;
+      }
 
-  .tabs {
-    display: flex;
-    gap: 0.25rem;
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 0.25rem;
-  }
-  .tab {
-    flex: 1;
-    text-align: center;
-    padding: 0.55rem 0.75rem;
-    font-size: 0.88rem;
-    font-weight: 600;
-    border-radius: 9px;
-    border: none;
-    background: transparent;
-    color: var(--ink-soft);
-    cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
-    font-family: inherit;
-  }
-  .tab[aria-selected="true"] {
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: 0 1px 0 var(--line);
-  }
-  .tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+      .template-card {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+        font-family: inherit;
+        color: inherit;
+      }
+      .template-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -18px rgba(27, 29, 27, 0.4);
+      }
+      .template-card:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .card-badges {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .badge-official {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--accent);
+        background: var(--accent-soft);
+        border-radius: 5px;
+        padding: 0.12rem 0.4rem;
+      }
+      .fav-btn {
+        width: 1.7rem;
+        height: 1.7rem;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-faint);
+        cursor: pointer;
+        font-size: 0.85rem;
+        line-height: 1;
+      }
+      .fav-btn:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+      .fav-btn.active {
+        color: var(--danger);
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .fav-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .template-card h3 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.005em;
+      }
+      .template-card p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        line-height: 1.55;
+      }
+      .card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+      }
+      .model-tags {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .model-tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        background: var(--surface-2);
+        border-radius: 999px;
+        padding: 0.14rem 0.5rem;
+      }
+      .usage-count {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+        white-space: nowrap;
+      }
+      .empty-state {
+        color: var(--ink-faint);
+        font-size: 0.88rem;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
 
-  .form-head h2 {
-    margin: 0 0 0.35rem;
-    font-size: 1.3rem;
-    letter-spacing: -0.01em;
-  }
-  .form-head p {
-    margin: 0;
-    color: var(--ink-soft);
-    font-size: 0.86rem;
-  }
+      /* template detail + dynamic form */
+      .back-link {
+        align-self: flex-start;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .back-link:hover {
+        color: var(--ink);
+      }
+      .back-link:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
 
-  /* the signature interaction: fields rendered inline inside a real sentence */
-  .sentence-form {
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.3rem 1.35rem;
-    font-size: 1.05rem;
-    line-height: 2.2;
-  }
-  .sentence-form .static { color: var(--ink-soft); }
+      .detail-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .detail-layout {
+          grid-template-columns: 1fr;
+        }
+      }
 
-  .blank-input {
-    font-family: var(--font-mono);
-    font-size: 0.92rem;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid var(--ink-faint);
-    color: var(--ink);
-    padding: 0.05rem 0.15rem;
-    min-width: 1.5ch;
-    max-width: 100%;
-    outline: none;
-    transition: border-color 0.15s ease;
-  }
-  .blank-input::placeholder { color: var(--ink-faint); opacity: 0.8; }
-  .blank-input:focus { border-color: var(--accent); }
-  .blank-input:focus-visible { outline: none; }
-  .blank-input.invalid { border-color: var(--danger); }
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+      .field-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .field-row .field-label {
+        font-size: 0.86rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .field-row .field-label .req {
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+      .field-row .field-help {
+        font-size: 0.78rem;
+        color: var(--ink-faint);
+      }
+      .text-input,
+      .select-input,
+      textarea.text-input {
+        font-family: inherit;
+        font-size: 0.92rem;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem 0.9rem;
+        outline: none;
+        transition: border-color 0.15s ease;
+        width: 100%;
+      }
+      .text-input:focus,
+      .select-input:focus {
+        border-color: var(--accent);
+      }
+      textarea.text-input {
+        resize: vertical;
+        min-height: 4.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.86rem;
+        line-height: 1.6;
+      }
+      .chip-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .chip-option {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .chip-option[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      .chip-option:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .toggle {
+        width: 2.4rem;
+        height: 1.4rem;
+        border-radius: 999px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.15s ease;
+      }
+      .toggle::after {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 1.15rem;
+        height: 1.15rem;
+        border-radius: 50%;
+        background: var(--ink-faint);
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      .toggle[aria-checked='true'] {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      .toggle[aria-checked='true']::after {
+        transform: translateX(1rem);
+        background: var(--accent);
+      }
+      .toggle:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .slider-row input[type='range'] {
+        flex: 1;
+        accent-color: var(--accent);
+      }
+      .slider-value {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        min-width: 2.4ch;
+        text-align: right;
+      }
 
-  .pw-wrap {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.3rem;
-    vertical-align: baseline;
-  }
-  .pw-toggle {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--accent);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .pw-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+      .preview-panel {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.2rem 1.3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        position: sticky;
+        top: 1rem;
+      }
+      .preview-panel .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: flex;
+        justify-content: space-between;
+      }
+      .preview-body {
+        font-size: 0.94rem;
+        line-height: 1.7;
+        color: var(--ink);
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+      }
+      .preview-body .filled {
+        color: var(--ink);
+      }
+      .preview-body .unfilled {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 0.02rem 0.3rem;
+      }
+      .preview-meta {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+      }
 
-  .measure {
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-    white-space: pre;
-    font-family: var(--font-mono);
-    font-size: 0.92rem;
-  }
+      .output-box {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+      }
+      .output-box .tag {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .output-box pre {
+        margin: 0;
+        white-space: pre-wrap;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--ink);
+      }
 
-  .error-banner {
-    display: none;
-    align-items: flex-start;
-    gap: 0.6rem;
-    background: var(--danger-soft);
-    color: var(--danger);
-    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
-    border-radius: 10px;
-    padding: 0.7rem 0.85rem;
-    font-size: 0.83rem;
-    line-height: 1.5;
-  }
-  .error-banner.show { display: flex; }
-  .error-banner code {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    opacity: 0.85;
-  }
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(120%);
+        background: var(--ink);
+        color: var(--bg);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        z-index: 20;
+        transition: transform 0.25s ease;
+        pointer-events: none;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
 
-  .actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
+      /* history */
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .history-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+      }
+      .history-row .history-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+        flex: 1;
+      }
+      .history-row .history-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .history-row .history-sub {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .history-row .history-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+      }
+      .icon-btn {
+        width: 2rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .icon-btn:hover {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .icon-btn.danger:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+      .icon-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
 
-  .submit-btn {
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 0.92rem;
-    background: var(--accent);
-    color: var(--accent-ink);
-    border: none;
-    border-radius: 10px;
-    padding: 0.7rem 1.3rem;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: transform 0.12s ease, filter 0.12s ease;
-  }
-  .submit-btn:hover { filter: brightness(1.08); }
-  .submit-btn:active { transform: translateY(1px); }
-  .submit-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brace-field" id="braceField" aria-hidden="true"></div>
 
-  .demo-error-toggle {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--ink-faint);
-    background: none;
-    border: 1px dashed var(--line);
-    border-radius: 8px;
-    padding: 0.4rem 0.65rem;
-    cursor: pointer;
-  }
-  .demo-error-toggle:hover { color: var(--ink-soft); border-color: var(--ink-faint); }
-  .demo-error-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    <!-- ============================================================ AUTH ============================================================ -->
+    <div id="viewAuth">
+      <div class="topbar">
+        <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
+        <button type="button" class="guest-link" onclick="continueGuest()">
+          Tiếp tục với vai trò Khách →
+        </button>
+      </div>
 
-  .fineprint {
-    font-size: 0.76rem;
-    color: var(--ink-faint);
-    text-align: center;
-    line-height: 1.6;
-  }
-  .fineprint a { color: var(--ink-soft); }
+      <main class="stage">
+        <div class="panelwrap">
+          <section class="context">
+            <span class="eyebrow" id="ctxEyebrow">api/auth</span>
+            <h1 id="ctxHeading">Đừng viết prompt từ đầu. Điền vào chỗ trống.</h1>
+            <p class="lede" id="ctxLede">
+              Duyệt thư viện mẫu, chọn model AI, điền các ô đã được định nghĩa sẵn — hệ thống ghép
+              thành prompt hoàn chỉnh cho bạn.
+            </p>
 
-  [hidden] { display: none !important; }
-
-  .demo-hint {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-    text-align: center;
-    margin-top: 0.6rem;
-  }
-
-  /* ---- Post-login home (mockup) ---- */
-  .home-view {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .home-user {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .user-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-  .signout-link {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .signout-link:hover { color: var(--ink); }
-  .signout-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
-
-  .home-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-    max-width: 1120px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
-  }
-
-  .home-header { display: flex; flex-direction: column; gap: 0.6rem; }
-  .home-header h1 {
-    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
-    line-height: 1.2;
-    letter-spacing: -0.015em;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .home-header .lede {
-    margin: 0;
-    color: var(--ink-soft);
-    font-size: 0.98rem;
-    line-height: 1.6;
-    max-width: 60ch;
-  }
-
-  .home-stats {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .stat-pill {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.4rem 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .stat-pill strong { color: var(--ink); font-size: 0.85rem; }
-  .stat-pill .pill {
-    background: var(--ink);
-    color: var(--bg);
-    border-radius: 999px;
-    padding: 0.1rem 0.5rem;
-    font-weight: 600;
-  }
-
-  /* ---- Search + tag filters (FR-2 / FR-3) ---- */
-  .search-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .search-box {
-    flex: 1;
-    min-width: 220px;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 0.65rem 1rem;
-    transition: border-color 0.15s ease;
-  }
-  .search-box:focus-within { border-color: var(--accent); }
-  .search-box .glyph { color: var(--ink-faint); font-family: var(--font-mono); }
-  .search-box input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: none;
-    font-family: inherit;
-    font-size: 0.92rem;
-    color: var(--ink);
-  }
-  .search-box input::placeholder { color: var(--ink-faint); }
-  .kbd-hint {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 0.15rem 0.45rem;
-  }
-
-  .tag-filters {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .tag-filter {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.4rem 0.85rem;
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
-  }
-  .tag-filter:hover { border-color: var(--ink-faint); }
-  .tag-filter[aria-pressed="true"] {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--accent-ink);
-  }
-  .tag-filter:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-
-  /* ---- Template catalog (FR-1) ---- */
-  .template-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-  .template-card {
-    position: relative;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    text-align: left;
-    cursor: pointer;
-    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-    font-family: inherit;
-    color: inherit;
-  }
-  .new-template-card {
-    border-style: dashed;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-height: 132px;
-  }
-  .new-template-card h3 { color: var(--accent); font-size: 0.95rem; }
-  .new-template-card p { text-align: center; }
-
-  .card-tools {
-    position: absolute;
-    top: 0.65rem;
-    right: 0.65rem;
-    display: flex;
-    gap: 0.3rem;
-  }
-  .icon-btn {
-    width: 1.6rem;
-    height: 1.6rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: var(--ink-soft);
-    font-size: 0.8rem;
-    cursor: pointer;
-    line-height: 1;
-  }
-  .icon-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
-  .icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-
-  .card-badge {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border-radius: 999px;
-    padding: 0.15rem 0.55rem;
-  }
-  .template-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px -18px rgba(27, 29, 27, 0.4);
-  }
-  .template-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .template-card h3 {
-    margin: 0;
-    font-size: 1rem;
-    letter-spacing: -0.005em;
-  }
-  .template-card p {
-    margin: 0;
-    color: var(--ink-soft);
-    font-size: 0.85rem;
-    line-height: 1.55;
-  }
-  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.2rem; }
-  .card-tag {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--ink-faint);
-    background: var(--surface-2);
-    border-radius: 999px;
-    padding: 0.15rem 0.55rem;
-  }
-  .empty-state {
-    color: var(--ink-faint);
-    font-size: 0.88rem;
-    padding: 1.5rem 0;
-    text-align: center;
-  }
-
-  /* ---- Recent history (Epic 3) ---- */
-  .history-section { display: flex; flex-direction: column; gap: 0.75rem; }
-  .history-section h2 {
-    margin: 0;
-    font-size: 0.95rem;
-    letter-spacing: -0.005em;
-  }
-  .history-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .history-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-  }
-  .history-row .history-meta { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-  .history-row .history-title { font-size: 0.88rem; font-weight: 600; }
-  .history-row .history-time {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-  }
-  .copy-btn {
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border: none;
-    border-radius: 8px;
-    padding: 0.4rem 0.75rem;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: filter 0.15s ease;
-  }
-  .copy-btn:hover { filter: brightness(0.96); }
-  .copy-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .copy-btn.copied { color: var(--ink-soft); background: var(--surface-2); }
-
-  .home-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .ghost-btn {
-    font-family: inherit;
-    font-weight: 600;
-    font-size: 0.92rem;
-    background: transparent;
-    color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 0.7rem 1.3rem;
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-  .ghost-btn:hover { border-color: var(--ink-faint); background: var(--surface-2); }
-  .ghost-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-
-  /* ---- Top bar: nav + user grouped on the right ---- */
-  .topbar-right { display: flex; align-items: center; gap: 1.75rem; }
-  .home-nav { display: flex; gap: 1.25rem; }
-  .home-nav a {
-    font-size: 0.88rem;
-    color: var(--ink-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s ease, border-color 0.15s ease;
-  }
-  .home-nav a:hover, .home-nav a[aria-current="page"] { color: var(--ink); border-color: var(--ink-faint); }
-  .home-nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
-
-  /* ---- Prompt editor (Variable Canvas mockup) ---- */
-  .back-link {
-    align-self: flex-start;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .back-link:hover { color: var(--ink); }
-  .back-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
-
-  .output-box {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-  }
-  .output-box .tag {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: block;
-    margin-bottom: 0.6rem;
-  }
-  .output-box pre {
-    margin: 0;
-    white-space: pre-wrap;
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--ink);
-  }
-
-  .delete-btn {
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: var(--danger);
-    background: var(--danger-soft);
-    border: none;
-    border-radius: 8px;
-    padding: 0.4rem 0.75rem;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: filter 0.15s ease;
-  }
-  .delete-btn:hover { filter: brightness(0.96); }
-  .delete-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-
-  /* ---- Custom template form ---- */
-  .field-row { display: flex; flex-direction: column; gap: 0.4rem; }
-  .field-row label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-faint);
-  }
-  .text-input {
-    font-family: inherit;
-    font-size: 0.92rem;
-    color: var(--ink);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 0.65rem 0.9rem;
-    outline: none;
-    transition: border-color 0.15s ease;
-    width: 100%;
-  }
-  .text-input:focus { border-color: var(--accent); }
-  .template-textarea {
-    resize: vertical;
-    font-family: var(--font-mono);
-    font-size: 0.88rem;
-    line-height: 1.6;
-    min-height: 4.5rem;
-  }
-
-  @media (max-width: 780px) {
-    .panelwrap { grid-template-columns: 1fr; }
-    .context { border-right: none; border-bottom: 1px solid var(--line); }
-    .feature-list { display: none; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-  }
-</style>
-</head>
-<body>
-
-<div class="brace-field" id="braceField" aria-hidden="true"></div>
-
-<div class="shell" id="viewAuth">
-  <div class="topbar">
-    <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
-    <a class="guest-link" href="#" onclick="return false;">Tiếp tục với vai trò Khách →</a>
-  </div>
-
-  <main class="stage">
-    <div class="panelwrap">
-      <!-- Context / left panel -->
-      <section class="context">
-        <span class="eyebrow">api/auth</span>
-        <h1>Đừng viết prompt từ đầu. Điền vào chỗ trống.</h1>
-        <p class="lede">Tài khoản Member lưu lại mọi prompt bạn đã ghép — Vai trò, Bối cảnh, Ràng buộc — để dùng lại bất cứ lúc nào.</p>
-
-        <div class="demo-card" aria-hidden="true">
-          <span class="tag">raw_template preview</span>
-          Với vai trò <span class="blank">{role}</span>, hãy debug đoạn log sau trong bối cảnh <span class="blank">{context}</span>, tuân thủ ràng buộc <span class="blank">{constraints}</span>.
-        </div>
-
-        <ul class="feature-list">
-          <li><span class="glyph">＋</span> Tự động lưu lịch sử prompt vào tài khoản của bạn</li>
-          <li><span class="glyph">↻</span> Copy nhanh một prompt cũ, không cần điền lại</li>
-          <li><span class="glyph">✓</span> Mật khẩu băm BCrypt, phiên đăng nhập qua JWT</li>
-        </ul>
-
-        <div class="session-note">
-          <span class="pill">JWT</span> phiên đăng nhập được ghi nhớ trên trình duyệt này, không cần đăng nhập lại mỗi lần
-        </div>
-      </section>
-
-      <!-- Auth / right panel -->
-      <section class="auth">
-        <div class="tabs" role="tablist" aria-label="Chuyển đổi đăng nhập / đăng ký">
-          <button class="tab" role="tab" id="tab-login" aria-selected="true" aria-controls="panel-login" onclick="showPanel('login')">Đăng nhập</button>
-          <button class="tab" role="tab" id="tab-register" aria-selected="false" aria-controls="panel-register" onclick="showPanel('register')">Đăng ký</button>
-        </div>
-
-        <!-- LOGIN -->
-        <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-          <div class="form-head">
-            <h2>Chào bạn quay lại</h2>
-            <p>Điền hai ô trống để mở lại phiên làm việc của bạn.</p>
-          </div>
-
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitDemo(event, 'login')">
-            <span class="static">Đăng nhập bằng email</span>
-            <input class="blank-input auto" type="email" placeholder="ban@vidu.com" data-field="email-login" required style="width:9ch">
-            <span class="static">và mật khẩu</span>
-            <span class="pw-wrap">
-              <input class="blank-input auto" type="password" placeholder="••••••••" data-field="pw-login" required style="width:9ch">
-              <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
-            </span>
-            <span class="static">.</span>
-
-            <div class="error-banner" id="err-login">
-              <span>⚠</span>
-              <span><strong>401 Unauthorized</strong> — Email hoặc mật khẩu không chính xác. <code>{"status":401,"error":"Unauthorized"}</code></span>
+            <div class="demo-card" aria-hidden="true">
+              <span class="tag">template_variables preview</span>
+              Với vai trò <span class="blank">{audience}</span>, hãy sửa văn phong đoạn dưới sang
+              giọng <span class="blank">{tone}</span>, độ dài tối đa
+              <span class="blank">{length}</span> từ.
             </div>
 
-            <div class="actions" style="margin-top:1.1rem">
-              <button type="submit" class="submit-btn">Đăng nhập →</button>
-              <button type="button" class="demo-error-toggle" onclick="toggleError('err-login')">xem trạng thái lỗi (demo)</button>
+            <ul class="feature-list">
+              <li>
+                <span class="glyph">＋</span> Tự động lưu lịch sử prompt vào tài khoản của bạn
+              </li>
+              <li><span class="glyph">↻</span> Sinh lại prompt từ lịch sử, không cần điền lại</li>
+              <li>
+                <span class="glyph">✓</span> Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh
+                token
+              </li>
+            </ul>
+
+            <div class="session-note">
+              <span class="pill">TOKEN</span> access token 15 phút, tự làm mới ngầm — không cần đăng
+              nhập lại
+            </div>
+          </section>
+
+          <section class="auth">
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Chuyển đổi đăng nhập / đăng ký"
+              id="authTabs"
+            >
+              <button
+                class="tab"
+                role="tab"
+                id="tab-login"
+                aria-selected="true"
+                aria-controls="panel-login"
+                onclick="showAuthPanel('login')"
+              >
+                Đăng nhập
+              </button>
+              <button
+                class="tab"
+                role="tab"
+                id="tab-register"
+                aria-selected="false"
+                aria-controls="panel-register"
+                onclick="showAuthPanel('register')"
+              >
+                Đăng ký
+              </button>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+              <div class="form-head">
+                <h2>Chào bạn quay lại</h2>
+                <p>Điền hai ô trống để mở lại phiên làm việc của bạn.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitDemo(event, 'login')"
+              >
+                <span class="static">Đăng nhập bằng email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-login"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">và mật khẩu</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="••••••••"
+                    data-field="pw-login"
+                    required
+                    style="width: 9ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">.</span>
+                <div class="banner err" id="err-login">
+                  <span>⚠</span
+                  ><span
+                    ><strong>401 Unauthorized</strong> — Email hoặc mật khẩu không chính xác.
+                    <code>{"error":{"code":"INVALID_CREDENTIALS"}}</code></span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đăng nhập →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-login')"
+                  >
+                    xem trạng thái lỗi (demo)
+                  </button>
+                </div>
+              </form>
+              <p class="fineprint" style="margin-top: 0.9rem">
+                <button type="button" class="fp-link" onclick="showAuthPanel('forgot')">
+                  Quên mật khẩu?
+                </button>
+              </p>
+              <p class="fineprint">
+                Chưa có tài khoản? <a onclick="showAuthPanel('register')">Đăng ký ngay</a> — miễn
+                phí, không cần thẻ.
+              </p>
+              <p class="demo-hint">demo: demo@how2prompt.dev / demo1234</p>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
+              <div class="form-head">
+                <h2>Tạo tài khoản Member</h2>
+                <p>Ba ô trống, một tài khoản để lưu toàn bộ lịch sử prompt.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitDemo(event, 'register')"
+              >
+                <span class="static">Tôi tên là</span>
+                <input
+                  class="blank-input"
+                  type="text"
+                  placeholder="tên hiển thị"
+                  data-field="username"
+                  required
+                  style="width: 10ch"
+                />
+                <span class="static">, dùng email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-reg"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">và mật khẩu</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="tối thiểu 8 ký tự"
+                    data-field="pw-reg"
+                    required
+                    style="width: 12ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">để mở tài khoản.</span>
+                <div class="banner err" id="err-register">
+                  <span>⚠</span
+                  ><span
+                    ><strong>409 Conflict</strong> — Email này đã được đăng ký.
+                    <code>{"error":{"code":"EMAIL_ALREADY_EXISTS"}}</code></span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đăng ký →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-register')"
+                  >
+                    xem trạng thái lỗi (demo)
+                  </button>
+                </div>
+              </form>
+              <p class="fineprint" style="margin-top: 1.25rem">
+                Đăng ký xong bạn sẽ được chuyển tới trang đăng nhập — tài khoản mới chưa tự động
+                đăng nhập.
+              </p>
+              <p class="fineprint">
+                Đã có tài khoản? <a onclick="showAuthPanel('login')">Đăng nhập</a>
+              </p>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="panel-forgot" role="tabpanel" hidden>
+              <div class="form-head">
+                <h2>Quên mật khẩu</h2>
+                <p>Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitForgot(event)"
+                id="forgotForm"
+              >
+                <span class="static">Gửi liên kết đặt lại mật khẩu tới email</span>
+                <input
+                  class="blank-input"
+                  type="email"
+                  placeholder="ban@vidu.com"
+                  data-field="email-forgot"
+                  required
+                  style="width: 9ch"
+                />
+                <span class="static">.</span>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Gửi liên kết →</button>
+                </div>
+              </form>
+              <div class="banner ok" id="ok-forgot">
+                <span>✓</span
+                ><span
+                  >Nếu email này tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi
+                  tới.</span
+                >
+              </div>
+              <p class="fineprint" style="margin-top: 0.9rem">
+                Nhớ ra mật khẩu rồi? <a onclick="showAuthPanel('login')">Đăng nhập</a>
+              </p>
+            </div>
+
+            <!-- RESET PASSWORD -->
+            <div id="panel-reset" role="tabpanel" hidden>
+              <div class="form-head">
+                <h2>Đặt lại mật khẩu</h2>
+                <p>
+                  Nhập mật khẩu mới cho tài khoản của bạn. (mô phỏng đã bấm vào liên kết trong
+                  email)
+                </p>
+              </div>
+              <form
+                class="sentence-form"
+                style="margin-top: 1rem"
+                onsubmit="return submitReset(event)"
+              >
+                <span class="static">Mật khẩu mới</span>
+                <span class="pw-wrap">
+                  <input
+                    class="blank-input"
+                    type="password"
+                    placeholder="tối thiểu 8 ký tự"
+                    data-field="pw-reset"
+                    required
+                    style="width: 12ch"
+                  />
+                  <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
+                </span>
+                <span class="static">.</span>
+                <div class="banner err" id="err-reset">
+                  <span>⚠</span
+                  ><span
+                    >Liên kết đã hết hạn hoặc đã được sử dụng.
+                    <a
+                      onclick="showAuthPanel('forgot')"
+                      style="color: inherit; text-decoration: underline"
+                      >Yêu cầu liên kết mới</a
+                    >.</span
+                  >
+                </div>
+                <div class="actions" style="margin-top: 1.1rem">
+                  <button type="submit" class="submit-btn">Đặt lại mật khẩu →</button>
+                  <button
+                    type="button"
+                    class="demo-error-toggle"
+                    onclick="toggleBanner('err-reset')"
+                  >
+                    xem liên kết hết hạn (demo)
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============================================================ APP (post-login) ============================================================ -->
+    <div class="app-view" id="viewApp" hidden>
+      <div class="topbar">
+        <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
+        <div class="topbar-right">
+          <nav class="app-nav">
+            <a id="navCatalog" aria-current="page" onclick="showPage('pageCatalog')">Thư viện</a>
+            <a id="navHistory" onclick="showPage('pageHistory')">Lịch sử</a>
+          </nav>
+          <div class="user-chip">
+            <span class="avatar" id="userAvatar">N</span>
+            <span class="user-name" id="userName">Người dùng Demo</span>
+            <button type="button" class="link-btn" onclick="signOut()">Đăng xuất</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Catalog (Epic 2) -->
+      <main class="app-main" id="pageCatalog">
+        <div class="page-head">
+          <span class="eyebrow">templates · guest &amp; member</span>
+          <h1 id="catalogGreeting">Chào Người dùng Demo, tìm mẫu prompt phù hợp</h1>
+          <p class="lede">
+            Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào các ô đã
+            định nghĩa sẵn.
+          </p>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-row">
+            <div class="search-box">
+              <span class="glyph">⌕</span>
+              <input
+                type="search"
+                id="templateSearch"
+                placeholder="Tìm theo tên hoặc mô tả…"
+                oninput="renderCatalog()"
+              />
+            </div>
+            <select class="model-select" id="modelFilter" onchange="renderCatalog()">
+              <option value="all">Tất cả model AI</option>
+              <option value="gpt">GPT-4o</option>
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+            </select>
+          </div>
+          <div class="filter-chips" id="tagFilters" role="group" aria-label="Lọc theo chủ đề"></div>
+        </div>
+
+        <section>
+          <div class="section-head">
+            <h2>Nổi bật</h2>
+            <span class="count">chọn bởi Admin</span>
+          </div>
+          <div class="rail" id="featuredRail"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>Thịnh hành 7 ngày qua</h2>
+            <span class="count" id="trendingCount"></span>
+          </div>
+          <div class="rail" id="trendingRail"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>Toàn bộ thư viện</h2>
+            <span class="count" id="gridCount"></span>
+          </div>
+          <div class="template-grid" id="templateGrid"></div>
+          <p class="empty-state" id="emptyState" hidden>
+            Không tìm thấy mẫu phù hợp — thử từ khóa hoặc bộ lọc khác.
+          </p>
+        </section>
+      </main>
+
+      <!-- Template detail + dynamic generate form (Epic 3) -->
+      <main class="app-main" id="pageTemplate" hidden>
+        <button type="button" class="back-link" onclick="showPage('pageCatalog')">
+          ← Quay lại thư viện
+        </button>
+
+        <div class="page-head">
+          <span class="eyebrow" id="tplTag">#debugging</span>
+          <h1 id="tplTitle">Debug lỗi hiệu quả</h1>
+          <p class="lede" id="tplDesc"></p>
+        </div>
+
+        <div class="field-row" style="max-width: 280px">
+          <span class="field-label">Model AI mục tiêu</span>
+          <select class="select-input" id="tplModelSelect" onchange="updatePreview()"></select>
+        </div>
+
+        <div class="detail-layout">
+          <form id="tplForm" onsubmit="return handleGenerate(event)">
+            <div class="field-group" id="tplFields"></div>
+
+            <div class="field-row" style="margin-top: 1.1rem">
+              <span class="field-label"
+                >Hướng dẫn bổ sung
+                <span style="color: var(--ink-faint); font-weight: 400">(tùy chọn)</span></span
+              >
+              <textarea
+                class="text-input"
+                id="extraInstructions"
+                rows="2"
+                placeholder="Thêm yêu cầu riêng, sẽ được nối vào cuối prompt…"
+                oninput="updatePreview()"
+              ></textarea>
+            </div>
+
+            <div class="banner err" id="err-generate">
+              <span>⚠</span><span>Vui lòng điền đủ các trường bắt buộc trước khi tạo prompt.</span>
+            </div>
+
+            <div class="actions" style="margin-top: 1.1rem">
+              <button type="submit" class="submit-btn">Tạo &amp; Sao chép prompt →</button>
+              <button type="button" class="ghost-btn" onclick="resetTplForm()">Xóa form</button>
             </div>
           </form>
 
-          <p class="fineprint" style="margin-top:1.25rem">Chưa có tài khoản? <a href="#" onclick="showPanel('register');return false;">Đăng ký ngay</a> — miễn phí, không cần thẻ.</p>
-          <p class="demo-hint">demo: demo@how2prompt.dev / demo1234</p>
+          <aside class="preview-panel">
+            <span class="tag"
+              ><span>xem trước (client-side)</span><span id="tokenEstimate">~0 tokens</span></span
+            >
+            <div class="preview-body" id="previewBody"></div>
+          </aside>
         </div>
 
-        <!-- REGISTER -->
-        <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
-          <div class="form-head">
-            <h2>Tạo tài khoản Member</h2>
-            <p>Ba ô trống, một tài khoản để lưu toàn bộ lịch sử prompt.</p>
+        <div class="output-box" id="tplOutput" hidden>
+          <span class="tag">Prompt hoàn chỉnh — đã lưu vào lịch sử</span>
+          <pre id="tplOutputText"></pre>
+          <div class="actions" style="margin-top: 0.9rem">
+            <button type="button" class="submit-btn" onclick="copyOutput(this)">
+              Sao chép lại
+            </button>
           </div>
-
-          <form class="sentence-form" style="margin-top:1rem" onsubmit="return submitDemo(event, 'register')">
-            <span class="static">Tôi tên là</span>
-            <input class="blank-input auto" type="text" placeholder="tên hiển thị" data-field="username" required style="width:10ch">
-            <span class="static">, dùng email</span>
-            <input class="blank-input auto" type="email" placeholder="ban@vidu.com" data-field="email-reg" required style="width:9ch">
-            <span class="static">và mật khẩu</span>
-            <span class="pw-wrap">
-              <input class="blank-input auto" type="password" placeholder="tối thiểu 8 ký tự" data-field="pw-reg" required style="width:12ch">
-              <button type="button" class="pw-toggle" onclick="togglePw(this)">hiện</button>
-            </span>
-            <span class="static">để mở tài khoản.</span>
-
-            <div class="error-banner" id="err-register">
-              <span>⚠</span>
-              <span><strong>409 Conflict</strong> — Email này đã được đăng ký. Hãy đăng nhập thay vì tạo mới.</span>
-            </div>
-
-            <div class="actions" style="margin-top:1.1rem">
-              <button type="submit" class="submit-btn">Đăng ký →</button>
-              <button type="button" class="demo-error-toggle" onclick="toggleError('err-register')">xem trạng thái lỗi (demo)</button>
-            </div>
-          </form>
-
-          <p class="fineprint" style="margin-top:1.25rem">Đã có tài khoản? <a href="#" onclick="showPanel('login');return false;">Đăng nhập</a></p>
         </div>
-      </section>
-    </div>
-  </main>
-</div>
+      </main>
 
-<!-- Post-login home (mockup of what a visitor sees right after signing in) -->
-<div class="home-view" id="viewHome" hidden>
-  <div class="topbar">
-    <div class="brand"><span class="mark">{ }</span> How2Prompt</div>
-    <div class="topbar-right">
-      <nav class="home-nav">
-        <a href="#" id="navCatalog" aria-current="page" onclick="showCatalog(); return false;">Trang chủ</a>
-        <a href="#" id="navHistory" onclick="showHistoryPage(); return false;">Lịch sử</a>
-      </nav>
-      <div class="home-user">
-        <span class="avatar" id="homeAvatar">N</span>
-        <span class="user-name" id="homeName">Người dùng Demo</span>
-        <button type="button" class="signout-link" onclick="signOut()">Đăng xuất</button>
-      </div>
-    </div>
-  </div>
-
-  <main class="home-main" id="pageCatalog">
-    <div class="home-header">
-      <span class="eyebrow">workspace</span>
-      <h1 id="homeGreeting">Chào Người dùng Demo, sẵn sàng ghép prompt chưa?</h1>
-      <p class="lede">Chọn một template trống, điền vào chỗ trống, sao chép và dán vào AI chat — chỉ mất vài giây.</p>
-      <div class="home-stats">
-        <div class="stat-pill"><strong id="historyCount">2</strong> prompt đã lưu</div>
-        <div class="stat-pill"><span class="pill">JWT</span> phiên đăng nhập đang được ghi nhớ</div>
-      </div>
-    </div>
-
-    <div class="search-row">
-      <div class="search-box">
-        <span class="glyph">⌕</span>
-        <input type="search" id="templateSearch" placeholder="Tìm template theo tên hoặc mô tả…" oninput="filterTemplates()">
-      </div>
-      <span class="kbd-hint">Ctrl+K để tìm nhanh</span>
-    </div>
-
-    <div class="tag-filters" id="tagFilters" role="group" aria-label="Lọc theo chủ đề">
-      <button type="button" class="tag-filter" data-tag="all" aria-pressed="true" onclick="setTagFilter('all')">Tất cả</button>
-      <button type="button" class="tag-filter" data-tag="debugging" aria-pressed="false" onclick="setTagFilter('debugging')">#debugging</button>
-      <button type="button" class="tag-filter" data-tag="coding" aria-pressed="false" onclick="setTagFilter('coding')">#coding</button>
-      <button type="button" class="tag-filter" data-tag="writing" aria-pressed="false" onclick="setTagFilter('writing')">#writing</button>
-      <button type="button" class="tag-filter" data-tag="marketing" aria-pressed="false" onclick="setTagFilter('marketing')">#marketing</button>
-    </div>
-
-    <div class="template-grid" id="templateGrid"></div>
-    <p class="empty-state" id="emptyState" hidden>Không tìm thấy template phù hợp — thử từ khóa hoặc tag khác.</p>
-
-    <div class="history-section">
-      <h2>Lịch sử gần đây</h2>
-      <div class="history-list">
-        <div class="history-row">
-          <div class="history-meta">
-            <span class="history-title">Debug lỗi hiệu quả</span>
-            <span class="history-time">Hôm nay, 09:42</span>
-          </div>
-          <button type="button" class="copy-btn" onclick="copyHistory(this)">Copy nhanh</button>
+      <!-- History (Epic 4) -->
+      <main class="app-main" id="pageHistory" hidden>
+        <div class="page-head">
+          <span class="eyebrow">lịch sử của bạn</span>
+          <h1>Prompt đã tạo</h1>
+          <p class="lede">
+            Mới nhất trước — nạp lại để chỉnh sửa và tạo bản mới, hoặc xóa những prompt không cần
+            nữa.
+          </p>
         </div>
-        <div class="history-row">
-          <div class="history-meta">
-            <span class="history-title">Sửa văn phong email</span>
-            <span class="history-time">Hôm qua, 16:05</span>
-          </div>
-          <button type="button" class="copy-btn" onclick="copyHistory(this)">Copy nhanh</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Prompt editor: opened by clicking a template card, or "Xem & sửa" from History -->
-  <main class="home-main" id="pageEditor" hidden>
-    <button type="button" class="back-link" id="editorBackLink" onclick="goBackFromEditor()">← Quay lại danh mục</button>
-
-    <div class="home-header">
-      <span class="eyebrow" id="editorTag">#debugging</span>
-      <h1 id="editorTitle">Debug lỗi hiệu quả</h1>
+        <div class="history-list" id="historyFullList"></div>
+        <p class="empty-state" id="historyEmpty" hidden>
+          Bạn chưa tạo prompt nào — hãy chọn một mẫu ở Thư viện.
+        </p>
+      </main>
     </div>
 
-    <form class="sentence-form" id="editorForm" onsubmit="return completeEditor(event)">
-      <span id="editorFields"></span>
+    <div class="measure" id="measure" aria-hidden="true"></div>
+    <div class="toast" id="toast"></div>
 
-      <div class="error-banner" id="editorError">
-        <span>⚠</span>
-        <span>Vui lòng điền đủ tất cả các ô trống trước khi hoàn thành.</span>
-      </div>
+    <script>
+      /* ===================== brace field decoration ===================== */
+      ;(function () {
+        const words = ['role', 'context', '{ }', 'constraints', 'tone', 'audience']
+        const field = document.getElementById('braceField')
+        const positions = [
+          [8, 5, 1.6, -6],
+          [20, 82, 2.1, 4],
+          [40, 10, 2.6, -3],
+          [64, 72, 1.4, 7],
+          [82, 18, 1.9, -5],
+          [12, 46, 1.3, 2],
+          [55, 92, 2.3, -8],
+          [92, 55, 1.5, 5],
+        ]
+        positions.forEach((p, i) => {
+          const span = document.createElement('span')
+          span.textContent = '{' + words[i % words.length] + '}'
+          span.style.top = p[0] + '%'
+          span.style.left = p[1] + '%'
+          span.style.fontSize = p[2] + 'rem'
+          span.style.transform = 'rotate(' + p[3] + 'deg)'
+          field.appendChild(span)
+        })
+      })()
 
-      <div class="actions" style="margin-top:1.1rem">
-        <button type="submit" class="submit-btn">Hoàn thành →</button>
-        <button type="button" class="demo-error-toggle" onclick="resetEditor()">Reset</button>
-      </div>
-    </form>
-
-    <div class="output-box" id="editorOutput" hidden>
-      <span class="tag">Đoạn Prompt hoàn chỉnh</span>
-      <pre id="editorOutputText"></pre>
-      <div class="actions" style="margin-top:0.9rem">
-        <button type="button" class="submit-btn" onclick="copyOutput(this)">Sao chép</button>
-        <button type="button" class="ghost-btn" id="saveHistoryBtn" hidden onclick="saveHistoryChanges()">Lưu thay đổi vào lịch sử</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- Full history page -->
-  <main class="home-main" id="pageHistory" hidden>
-    <div class="home-header">
-      <span class="eyebrow">lịch sử</span>
-      <h1>Các prompt bạn đã tạo</h1>
-      <p class="lede">Sắp xếp mới nhất trước — xem chi tiết để sửa lại, copy nhanh, hoặc xóa những prompt không cần nữa.</p>
-    </div>
-
-    <div class="history-list" id="historyFullList"></div>
-    <p class="empty-state" id="historyEmpty" hidden>Bạn chưa lưu prompt nào — hãy tạo một prompt ở Trang chủ.</p>
-  </main>
-
-  <!-- Create / edit a custom template -->
-  <main class="home-main" id="pageTemplateForm" hidden>
-    <button type="button" class="back-link" onclick="showCatalog()">← Hủy</button>
-
-    <div class="home-header">
-      <span class="eyebrow">custom template</span>
-      <h1 id="templateFormHeading">Tạo template của bạn</h1>
-      <p class="lede">Viết một câu mẫu, đánh dấu chỗ trống bằng dấu ngoặc nhọn, ví dụ {vai_tro}.</p>
-    </div>
-
-    <form onsubmit="return saveTemplateForm(event)" style="display:flex; flex-direction:column; gap:1.1rem;">
-      <div class="field-row">
-        <label for="templateFormTitle">Tiêu đề</label>
-        <input class="text-input" id="templateFormTitle" placeholder="VD: Viết mô tả sản phẩm">
-      </div>
-
-      <div class="field-row">
-        <label for="templateFormTag">Chủ đề</label>
-        <select class="text-input" id="templateFormTag">
-          <option value="debugging">#debugging</option>
-          <option value="coding">#coding</option>
-          <option value="writing">#writing</option>
-          <option value="marketing">#marketing</option>
-        </select>
-      </div>
-
-      <div class="field-row">
-        <label for="templateFormBody">Câu template</label>
-        <textarea class="text-input template-textarea" id="templateFormBody" oninput="updateTemplatePreview()" placeholder="VD: Viết mô tả sản phẩm {ten_san_pham} nhắm tới khách hàng {doi_tuong}, giọng văn {phong_cach}."></textarea>
-      </div>
-
-      <div class="field-row">
-        <label>Xem trước</label>
-        <div class="sentence-form" id="templateFormPreview" style="font-size:1rem; line-height:2;"></div>
-      </div>
-
-      <div class="error-banner" id="templateFormError">
-        <span>⚠</span>
-        <span>Vui lòng nhập tiêu đề và ít nhất một chỗ trống dạng {ten_bien}.</span>
-      </div>
-
-      <div class="actions">
-        <button type="submit" class="submit-btn">Lưu template →</button>
-        <button type="button" class="ghost-btn" onclick="showCatalog()">Hủy</button>
-      </div>
-    </form>
-  </main>
-</div>
-
-<div class="measure" id="measure" aria-hidden="true"></div>
-
-<script>
-  function showPanel(which) {
-    const loginTab = document.getElementById('tab-login');
-    const regTab = document.getElementById('tab-register');
-    const loginPanel = document.getElementById('panel-login');
-    const regPanel = document.getElementById('panel-register');
-    const isLogin = which === 'login';
-    loginTab.setAttribute('aria-selected', String(isLogin));
-    regTab.setAttribute('aria-selected', String(!isLogin));
-    loginPanel.hidden = !isLogin;
-    regPanel.hidden = isLogin;
-  }
-
-  function togglePw(btn) {
-    const input = btn.previousElementSibling;
-    const showing = input.type === 'text';
-    input.type = showing ? 'password' : 'text';
-    btn.textContent = showing ? 'hiện' : 'ẩn';
-  }
-
-  function toggleError(id) {
-    document.getElementById(id).classList.toggle('show');
-  }
-
-  function submitDemo(evt, kind) {
-    evt.preventDefault();
-    if (kind === 'login') {
-      const form = evt.target;
-      const email = form.querySelector('[data-field="email-login"]').value.trim();
-      const pw = form.querySelector('[data-field="pw-login"]').value;
-      if (email === 'demo@how2prompt.dev' && pw === 'demo1234') {
-        goHome(email === 'demo@how2prompt.dev' ? 'Người dùng Demo' : email);
-        return false;
+      /* ===================== auth panel switching ===================== */
+      function showAuthPanel(which) {
+        const panels = ['login', 'register', 'forgot', 'reset']
+        panels.forEach((p) => {
+          document.getElementById('panel-' + p).hidden = p !== which
+        })
+        document
+          .getElementById('tab-login')
+          .setAttribute('aria-selected', String(which === 'login'))
+        document
+          .getElementById('tab-register')
+          .setAttribute('aria-selected', String(which === 'register'))
+        document.getElementById('authTabs').style.visibility =
+          which === 'login' || which === 'register' ? 'visible' : 'hidden'
       }
-      toggleError('err-login');
-      return false;
-    }
-    toggleError('err-register');
-    return false;
-  }
 
-  function goHome(name) {
-    document.getElementById('viewAuth').hidden = true;
-    document.getElementById('viewHome').hidden = false;
-    document.getElementById('homeName').textContent = name;
-    document.getElementById('homeGreeting').textContent = `Chào ${name}, sẵn sàng ghép prompt chưa?`;
-    document.getElementById('homeAvatar').textContent = name.trim().charAt(0).toUpperCase();
-    showCatalog();
-  }
-
-  // ---- Page switching within the signed-in workspace ----
-  function showPage(id) {
-    ['pageCatalog', 'pageEditor', 'pageHistory', 'pageTemplateForm'].forEach((pid) => {
-      document.getElementById(pid).hidden = pid !== id;
-    });
-    document.getElementById('navCatalog').removeAttribute('aria-current');
-    document.getElementById('navHistory').removeAttribute('aria-current');
-    if (id === 'pageCatalog') document.getElementById('navCatalog').setAttribute('aria-current', 'page');
-    if (id === 'pageHistory') document.getElementById('navHistory').setAttribute('aria-current', 'page');
-  }
-  function showCatalog() { showPage('pageCatalog'); }
-  function showHistoryPage() { renderHistoryPage(); showPage('pageHistory'); }
-
-  function signOut() {
-    document.getElementById('viewHome').hidden = true;
-    document.getElementById('viewAuth').hidden = false;
-    showPanel('login');
-  }
-
-  // ---- Template catalog (FR-1/FR-2/FR-3 mockup data) ----
-  const templates = [
-    { id: 0, title: 'Debug lỗi hiệu quả', tag: 'debugging', desc: 'Mô tả lỗi, môi trường, và log để AI chẩn đoán chính xác hơn.',
-      template: 'Với vai trò {role}, hãy debug đoạn log sau trong bối cảnh {context}, tuân thủ ràng buộc {constraints}.',
-      fields: [
-        { name: 'role', placeholder: 'QA Engineer' },
-        { name: 'context', placeholder: 'ứng dụng thanh toán Node.js' },
-        { name: 'constraints', placeholder: 'không đổi API public' },
-      ] },
-    { id: 1, title: 'Code review có cấu trúc', tag: 'coding', desc: 'Yêu cầu AI review theo checklist rõ ràng, không bỏ sót.',
-      template: 'Với vai trò {role}, hãy review đoạn code sau theo checklist {checklist}, tập trung vào {focus}.',
-      fields: [
-        { name: 'role', placeholder: 'Senior Backend Engineer' },
-        { name: 'checklist', placeholder: 'bảo mật, hiệu năng, dễ đọc' },
-        { name: 'focus', placeholder: 'xử lý lỗi' },
-      ] },
-    { id: 2, title: 'Tối ưu truy vấn chậm', tag: 'debugging', desc: 'Đưa query và schema để AI đề xuất cách tối ưu cụ thể.',
-      template: 'Truy vấn SQL sau đang chạy chậm trên bảng {table}: hãy đề xuất cách tối ưu, biết hệ quản trị là {db} và ràng buộc {constraints}.',
-      fields: [
-        { name: 'table', placeholder: 'orders' },
-        { name: 'db', placeholder: 'PostgreSQL 15' },
-        { name: 'constraints', placeholder: 'không được thêm index mới' },
-      ] },
-    { id: 3, title: 'Sửa văn phong email', tag: 'writing', desc: 'Biến bản nháp thành email chuyên nghiệp, đúng ngữ cảnh.',
-      template: 'Biến đoạn nháp sau thành email chuyên nghiệp gửi tới {recipient}, với giọng văn {tone}: {draft}',
-      fields: [
-        { name: 'recipient', placeholder: 'khách hàng doanh nghiệp' },
-        { name: 'tone', placeholder: 'lịch sự, ngắn gọn' },
-        { name: 'draft', placeholder: 'dán bản nháp của bạn...' },
-      ] },
-    { id: 4, title: 'Tóm tắt tài liệu dài', tag: 'writing', desc: 'Rút gọn nội dung dài thành các điểm chính, giữ đúng trọng tâm.',
-      template: 'Tóm tắt tài liệu sau thành {length} gạch đầu dòng, giữ đúng trọng tâm về {topic}: {document}',
-      fields: [
-        { name: 'length', placeholder: '5' },
-        { name: 'topic', placeholder: 'chiến lược ra mắt sản phẩm' },
-        { name: 'document', placeholder: 'dán nội dung tài liệu...' },
-      ] },
-    { id: 5, title: 'Viết caption mạng xã hội', tag: 'marketing', desc: 'Xây dựng caption thu hút theo đúng giọng thương hiệu của bạn.',
-      template: 'Viết caption cho bài đăng về {topic} trên {platform}, giọng điệu {tone}.',
-      fields: [
-        { name: 'topic', placeholder: 'ra mắt tính năng mới' },
-        { name: 'platform', placeholder: 'Instagram' },
-        { name: 'tone', placeholder: 'trẻ trung, hài hước' },
-      ] },
-    { id: 6, title: 'Lên kế hoạch content', tag: 'marketing', desc: 'Lập lịch nội dung theo chủ đề và mục tiêu tuần/tháng.',
-      template: 'Lập lịch nội dung {duration} cho chủ đề {topic}, mục tiêu {goal}.',
-      fields: [
-        { name: 'duration', placeholder: '1 tháng' },
-        { name: 'topic', placeholder: 'chăm sóc khách hàng' },
-        { name: 'goal', placeholder: 'tăng tương tác 20%' },
-      ] },
-    { id: 7, title: 'Viết unit test', tag: 'coding', desc: 'Sinh test case bám theo hành vi thực tế của hàm, không hời hợt.',
-      template: 'Viết unit test cho hàm sau bằng {framework}, bao phủ các case: {cases}. Code: {code}',
-      fields: [
-        { name: 'framework', placeholder: 'Vitest' },
-        { name: 'cases', placeholder: 'input rỗng, giá trị âm, số lớn' },
-        { name: 'code', placeholder: 'dán hàm cần test...' },
-      ] },
-  ];
-  let activeTag = 'all';
-  let currentTemplate = null;
-  let editorContext = { mode: 'create', historyIndex: null };
-  let lastCompiledValues = {};
-  let editingCustomTemplateId = null;
-
-  function renderTemplates() {
-    const query = (document.getElementById('templateSearch').value || '').trim().toLowerCase();
-    const grid = document.getElementById('templateGrid');
-    const empty = document.getElementById('emptyState');
-
-    const filtered = templates.filter((t) => {
-      const matchesTag = activeTag === 'all' || t.tag === activeTag;
-      const matchesQuery = !query || t.title.toLowerCase().includes(query) || t.desc.toLowerCase().includes(query);
-      return matchesTag && matchesQuery;
-    });
-
-    const newCardHtml = `
-      <div class="template-card new-template-card" role="button" tabindex="0"
-        onclick="openTemplateForm()" onkeydown="if(event.key==='Enter'){openTemplateForm()}">
-        <h3>+ Tạo template của bạn</h3>
-        <p>Viết câu template riêng, dùng {ten_bien} để tạo chỗ trống.</p>
-      </div>
-    `;
-
-    grid.innerHTML = newCardHtml + filtered.map((t) => `
-      <div class="template-card" role="button" tabindex="0"
-        onclick="openEditor(${JSON.stringify(t.id)})" onkeydown="if(event.key==='Enter'){openEditor(${JSON.stringify(t.id)})}">
-        ${t.custom ? `
-          <div class="card-tools">
-            <button type="button" class="icon-btn" aria-label="Sửa template"
-              onclick="event.stopPropagation(); openTemplateForm(${JSON.stringify(t.id)})">✎</button>
-            <button type="button" class="icon-btn" aria-label="Xóa template"
-              onclick="event.stopPropagation(); deleteTemplateCard(${JSON.stringify(t.id)})">✕</button>
-          </div>
-        ` : ''}
-        <h3>${t.title}</h3>
-        <p>${t.desc}</p>
-        <div class="card-tags">
-          <span class="card-tag">#${t.tag}</span>
-          ${t.custom ? '<span class="card-badge">của bạn</span>' : ''}
-        </div>
-      </div>
-    `).join('');
-
-    empty.hidden = filtered.length !== 0;
-  }
-
-  function filterTemplates() { renderTemplates(); }
-
-  function setTagFilter(tag) {
-    activeTag = tag;
-    document.querySelectorAll('.tag-filter').forEach((btn) => {
-      btn.setAttribute('aria-pressed', String(btn.dataset.tag === tag));
-    });
-    renderTemplates();
-  }
-
-  function copyHistory(btn) {
-    const original = btn.textContent;
-    btn.textContent = 'Đã sao chép!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.classList.remove('copied');
-    }, 2000);
-  }
-
-  renderTemplates();
-
-  // ---- Prompt editor (Variable Canvas mockup: FR-4/FR-5/FR-6/FR-8/FR-9/FR-10) ----
-  function draftKeyFor(templateId) { return 'how2prompt.draft.' + templateId; }
-
-  function renderEditorShell(t, values) {
-    document.getElementById('editorTag').textContent = '#' + t.tag;
-    document.getElementById('editorTitle').textContent = t.title;
-    document.getElementById('editorOutput').hidden = true;
-    document.getElementById('editorError').classList.remove('show');
-    document.getElementById('saveHistoryBtn').hidden = true;
-
-    const parts = t.template.split(/\{(\w+)\}/g); // alternates: static, fieldName, static, fieldName...
-    let html = '';
-    parts.forEach((part, i) => {
-      if (i % 2 === 0) {
-        if (part) html += `<span class="static">${part}</span>`;
-      } else {
-        const field = t.fields.find((f) => f.name === part) || { placeholder: '' };
-        const value = (values && values[part]) || '';
-        html += `<input class="blank-input auto" type="text" placeholder="${field.placeholder}" data-field="${part}" value="${value}" oninput="saveDraft()">`;
+      function togglePw(btn) {
+        const input = btn.previousElementSibling
+        const showing = input.type === 'text'
+        input.type = showing ? 'password' : 'text'
+        btn.textContent = showing ? 'hiện' : 'ẩn'
       }
-    });
-    document.getElementById('editorFields').innerHTML = html;
-    wireAutoResize(document.getElementById('editorFields'));
-  }
-
-  // Opened from the catalog: normal "create" flow, draft auto-saved per template
-  function openEditor(id) {
-    const t = templates.find((x) => x.id === id);
-    if (!t) return;
-    currentTemplate = t;
-    editorContext = { mode: 'create', historyIndex: null };
-    document.getElementById('editorBackLink').textContent = '← Quay lại danh mục';
-
-    let draft = {};
-    try { draft = JSON.parse(localStorage.getItem(draftKeyFor(t.id)) || '{}'); } catch (e) { draft = {}; }
-    renderEditorShell(t, draft);
-    showPage('pageEditor');
-  }
-
-  // Opened from History's "Xem & sửa": pre-filled with that entry's saved values
-  function openHistoryDetail(i) {
-    const entry = historyEntries[i];
-    const t = templateById(entry.templateId);
-    if (!t) return;
-    currentTemplate = t;
-    editorContext = { mode: 'history', historyIndex: i };
-    document.getElementById('editorBackLink').textContent = '← Quay lại Lịch sử';
-
-    renderEditorShell(t, entry.values);
-    showPage('pageEditor');
-  }
-
-  function goBackFromEditor() {
-    if (editorContext.mode === 'history') showHistoryPage();
-    else showCatalog();
-  }
-
-  // FR-6: auto-save draft values to localStorage as the visitor types (create mode only —
-  // editing a history entry must not overwrite the template's own scratch draft)
-  function saveDraft() {
-    if (!currentTemplate || editorContext.mode !== 'create') return;
-    const values = {};
-    document.querySelectorAll('#editorFields .blank-input').forEach((input) => {
-      values[input.dataset.field] = input.value;
-    });
-    localStorage.setItem(draftKeyFor(currentTemplate.id), JSON.stringify(values));
-  }
-
-  // FR-7: Reset — in create mode, clears the canvas and the saved draft;
-  // in history mode, undoes unsaved edits back to the saved entry's values
-  function resetEditor() {
-    if (!currentTemplate) return;
-    if (editorContext.mode === 'history') {
-      renderEditorShell(currentTemplate, historyEntries[editorContext.historyIndex].values);
-    } else {
-      localStorage.removeItem(draftKeyFor(currentTemplate.id));
-      renderEditorShell(currentTemplate, {});
-    }
-  }
-
-  // FR-8/FR-10: compile the final prompt, or block + highlight if a required blank is empty
-  function completeEditor(evt) {
-    evt.preventDefault();
-    const inputs = Array.from(document.querySelectorAll('#editorFields .blank-input'));
-    inputs.forEach((input) => input.classList.remove('invalid'));
-
-    const emptyInputs = inputs.filter((input) => !input.value.trim());
-    if (emptyInputs.length > 0) {
-      emptyInputs.forEach((input) => input.classList.add('invalid'));
-      document.getElementById('editorError').classList.add('show');
-      emptyInputs[0].focus();
-      return false;
-    }
-    document.getElementById('editorError').classList.remove('show');
-
-    let output = currentTemplate.template;
-    const values = {};
-    inputs.forEach((input) => {
-      values[input.dataset.field] = input.value.trim();
-      output = output.split(`{${input.dataset.field}}`).join(input.value.trim());
-    });
-    lastCompiledValues = values;
-
-    document.getElementById('editorOutputText').textContent = output;
-    document.getElementById('editorOutput').hidden = false;
-    document.getElementById('saveHistoryBtn').hidden = editorContext.mode !== 'history';
-    return false;
-  }
-
-  // Persist edits made from History's "Xem & sửa" back onto that entry
-  function saveHistoryChanges() {
-    if (editorContext.historyIndex == null) return;
-    historyEntries[editorContext.historyIndex].values = lastCompiledValues;
-    showHistoryPage();
-  }
-
-  // FR-9: copy compiled prompt, "Đã sao chép!" for 2 seconds
-  function copyOutput(btn) {
-    const text = document.getElementById('editorOutputText').textContent;
-    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
-    const original = btn.textContent;
-    btn.textContent = 'Đã sao chép!';
-    setTimeout(() => { btn.textContent = original; }, 2000);
-  }
-
-  // ---- Full history page (Epic 3: FR-15/FR-16/FR-17 + xem chi tiết/sửa) ----
-  // Each entry links back to its template by id + stores the filled values (not just
-  // the final text), so "Xem & sửa" can reopen the exact same inline blanks.
-  let historyEntries = [
-    { templateId: 0, time: 'Hôm nay, 09:42',
-      values: { role: 'QA Engineer', context: 'ứng dụng thanh toán Node.js', constraints: 'không đổi API public' } },
-    { templateId: 3, time: 'Hôm qua, 16:05',
-      values: { recipient: 'khách hàng doanh nghiệp', tone: 'lịch sự, ngắn gọn', draft: '(bản nháp gốc)' } },
-    { templateId: 5, time: '2 ngày trước',
-      values: { topic: 'ra mắt tính năng mới', platform: 'Instagram', tone: 'trẻ trung, hài hước' } },
-    { templateId: 1, time: '3 ngày trước',
-      values: { role: 'Senior Backend Engineer', checklist: 'bảo mật, hiệu năng, dễ đọc', focus: 'xử lý lỗi' } },
-    { templateId: 4, time: 'Tuần trước',
-      values: { length: '5', topic: 'chiến lược ra mắt sản phẩm', document: '(nội dung gốc)' } },
-  ];
-
-  function templateById(id) { return templates.find((t) => t.id === id); }
-
-  function compileTemplate(t, values) {
-    let output = t.template;
-    t.fields.forEach((f) => { output = output.split(`{${f.name}}`).join(values[f.name] || ''); });
-    return output;
-  }
-
-  function renderHistoryPage() {
-    const list = document.getElementById('historyFullList');
-    const empty = document.getElementById('historyEmpty');
-
-    list.innerHTML = historyEntries.map((h, i) => {
-      const t = templateById(h.templateId);
-      const title = t ? t.title : '(template đã bị xóa)';
-      return `
-        <div class="history-row">
-          <div class="history-meta">
-            <span class="history-title">${title}</span>
-            <span class="history-time">${h.time}</span>
-          </div>
-          <div style="display:flex; gap:0.5rem; flex-shrink:0;">
-            <button type="button" class="ghost-btn" style="padding:0.4rem 0.75rem; font-size:0.76rem;"
-              onclick="openHistoryDetail(${i})" ${t ? '' : 'disabled'}>Xem &amp; sửa</button>
-            <button type="button" class="copy-btn" data-index="${i}" onclick="copyHistoryEntry(this)" ${t ? '' : 'disabled'}>Copy nhanh</button>
-            <button type="button" class="delete-btn" onclick="deleteHistory(${i})">Xóa</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    document.getElementById('historyCount').textContent = historyEntries.length;
-    empty.hidden = historyEntries.length !== 0;
-  }
-
-  function copyHistoryEntry(btn) {
-    const entry = historyEntries[Number(btn.dataset.index)];
-    const t = templateById(entry.templateId);
-    if (!t) return;
-    if (navigator.clipboard) navigator.clipboard.writeText(compileTemplate(t, entry.values)).catch(() => {});
-    const original = btn.textContent;
-    btn.textContent = 'Đã sao chép!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
-  }
-
-  function deleteHistory(i) {
-    historyEntries.splice(i, 1);
-    renderHistoryPage();
-  }
-
-  // ---- Custom templates: create/edit your own (client-side only in this mockup) ----
-  function openTemplateForm(id) {
-    editingCustomTemplateId = id ?? null;
-    const t = id != null ? templates.find((x) => x.id === id) : null;
-
-    document.getElementById('templateFormHeading').textContent = t ? 'Chỉnh sửa template' : 'Tạo template của bạn';
-    document.getElementById('templateFormTitle').value = t ? t.title : '';
-    document.getElementById('templateFormTag').value = t ? t.tag : 'debugging';
-    document.getElementById('templateFormBody').value = t ? t.template : '';
-    document.getElementById('templateFormError').classList.remove('show');
-    updateTemplatePreview();
-    showPage('pageTemplateForm');
-  }
-
-  // A template's fields are just whatever {ten_bien} tokens appear in its text —
-  // no separate schema to fill in, matching the product's own raw_template syntax.
-  function extractFields(templateText) {
-    const seen = new Set();
-    const names = [];
-    const re = /\{(\w+)\}/g;
-    let m;
-    while ((m = re.exec(templateText))) {
-      if (!seen.has(m[1])) { seen.add(m[1]); names.push(m[1]); }
-    }
-    return names.map((name) => ({ name, placeholder: name }));
-  }
-
-  function updateTemplatePreview() {
-    const text = document.getElementById('templateFormBody').value;
-    const preview = document.getElementById('templateFormPreview');
-    if (!text.trim()) {
-      preview.innerHTML = '<span class="static" style="color:var(--ink-faint)">Xem trước sẽ hiện ở đây…</span>';
-      return;
-    }
-    const parts = text.split(/\{(\w+)\}/g);
-    let html = '';
-    parts.forEach((part, i) => {
-      if (i % 2 === 0) {
-        if (part) html += `<span class="static">${part}</span>`;
-      } else {
-        html += `<span class="blank-input" style="display:inline-block; border-bottom-style:dashed;">${part}</span>`;
+      function toggleBanner(id) {
+        document.getElementById(id).classList.toggle('show')
       }
-    });
-    preview.innerHTML = html;
-  }
 
-  function saveTemplateForm(evt) {
-    evt.preventDefault();
-    const title = document.getElementById('templateFormTitle').value.trim();
-    const tag = document.getElementById('templateFormTag').value;
-    const body = document.getElementById('templateFormBody').value.trim();
-    const fields = extractFields(body);
-    const errorEl = document.getElementById('templateFormError');
+      function submitDemo(evt, kind) {
+        evt.preventDefault()
+        const form = evt.target
+        if (kind === 'login') {
+          const email = form.querySelector('[data-field="email-login"]').value.trim()
+          const pw = form.querySelector('[data-field="pw-login"]').value
+          if (email === 'demo@how2prompt.dev' && pw === 'demo1234') {
+            goToApp('Người dùng Demo')
+            return false
+          }
+          toggleBanner('err-login')
+          return false
+        }
+        toggleBanner('err-register')
+        return false
+      }
+      function submitForgot(evt) {
+        evt.preventDefault()
+        document.getElementById('ok-forgot').classList.add('show')
+        evt.target.querySelector('button[type=submit]').disabled = true
+        return false
+      }
+      function submitReset(evt) {
+        evt.preventDefault()
+        showAuthPanel('login')
+        return false
+      }
+      function continueGuest() {
+        goToApp(null)
+      }
 
-    if (!title || fields.length === 0) {
-      errorEl.classList.add('show');
-      return false;
-    }
-    errorEl.classList.remove('show');
+      function goToApp(name) {
+        document.getElementById('viewAuth').hidden = true
+        document.getElementById('viewApp').hidden = false
+        const chip = document.querySelector('.user-chip')
+        if (name) {
+          chip.hidden = false
+          document.getElementById('userName').textContent = name
+          document.getElementById('userAvatar').textContent = name.trim().charAt(0).toUpperCase()
+          document.getElementById('catalogGreeting').textContent =
+            'Chào ' + name + ', tìm mẫu prompt phù hợp'
+        } else {
+          chip.hidden = true
+          document.getElementById('catalogGreeting').textContent =
+            'Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'
+        }
+        isGuest = !name
+        renderCatalog()
+        showPage('pageCatalog')
+      }
+      function signOut() {
+        document.getElementById('viewApp').hidden = true
+        document.getElementById('viewAuth').hidden = false
+        showAuthPanel('login')
+      }
 
-    if (editingCustomTemplateId != null) {
-      const t = templates.find((x) => x.id === editingCustomTemplateId);
-      Object.assign(t, { title, tag, template: body, fields });
-    } else {
-      templates.push({
-        id: 'custom-' + Date.now(),
-        title,
-        tag,
-        template: body,
-        fields,
-        desc: 'Template của bạn — bấm ✎ để chỉnh sửa.',
-        custom: true,
-      });
-    }
+      /* ===================== app data ===================== */
+      let isGuest = false
+      const TEMPLATES = [
+        {
+          id: 't1',
+          title: 'Debug lỗi hiệu quả',
+          tag: 'debugging',
+          official: true,
+          usage: 482,
+          featured: true,
+          trending: true,
+          models: ['gpt', 'claude'],
+          desc: 'Mô tả lỗi + log, nhận hướng dẫn debug theo đúng vai trò và bối cảnh kỹ thuật của bạn.',
+          body: 'Với vai trò {{role}}, hãy debug đoạn log sau trong bối cảnh {{context}}, tuân thủ ràng buộc {{constraints}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'role',
+              label: 'Vai trò',
+              type: 'select',
+              required: true,
+              options: ['Senior Backend Engineer', 'DevOps Engineer', 'QA Engineer'],
+            },
+            {
+              key: 'context',
+              label: 'Bối cảnh hệ thống',
+              type: 'textarea',
+              required: true,
+              placeholder: 'VD: dịch vụ Node.js chạy trên Kubernetes…',
+            },
+            {
+              key: 'constraints',
+              label: 'Ràng buộc',
+              type: 'text',
+              required: false,
+              placeholder: 'VD: không đổi schema DB',
+            },
+          ],
+        },
+        {
+          id: 't2',
+          title: 'Sửa văn phong nội dung',
+          tag: 'writing',
+          official: true,
+          usage: 311,
+          featured: true,
+          trending: false,
+          models: ['gpt', 'claude', 'gemini'],
+          desc: 'Đưa một đoạn văn về đúng giọng điệu và độ dài mong muốn.',
+          body: 'Sửa văn phong đoạn sau sang giọng {{tone}}, độ dài tối đa {{length}} từ, hướng tới đối tượng {{audience}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'tone',
+              label: 'Giọng văn',
+              type: 'chips',
+              required: true,
+              options: ['Trang trọng', 'Thân thiện', 'Súc tích', 'Hài hước'],
+            },
+            {
+              key: 'length',
+              label: 'Độ dài tối đa (từ)',
+              type: 'slider',
+              required: true,
+              min: 50,
+              max: 500,
+              step: 10,
+              default: 150,
+            },
+            {
+              key: 'audience',
+              label: 'Đối tượng đọc',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: khách hàng doanh nghiệp',
+            },
+          ],
+        },
+        {
+          id: 't3',
+          title: 'Mô tả sản phẩm marketing',
+          tag: 'marketing',
+          official: true,
+          usage: 205,
+          featured: false,
+          trending: true,
+          models: ['gpt', 'gemini'],
+          desc: 'Viết mô tả sản phẩm bám theo tính năng và điểm khác biệt cạnh tranh.',
+          body: 'Viết mô tả sản phẩm {{product}} nhắm tới {{segment}}, nhấn mạnh tính năng {{features}}.{{highlight}}{{__extra__}}',
+          fields: [
+            {
+              key: 'product',
+              label: 'Tên sản phẩm',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: Ứng dụng quản lý chi tiêu',
+            },
+            {
+              key: 'segment',
+              label: 'Phân khúc khách hàng',
+              type: 'text',
+              required: true,
+              placeholder: 'VD: sinh viên, người mới đi làm',
+            },
+            {
+              key: 'features',
+              label: 'Tính năng nổi bật',
+              type: 'multiselect',
+              required: true,
+              options: [
+                'Theo dõi realtime',
+                'Đồng bộ ngân hàng',
+                'Cảnh báo chi tiêu',
+                'Báo cáo AI',
+              ],
+            },
+            {
+              key: 'highlight',
+              label: 'Nhấn mạnh yếu tố miễn phí?',
+              type: 'boolean',
+              required: false,
+            },
+          ],
+        },
+        {
+          id: 't4',
+          title: 'Kiểm tra code review',
+          tag: 'coding',
+          official: true,
+          usage: 158,
+          featured: false,
+          trending: false,
+          models: ['claude'],
+          desc: 'Rà soát pull request theo checklist bảo mật và hiệu năng.',
+          body: 'Review đoạn code sau theo mức độ nghiêm ngặt {{strictness}}/5, tập trung vào {{focus}}.{{__extra__}}',
+          fields: [
+            {
+              key: 'strictness',
+              label: 'Mức độ nghiêm ngặt',
+              type: 'slider',
+              required: true,
+              min: 1,
+              max: 5,
+              step: 1,
+              default: 3,
+            },
+            {
+              key: 'focus',
+              label: 'Tập trung vào',
+              type: 'multiselect',
+              required: true,
+              options: ['Bảo mật', 'Hiệu năng', 'Khả năng đọc', 'Test coverage'],
+            },
+          ],
+        },
+      ]
+      const MODEL_LABEL = { gpt: 'GPT-4o', claude: 'Claude', gemini: 'Gemini' }
+      let activeTag = 'all'
+      let history = [
+        {
+          id: 'h1',
+          templateId: 't1',
+          title: 'Debug lỗi hiệu quả',
+          model: 'gpt',
+          time: 'Hôm nay, 09:42',
+          values: {
+            role: 'Senior Backend Engineer',
+            context: 'dịch vụ Node.js chạy trên Kubernetes',
+            constraints: 'không đổi schema DB',
+          },
+          text: 'Với vai trò Senior Backend Engineer, hãy debug đoạn log sau trong bối cảnh dịch vụ Node.js chạy trên Kubernetes, tuân thủ ràng buộc không đổi schema DB.',
+        },
+        {
+          id: 'h2',
+          templateId: 't2',
+          title: 'Sửa văn phong nội dung',
+          model: 'claude',
+          time: 'Hôm qua, 16:05',
+          values: { tone: 'Trang trọng', length: '150', audience: 'khách hàng doanh nghiệp' },
+          text: 'Sửa văn phong đoạn sau sang giọng Trang trọng, độ dài tối đa 150 từ, hướng tới đối tượng khách hàng doanh nghiệp.',
+        },
+      ]
 
-    renderTemplates();
-    showCatalog();
-    return false;
-  }
+      /* ===================== catalog rendering (Epic 2) ===================== */
+      const ALL_TAGS = ['all', 'debugging', 'coding', 'writing', 'marketing']
+      const TAG_LABEL = {
+        all: 'Tất cả',
+        debugging: '#debugging',
+        coding: '#coding',
+        writing: '#writing',
+        marketing: '#marketing',
+      }
+      ;(function initTagFilters() {
+        const wrap = document.getElementById('tagFilters')
+        ALL_TAGS.forEach((tag) => {
+          const btn = document.createElement('button')
+          btn.type = 'button'
+          btn.className = 'chip'
+          btn.textContent = TAG_LABEL[tag]
+          btn.setAttribute('aria-pressed', String(tag === 'all'))
+          btn.onclick = () => {
+            activeTag = tag
+            document
+              .querySelectorAll('#tagFilters .chip')
+              .forEach((c) => c.setAttribute('aria-pressed', 'false'))
+            btn.setAttribute('aria-pressed', 'true')
+            renderCatalog()
+          }
+          wrap.appendChild(btn)
+        })
+      })()
 
-  function deleteTemplateCard(id) {
-    const idx = templates.findIndex((t) => t.id === id);
-    if (idx !== -1) templates.splice(idx, 1);
-    renderTemplates();
-  }
+      function matchesFilters(t) {
+        const q = document.getElementById('templateSearch').value.trim().toLowerCase()
+        const model = document.getElementById('modelFilter').value
+        if (activeTag !== 'all' && t.tag !== activeTag) return false
+        if (model !== 'all' && !t.models.includes(model)) return false
+        if (q && !(t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)))
+          return false
+        return true
+      }
 
-  // AR-8: auto-resize inline inputs to their content width via hidden measuring span
-  const measure = document.getElementById('measure');
-  function resize(input) {
-    const text = input.value || input.placeholder || '';
-    measure.textContent = text;
-    const w = measure.getBoundingClientRect().width;
-    input.style.width = Math.max(w + 14, 28) + 'px';
-  }
-  function wireAutoResize(container) {
-    container.querySelectorAll('.blank-input.auto').forEach(input => {
-      resize(input);
-      input.addEventListener('input', () => resize(input));
-    });
-  }
-  wireAutoResize(document);
-  window.addEventListener('resize', () => {
-    document.querySelectorAll('.blank-input.auto').forEach(resize);
-  });
+      function templateCardHTML(t) {
+        const favActive = favorites.has(t.id)
+        return (
+          '<button type="button" class="template-card" onclick="openTemplate(\'' +
+          t.id +
+          '\')">' +
+          '<div class="card-top"><span class="card-badges">' +
+          (t.official ? '<span class="badge-official">Chính thức</span>' : '') +
+          '</span>' +
+          '<span class="fav-btn' +
+          (favActive ? ' active' : '') +
+          '" role="button" tabindex="0" onclick="event.stopPropagation(); toggleFavorite(\'' +
+          t.id +
+          '\', this)">' +
+          (favActive ? '♥' : '♡') +
+          '</span></div>' +
+          '<h3>' +
+          t.title +
+          '</h3><p>' +
+          t.desc +
+          '</p>' +
+          '<div class="card-meta"><div class="model-tags">' +
+          t.models.map((m) => '<span class="model-tag">' + MODEL_LABEL[m] + '</span>').join('') +
+          '</div>' +
+          '<span class="usage-count">' +
+          t.usage +
+          ' lượt dùng</span></div></button>'
+        )
+      }
+      const favorites = new Set()
+      function toggleFavorite(id, el) {
+        if (favorites.has(id)) favorites.delete(id)
+        else favorites.add(id)
+        el.classList.toggle('active')
+        el.textContent = favorites.has(id) ? '♥' : '♡'
+        showToast(favorites.has(id) ? 'Đã thêm vào Yêu thích' : 'Đã bỏ Yêu thích')
+      }
 
-  // Keep the "prompt đã lưu" count on the catalog header accurate from the start
-  renderHistoryPage();
+      function renderCatalog() {
+        const filtered = TEMPLATES.filter(matchesFilters)
+        document.getElementById('featuredRail').innerHTML = TEMPLATES.filter((t) => t.featured)
+          .map(templateCardHTML)
+          .join('')
+        const trending = TEMPLATES.filter((t) => t.trending)
+        document.getElementById('trendingRail').innerHTML = trending.map(templateCardHTML).join('')
+        document.getElementById('trendingCount').textContent = trending.length + ' mẫu'
+        document.getElementById('templateGrid').innerHTML = filtered.map(templateCardHTML).join('')
+        document.getElementById('gridCount').textContent =
+          filtered.length + ' / ' + TEMPLATES.length + ' mẫu'
+        document.getElementById('emptyState').hidden = filtered.length !== 0
+      }
 
-  // decorative background brace field
-  const field = document.getElementById('braceField');
-  const glyphs = ['{role}', '{context}', '{constraints}', '{ }', '{email}'];
-  for (let i = 0; i < 14; i++) {
-    const s = document.createElement('span');
-    s.textContent = glyphs[i % glyphs.length];
-    s.style.left = Math.random() * 100 + '%';
-    s.style.top = Math.random() * 100 + '%';
-    s.style.fontSize = (1 + Math.random() * 2.2) + 'rem';
-    s.style.transform = `rotate(${(Math.random() * 16 - 8).toFixed(1)}deg)`;
-    field.appendChild(s);
-  }
-</script>
-</body>
+      /* ===================== page switching ===================== */
+      function showPage(id) {
+        ;['pageCatalog', 'pageTemplate', 'pageHistory'].forEach((pid) => {
+          document.getElementById(pid).hidden = pid !== id
+        })
+        document.getElementById('navCatalog').removeAttribute('aria-current')
+        document.getElementById('navHistory').removeAttribute('aria-current')
+        if (id === 'pageCatalog') {
+          document.getElementById('navCatalog').setAttribute('aria-current', 'page')
+          renderCatalog()
+        }
+        if (id === 'pageHistory') {
+          document.getElementById('navHistory').setAttribute('aria-current', 'page')
+          renderHistory()
+        }
+      }
+
+      /* ===================== template detail + dynamic form (Epic 3) ===================== */
+      let currentTemplate = null
+      let currentValues = {}
+
+      function openTemplate(id, presetValues) {
+        currentTemplate = TEMPLATES.find((t) => t.id === id)
+        if (!currentTemplate) return
+        currentValues = presetValues ? Object.assign({}, presetValues) : {}
+        document.getElementById('tplTag').textContent = TAG_LABEL[currentTemplate.tag]
+        document.getElementById('tplTitle').textContent = currentTemplate.title
+        document.getElementById('tplDesc').textContent = currentTemplate.desc
+
+        const modelSel = document.getElementById('tplModelSelect')
+        modelSel.innerHTML = currentTemplate.models
+          .map((m) => '<option value="' + m + '">' + MODEL_LABEL[m] + '</option>')
+          .join('')
+
+        const fieldsWrap = document.getElementById('tplFields')
+        fieldsWrap.innerHTML = ''
+        currentTemplate.fields.forEach((f) => fieldsWrap.appendChild(renderField(f)))
+        document.getElementById('extraInstructions').value = ''
+        document.getElementById('tplOutput').hidden = true
+        document.getElementById('err-generate').classList.remove('show')
+        updatePreview()
+        showPage('pageTemplate')
+      }
+
+      function renderField(f) {
+        const row = document.createElement('div')
+        row.className = 'field-row'
+        const labelHTML =
+          '<span class="field-label">' +
+          f.label +
+          (f.required ? ' <span class="req">bắt buộc</span>' : '') +
+          '</span>'
+
+        if (f.type === 'text') {
+          row.innerHTML =
+            labelHTML +
+            '<input class="text-input" type="text" placeholder="' +
+            (f.placeholder || '') +
+            '" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)">'
+        } else if (f.type === 'textarea') {
+          row.innerHTML =
+            labelHTML +
+            '<textarea class="text-input" rows="3" placeholder="' +
+            (f.placeholder || '') +
+            '" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)"></textarea>'
+        } else if (f.type === 'select') {
+          row.innerHTML =
+            labelHTML +
+            '<select class="select-input" onchange="setValue(\'' +
+            f.key +
+            '\', this.value)"><option value="">— chọn —</option>' +
+            f.options.map((o) => '<option>' + o + '</option>').join('') +
+            '</select>'
+        } else if (f.type === 'number') {
+          row.innerHTML =
+            labelHTML +
+            '<input class="text-input" type="number" oninput="setValue(\'' +
+            f.key +
+            '\', this.value)">'
+        } else if (f.type === 'chips') {
+          const chips = f.options
+            .map(
+              (o) =>
+                '<button type="button" class="chip-option" aria-pressed="false" data-key="' +
+                f.key +
+                '" data-val="' +
+                o +
+                '" onclick="selectChip(this)">' +
+                o +
+                '</button>',
+            )
+            .join('')
+          row.innerHTML = labelHTML + '<div class="chip-select">' + chips + '</div>'
+        } else if (f.type === 'multiselect') {
+          const chips = f.options
+            .map(
+              (o) =>
+                '<button type="button" class="chip-option" aria-pressed="false" data-key="' +
+                f.key +
+                '" data-val="' +
+                o +
+                '" onclick="toggleChip(this)">' +
+                o +
+                '</button>',
+            )
+            .join('')
+          row.innerHTML =
+            labelHTML +
+            '<div class="field-help">Chọn một hoặc nhiều</div><div class="chip-select">' +
+            chips +
+            '</div>'
+        } else if (f.type === 'boolean') {
+          row.innerHTML =
+            labelHTML +
+            '<div class="toggle-row"><span class="toggle" role="switch" aria-checked="false" tabindex="0" onclick="toggleBool(this, \'' +
+            f.key +
+            '\')" onkeydown="if(event.key===\' \'){event.preventDefault();this.click();}"></span><span class="field-help" style="font-size:0.86rem">Bật/tắt</span></div>'
+        } else if (f.type === 'slider') {
+          const dflt = f.default != null ? f.default : f.min
+          row.innerHTML =
+            labelHTML +
+            '<div class="slider-row"><input type="range" min="' +
+            f.min +
+            '" max="' +
+            f.max +
+            '" step="' +
+            f.step +
+            '" value="' +
+            dflt +
+            '" oninput="setSlider(this, \'' +
+            f.key +
+            '\')"><span class="slider-value" id="slider-' +
+            f.key +
+            '">' +
+            dflt +
+            '</span></div>'
+          setTimeout(() => setValue(f.key, String(dflt)), 0)
+        }
+        return row
+      }
+
+      function setValue(key, val) {
+        currentValues[key] = val
+        updatePreview()
+      }
+      function selectChip(btn) {
+        const key = btn.dataset.key
+        btn.parentElement
+          .querySelectorAll('.chip-option')
+          .forEach((c) => c.setAttribute('aria-pressed', 'false'))
+        btn.setAttribute('aria-pressed', 'true')
+        setValue(key, btn.dataset.val)
+      }
+      function toggleChip(btn) {
+        const pressed = btn.getAttribute('aria-pressed') === 'true'
+        btn.setAttribute('aria-pressed', String(!pressed))
+        const key = btn.dataset.key
+        const selected = Array.from(
+          btn.parentElement.querySelectorAll('[aria-pressed="true"]'),
+        ).map((b) => b.dataset.val)
+        setValue(key, selected.join(', '))
+      }
+      function toggleBool(el, key) {
+        const checked = el.getAttribute('aria-checked') === 'true'
+        el.setAttribute('aria-checked', String(!checked))
+        setValue(key, !checked ? 'có' : '')
+      }
+      function setSlider(input, key) {
+        document.getElementById('slider-' + key).textContent = input.value
+        setValue(key, input.value)
+      }
+
+      function updatePreview() {
+        if (!currentTemplate) return
+        const extra = document.getElementById('extraInstructions').value.trim()
+        let html = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) => {
+          if (key === '__extra__') return ''
+          const val = currentValues[key]
+          return val
+            ? '<span class="filled">' + escapeHtml(val) + '</span>'
+            : '<span class="unfilled">{' + key + '}</span>'
+        })
+        if (extra) html += '\n\n' + escapeHtml(extra)
+        document.getElementById('previewBody').innerHTML = html
+        const plain = html.replace(/<[^>]+>/g, '')
+        document.getElementById('tokenEstimate').textContent =
+          '~' + Math.max(1, Math.round(plain.length / 4)) + ' tokens'
+      }
+      function escapeHtml(s) {
+        return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c])
+      }
+
+      function resetTplForm() {
+        if (currentTemplate) openTemplate(currentTemplate.id)
+      }
+
+      function handleGenerate(evt) {
+        evt.preventDefault()
+        const missing = currentTemplate.fields.filter((f) => f.required && !currentValues[f.key])
+        if (missing.length) {
+          document.getElementById('err-generate').classList.add('show')
+          return false
+        }
+        document.getElementById('err-generate').classList.remove('show')
+        const extra = document.getElementById('extraInstructions').value.trim()
+        let text = currentTemplate.body.replace(/\{\{(\w+)\}\}/g, (m, key) =>
+          key === '__extra__' ? '' : currentValues[key] || '',
+        )
+        if (extra) text += '\n\n' + extra
+        document.getElementById('tplOutputText').textContent = text
+        document.getElementById('tplOutput').hidden = false
+
+        history.unshift({
+          id: 'h' + Date.now(),
+          templateId: currentTemplate.id,
+          title: currentTemplate.title,
+          model: document.getElementById('tplModelSelect').value,
+          time: 'Vừa xong',
+          values: Object.assign({}, currentValues),
+          text: text,
+        })
+        showToast(
+          isGuest ? 'Đã tạo prompt (Khách — không lưu lịch sử)' : 'Đã tạo và lưu vào lịch sử',
+        )
+        return false
+      }
+
+      function copyOutput(btn) {
+        const original = btn.textContent
+        btn.textContent = 'Đã sao chép!'
+        setTimeout(() => (btn.textContent = original), 1600)
+        showToast('Đã sao chép vào clipboard')
+      }
+
+      /* ===================== history (Epic 4) ===================== */
+      function renderHistory() {
+        const list = document.getElementById('historyFullList')
+        document.getElementById('historyEmpty').hidden = history.length !== 0
+        list.innerHTML = history
+          .map(
+            (h) =>
+              '<div class="history-row"><div class="history-meta"><span class="history-title">' +
+              h.title +
+              '</span>' +
+              '<span class="history-sub"><span>' +
+              MODEL_LABEL[h.model] +
+              '</span><span>' +
+              h.time +
+              '</span></span></div>' +
+              '<div class="history-actions">' +
+              '<button type="button" class="icon-btn" title="Nạp lại để chỉnh sửa" onclick="reloadHistory(\'' +
+              h.id +
+              '\')">↻</button>' +
+              '<button type="button" class="icon-btn" title="Sao chép" onclick="copyHistoryText(\'' +
+              h.id +
+              '\', this)">⧉</button>' +
+              '<button type="button" class="icon-btn danger" title="Xóa" onclick="deleteHistory(\'' +
+              h.id +
+              '\')">✕</button>' +
+              '</div></div>',
+          )
+          .join('')
+      }
+      function reloadHistory(id) {
+        const h = history.find((x) => x.id === id)
+        if (!h) return
+        openTemplate(h.templateId, h.values)
+        showToast('Đã nạp lại vào form — sửa và tạo bản mới')
+      }
+      function copyHistoryText(id, btn) {
+        const original = btn.textContent
+        btn.textContent = '✓'
+        setTimeout(() => (btn.textContent = original), 1200)
+        showToast('Đã sao chép vào clipboard')
+      }
+      function deleteHistory(id) {
+        history = history.filter((x) => x.id !== id)
+        renderHistory()
+        showToast('Đã xóa khỏi lịch sử')
+      }
+
+      /* ===================== toast ===================== */
+      let toastTimer
+      function showToast(msg) {
+        const t = document.getElementById('toast')
+        t.textContent = msg
+        t.classList.add('show')
+        clearTimeout(toastTimer)
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2000)
+      }
+
+      renderCatalog()
+    </script>
+  </body>
 </html>
