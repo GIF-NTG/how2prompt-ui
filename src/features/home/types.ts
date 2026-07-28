@@ -1,4 +1,4 @@
-import type { I18nString, PageInfo } from '@/shared/types/api'
+import type { I18nString, PageMeta } from '@/shared/types/api'
 
 export interface AuthorBrief {
   id: string | null
@@ -49,6 +49,7 @@ export interface TemplateListItem {
   is_official: boolean
   author: AuthorBrief
   categories: Category[]
+  tags: Tag[]
   supported_models: string[]
   usage_count: number
   favorite_count: number
@@ -62,15 +63,4 @@ export interface CatalogFilters {
   model: string
 }
 
-export interface CatalogPageData {
-  templates: TemplateListItem[]
-  featured: TemplateListItem[]
-  trending: TemplateListItem[]
-  categories: Category[]
-  tags: Tag[]
-  models: AiModel[]
-  total_count: number
-  page_info: PageInfo
-}
-
-export type { I18nString, PageInfo }
+export type { I18nString, PageMeta }

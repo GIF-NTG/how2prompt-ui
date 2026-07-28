@@ -3,9 +3,13 @@ export interface I18nString {
   vi?: string
 }
 
-export interface PageInfo {
-  next_cursor: string | null
-  has_next: boolean
+export interface PageMeta {
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  hasNext: boolean
+  hasPrevious: boolean
 }
 
 export { ApiError } from '@/shared/utils/httpClient'

@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react'
 import { templateClient } from '@/features/home/api/templateClient'
-import type { Tag } from '@/features/home/types'
+import type { Category } from '@/features/home/types'
+import { getI18nValue } from '@/shared/utils/i18n'
 import { ChipFilterGroup } from './ChipFilterGroup'
 
-interface TagFilterChipsProps {
+interface CategoryFilterChipsProps {
   value: string
   onChange: (slug: string) => void
 }
 
-export function TagFilterChips({ value, onChange }: TagFilterChipsProps) {
-  const [tags, setTags] = useState<Tag[]>([])
+export function CategoryFilterChips({ value, onChange }: CategoryFilterChipsProps) {
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
-    templateClient.getTags().then((data) => {
+    templateClient.getCategories().then((data) => {
       if (!cancelled) {
-        setTags(data)
+        setCategories(data)
         setLoading(false)
       }
     })
@@ -27,10 +28,10 @@ export function TagFilterChips({ value, onChange }: TagFilterChipsProps) {
 
   return (
     <ChipFilterGroup
-      items={tags.map((t) => ({ id: t.id, slug: t.slug, label: t.name }))}
+      items={categories.map((c) => ({ id: c.id, slug: c.slug, label: getI18nValue(c.name) }))}
       value={value}
       onChange={onChange}
-      ariaLabel="Lọc theo tag"
+      ariaLabel="Lọc theo chủ đề"
       loading={loading}
     />
   )

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { templateClient } from '@/features/home/api/templateClient'
@@ -11,24 +11,37 @@ import { TemplateGrid } from '@/features/home/components/TemplateGrid'
 import { EmptyState } from '@/features/home/components/EmptyState'
 import type { TemplateListItem } from '@/features/home/types'
 
+const PAGE_SIZE = 20
+
 export function CatalogPage() {
   const navigate = useNavigate()
   const { session } = useAuth()
-  const { filters, setTag, setModel, setSearch } = useCatalogFilters()
+  const { filters, setCategory, setTag, setModel, setSearch, setSort } = useCatalogFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
   const [featured, setFeatured] = useState<TemplateListItem[]>([])
   const [trending, setTrending] = useState<TemplateListItem[]>([])
   const [templates, setTemplates] = useState<TemplateListItem[]>([])
   const [totalCount, setTotalCount] = useState(0)
+  const [page, setPage] = useState(0)
+  const [hasNext, setHasNext] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestGeneration = useRef(0)
 
   const queryKey = useMemo(
-    () => ({ model: filters.model, tag: filters.tag, q: debouncedSearch }),
-    [filters.model, filters.tag, debouncedSearch],
+    () => ({
+      model: filters.model,
+      category: filters.category,
+      tag: filters.tag,
+      sort: filters.sort,
+      q: debouncedSearch,
+    }),
+    [filters.model, filters.category, filters.tag, filters.sort, debouncedSearch],
   )
 
   const loadData = useCallback(async () => {
+    const generation = ++requestGeneration.current
     setLoading(true)
     setError(null)
 
@@ -37,28 +50,60 @@ export function CatalogPage() {
         templateClient.getFeatured(),
         templateClient.getTrending(),
         templateClient.getTemplates({
-          sort: 'popular',
-          limit: 50,
+          sort: queryKey.sort,
+          page: 0,
+          size: PAGE_SIZE,
           q: queryKey.q || undefined,
           model: queryKey.model || undefined,
+          category: queryKey.category || undefined,
           tags: queryKey.tag || undefined,
         }),
       ])
 
+      if (generation !== requestGeneration.current) return
       setFeatured(featuredData)
       setTrending(trendingData)
       setTemplates(allData.data)
-      setTotalCount(allData.total_count)
+      setTotalCount(allData.meta.totalElements)
+      setPage(0)
+      setHasNext(allData.meta.hasNext)
     } catch {
+      if (generation !== requestGeneration.current) return
       setError('Không thể tải thư viện mẫu, vui lòng thử lại sau.')
     } finally {
-      setLoading(false)
+      if (generation === requestGeneration.current) setLoading(false)
     }
   }, [queryKey])
 
   useEffect(() => {
     void loadData()
   }, [loadData])
+
+  const handleLoadMore = useCallback(async () => {
+    const generation = requestGeneration.current
+    const nextPage = page + 1
+    setIsLoadingMore(true)
+    try {
+      const allData = await templateClient.getTemplates({
+        sort: queryKey.sort,
+        page: nextPage,
+        size: PAGE_SIZE,
+        q: queryKey.q || undefined,
+        model: queryKey.model || undefined,
+        category: queryKey.category || undefined,
+        tags: queryKey.tag || undefined,
+      })
+      if (generation !== requestGeneration.current) return
+      setTemplates((prev) => [...prev, ...allData.data])
+      setPage(nextPage)
+      setHasNext(allData.meta.hasNext)
+    } catch {
+      if (generation !== requestGeneration.current) return
+      setError('Không thể tải thêm mẫu, vui lòng thử lại sau.')
+    } finally {
+      if (generation === requestGeneration.current) setIsLoadingMore(false)
+    }
+  }, [page, queryKey])
 
   const handleTemplateClick = useCallback(
     (slug: string) => {
@@ -102,7 +147,9 @@ export function CatalogPage() {
       <FilterBar
         filters={filters}
         onModelChange={setModel}
+        onCategoryChange={setCategory}
         onTagChange={setTag}
+        onSortChange={setSort}
         search={<SearchBox value={filters.search} onChange={setSearch} />}
       />
 
@@ -133,6 +180,9 @@ export function CatalogPage() {
             totalCount={totalCount}
             isSignedIn={!!session}
             onTemplateClick={handleTemplateClick}
+            hasNext={hasNext}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={() => void handleLoadMore()}
           />
         </>
       )}
