@@ -1,7 +1,7 @@
 import type { TemplateDetailClient } from './templateDetailClient.types'
 import type { TemplateDetail } from '../types'
 
-const MOCK_TEMPLATE: TemplateDetail = {
+const DEBUG_TEMPLATE: TemplateDetail = {
   id: 't1',
   slug: 'debug-loi-hieu-qua',
   title: { en: 'Debug Errors Effectively', vi: 'Debug lỗi hiệu quả' },
@@ -137,16 +137,358 @@ const MOCK_TEMPLATE: TemplateDetail = {
   },
 }
 
-let mockTemplate = { ...MOCK_TEMPLATE }
+const REWRITE_TEMPLATE: TemplateDetail = {
+  id: 't2',
+  slug: 'sua-van-phong-noi-dung',
+  title: { en: 'Rewrite content style', vi: 'Sửa văn phong nội dung' },
+  description: {
+    en: 'Put a paragraph into the right tone and length.',
+    vi: 'Đưa một đoạn văn về đúng giọng điệu và độ dài mong muốn.',
+  },
+  coverImage: null,
+  isOfficial: true,
+  author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
+  categories: [
+    {
+      id: 'c3',
+      slug: 'writing',
+      name: { en: 'Writing', vi: '#writing' },
+      description: { en: '', vi: '' },
+      icon: null,
+      color: null,
+      parentId: null,
+      sortOrder: 3,
+      templateCount: 1,
+    },
+  ],
+  supportedModels: ['gpt-4o', 'claude', 'gemini'],
+  usageCount: 311,
+  favoriteCount: 8,
+  isFavorited: false,
+  viewCount: 940,
+  createdAt: '2026-07-19T00:00:00Z',
+  currentVersion: {
+    version: 1,
+    promptBody:
+      'Viết lại đoạn văn sau theo giọng điệu {{tone}}, độ dài khoảng {{length}} từ:\n\n{{content}}',
+    guide: {
+      en: 'Paste the original paragraph, pick a target tone and an approximate word count.',
+      vi: 'Dán đoạn văn gốc, chọn giọng điệu mong muốn và độ dài xấp xỉ.',
+    },
+    exampleOutput: {
+      en: 'A rewritten paragraph matching the requested tone and length.',
+      vi: 'Đoạn văn được viết lại đúng giọng điệu và độ dài yêu cầu.',
+    },
+    variables: [
+      {
+        id: 'v1',
+        varKey: 'content',
+        label: { en: 'Original content', vi: 'Nội dung gốc' },
+        description: { en: 'The paragraph to rewrite', vi: 'Đoạn văn cần viết lại' },
+        placeholder: { en: 'Paste your text...', vi: 'Dán văn bản của bạn...' },
+        helpText: { en: '', vi: '' },
+        inputType: 'textarea',
+        isRequired: true,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 1,
+      },
+      {
+        id: 'v2',
+        varKey: 'tone',
+        label: { en: 'Tone', vi: 'Giọng điệu' },
+        description: { en: 'Desired tone of voice', vi: 'Giọng điệu mong muốn' },
+        placeholder: { en: '', vi: '' },
+        helpText: { en: '', vi: '' },
+        inputType: 'select',
+        isRequired: true,
+        defaultValue: 'chuyen-nghiep',
+        options: [
+          { value: 'chuyen-nghiep', label: { en: 'Professional', vi: 'Chuyên nghiệp' } },
+          { value: 'than-thien', label: { en: 'Friendly', vi: 'Thân thiện' } },
+          { value: 'trang-trong', label: { en: 'Formal', vi: 'Trang trọng' } },
+        ],
+        validation: {},
+        sortOrder: 2,
+      },
+      {
+        id: 'v3',
+        varKey: 'length',
+        label: { en: 'Target word count', vi: 'Số từ mong muốn' },
+        description: { en: '', vi: '' },
+        placeholder: { en: '150', vi: '150' },
+        helpText: { en: '', vi: '' },
+        inputType: 'number',
+        isRequired: false,
+        defaultValue: '150',
+        options: [],
+        validation: { min: 20, max: 2000 },
+        sortOrder: 3,
+      },
+    ],
+    variants: [
+      { aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+      { aiModelCode: 'claude', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+      { aiModelCode: 'gemini', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+    ],
+  },
+}
+
+const MARKETING_TEMPLATE: TemplateDetail = {
+  id: 't3',
+  slug: 'mo-ta-san-pham-marketing',
+  title: { en: 'Marketing product description', vi: 'Mô tả sản phẩm marketing' },
+  description: {
+    en: 'Write a product description following features and competitive advantages.',
+    vi: 'Viết mô tả sản phẩm bám theo tính năng và điểm khác biệt cạnh tranh.',
+  },
+  coverImage: null,
+  isOfficial: true,
+  author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
+  categories: [
+    {
+      id: 'c4',
+      slug: 'marketing',
+      name: { en: 'Marketing', vi: '#marketing' },
+      description: { en: '', vi: '' },
+      icon: null,
+      color: null,
+      parentId: null,
+      sortOrder: 4,
+      templateCount: 1,
+    },
+  ],
+  supportedModels: ['gpt-4o', 'gemini'],
+  usageCount: 205,
+  favoriteCount: 5,
+  isFavorited: false,
+  viewCount: 620,
+  createdAt: '2026-07-18T00:00:00Z',
+  currentVersion: {
+    version: 1,
+    promptBody:
+      'Viết mô tả sản phẩm cho {{productName}}, nhấn mạnh các tính năng: {{features}}. Đối tượng khách hàng: {{audience}}.',
+    guide: {
+      en: 'Provide the product name, its key features and the target audience.',
+      vi: 'Cung cấp tên sản phẩm, các tính năng nổi bật và đối tượng khách hàng.',
+    },
+    exampleOutput: {
+      en: 'A persuasive product description highlighting the given features.',
+      vi: 'Một đoạn mô tả sản phẩm thuyết phục, làm nổi bật các tính năng đã cho.',
+    },
+    variables: [
+      {
+        id: 'v1',
+        varKey: 'productName',
+        label: { en: 'Product name', vi: 'Tên sản phẩm' },
+        description: { en: '', vi: '' },
+        placeholder: { en: 'e.g. SmartWatch X1', vi: 'ví dụ: SmartWatch X1' },
+        helpText: { en: '', vi: '' },
+        inputType: 'text',
+        isRequired: true,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 1,
+      },
+      {
+        id: 'v2',
+        varKey: 'features',
+        label: { en: 'Key features', vi: 'Tính năng nổi bật' },
+        description: { en: '', vi: '' },
+        placeholder: { en: 'Comma-separated list', vi: 'Danh sách, cách nhau bằng dấu phẩy' },
+        helpText: { en: '', vi: '' },
+        inputType: 'textarea',
+        isRequired: true,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 2,
+      },
+      {
+        id: 'v3',
+        varKey: 'audience',
+        label: { en: 'Target audience', vi: 'Đối tượng khách hàng' },
+        description: { en: '', vi: '' },
+        placeholder: { en: 'e.g. Young professionals', vi: 'ví dụ: Người đi làm trẻ' },
+        helpText: { en: '', vi: '' },
+        inputType: 'text',
+        isRequired: false,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 3,
+      },
+    ],
+    variants: [
+      { aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+      { aiModelCode: 'gemini', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+    ],
+  },
+}
+
+const CODE_REVIEW_TEMPLATE: TemplateDetail = {
+  id: 't4',
+  slug: 'kiem-tra-code-review',
+  title: { en: 'Code review checklist', vi: 'Kiểm tra code review' },
+  description: {
+    en: 'Review a pull request against security and performance checklist.',
+    vi: 'Rà soát pull request theo checklist bảo mật và hiệu năng.',
+  },
+  coverImage: null,
+  isOfficial: true,
+  author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
+  categories: [
+    {
+      id: 'c2',
+      slug: 'coding',
+      name: { en: 'Coding', vi: '#coding' },
+      description: { en: '', vi: '' },
+      icon: null,
+      color: null,
+      parentId: null,
+      sortOrder: 2,
+      templateCount: 1,
+    },
+  ],
+  supportedModels: ['claude'],
+  usageCount: 158,
+  favoriteCount: 3,
+  isFavorited: false,
+  viewCount: 410,
+  createdAt: '2026-07-22T00:00:00Z',
+  currentVersion: {
+    version: 1,
+    promptBody:
+      'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n{{diff}}\n\nMức độ nghiêm ngặt: {{strictness}}',
+    guide: {
+      en: 'Paste the diff/PR content and pick a strictness level.',
+      vi: 'Dán nội dung diff/PR và chọn mức độ nghiêm ngặt.',
+    },
+    exampleOutput: {
+      en: 'A structured review listing security and performance findings.',
+      vi: 'Một bản review có cấu trúc liệt kê các vấn đề bảo mật và hiệu năng.',
+    },
+    variables: [
+      {
+        id: 'v1',
+        varKey: 'diff',
+        label: { en: 'Diff / PR content', vi: 'Nội dung diff / PR' },
+        description: { en: '', vi: '' },
+        placeholder: { en: 'Paste the diff...', vi: 'Dán diff của bạn...' },
+        helpText: { en: '', vi: '' },
+        inputType: 'textarea',
+        isRequired: true,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 1,
+      },
+      {
+        id: 'v2',
+        varKey: 'strictness',
+        label: { en: 'Strictness', vi: 'Mức độ nghiêm ngặt' },
+        description: { en: '', vi: '' },
+        placeholder: { en: '', vi: '' },
+        helpText: { en: '', vi: '' },
+        inputType: 'select',
+        isRequired: false,
+        defaultValue: 'standard',
+        options: [
+          { value: 'lenient', label: { en: 'Lenient', vi: 'Nhẹ nhàng' } },
+          { value: 'standard', label: { en: 'Standard', vi: 'Tiêu chuẩn' } },
+          { value: 'strict', label: { en: 'Strict', vi: 'Nghiêm ngặt' } },
+        ],
+        validation: {},
+        sortOrder: 2,
+      },
+    ],
+    variants: [{ aiModelCode: 'claude', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} }],
+  },
+}
+
+const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
+  id: 't5',
+  slug: 'tom-tat-cuoc-hop',
+  title: { en: 'Summarize meeting notes', vi: 'Tóm tắt cuộc họp' },
+  description: {
+    en: 'Turn raw meeting notes into a structured summary with action items.',
+    vi: 'Biến ghi chú cuộc họp thô thành bản tóm tắt có cấu trúc kèm việc cần làm.',
+  },
+  coverImage: null,
+  isOfficial: false,
+  author: { id: 'u1', fullName: 'Nguyễn Văn A', username: 'nguyenvana', avatarUrl: null, type: 'user' },
+  categories: [
+    {
+      id: 'c3',
+      slug: 'writing',
+      name: { en: 'Writing', vi: '#writing' },
+      description: { en: '', vi: '' },
+      icon: null,
+      color: null,
+      parentId: null,
+      sortOrder: 3,
+      templateCount: 1,
+    },
+  ],
+  supportedModels: ['gpt-4o'],
+  usageCount: 600,
+  favoriteCount: 2,
+  isFavorited: false,
+  viewCount: 1280,
+  createdAt: '2026-07-21T00:00:00Z',
+  currentVersion: {
+    version: 1,
+    promptBody: 'Tóm tắt ghi chú cuộc họp sau thành các mục chính và việc cần làm:\n\n{{notes}}',
+    guide: {
+      en: 'Paste the raw meeting notes.',
+      vi: 'Dán ghi chú cuộc họp thô.',
+    },
+    exampleOutput: {
+      en: 'A structured summary with key points and action items.',
+      vi: 'Bản tóm tắt có cấu trúc gồm các ý chính và việc cần làm.',
+    },
+    variables: [
+      {
+        id: 'v1',
+        varKey: 'notes',
+        label: { en: 'Meeting notes', vi: 'Ghi chú cuộc họp' },
+        description: { en: '', vi: '' },
+        placeholder: { en: 'Paste your notes...', vi: 'Dán ghi chú của bạn...' },
+        helpText: { en: '', vi: '' },
+        inputType: 'textarea',
+        isRequired: true,
+        defaultValue: null,
+        options: [],
+        validation: {},
+        sortOrder: 1,
+      },
+    ],
+    variants: [{ aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} }],
+  },
+}
+
+const MOCK_TEMPLATES_BY_SLUG = new Map<string, TemplateDetail>(
+  [
+    DEBUG_TEMPLATE,
+    REWRITE_TEMPLATE,
+    MARKETING_TEMPLATE,
+    CODE_REVIEW_TEMPLATE,
+    MEETING_SUMMARY_TEMPLATE,
+  ].map((template) => [template.slug, template]),
+)
+
 const favorites = new Set<string>()
 
 export function createMockTemplateDetailClient(): TemplateDetailClient {
   return {
     async getDetail(slug) {
-      if (slug !== MOCK_TEMPLATE.slug) {
+      const template = MOCK_TEMPLATES_BY_SLUG.get(slug)
+      if (!template) {
         throw new Error('TEMPLATE_NOT_FOUND')
       }
-      return { ...mockTemplate, isFavorited: favorites.has(mockTemplate.id) }
+      return { ...template, isFavorited: favorites.has(template.id) }
     },
 
     async toggleFavorite(templateId) {
@@ -158,8 +500,11 @@ export function createMockTemplateDetailClient(): TemplateDetailClient {
       return { isFavorited: favorites.has(templateId) }
     },
 
-    async incrementViewCount() {
-      mockTemplate = { ...mockTemplate, viewCount: mockTemplate.viewCount + 1 }
+    async incrementViewCount(slug) {
+      const template = MOCK_TEMPLATES_BY_SLUG.get(slug)
+      if (template) {
+        MOCK_TEMPLATES_BY_SLUG.set(slug, { ...template, viewCount: template.viewCount + 1 })
+      }
     },
   }
 }
