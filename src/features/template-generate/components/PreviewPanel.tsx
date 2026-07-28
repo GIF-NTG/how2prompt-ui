@@ -4,14 +4,19 @@ import { renderTemplate, renderTemplateText, estimateTokens } from '../utils/ren
 interface PreviewPanelProps {
   promptBody: string
   inputValues: Record<string, string | number | boolean | string[]>
+  extraInstructions?: string
 }
 
-export function PreviewPanel({ promptBody, inputValues }: PreviewPanelProps) {
+export function PreviewPanel({ promptBody, inputValues, extraInstructions }: PreviewPanelProps) {
   const segments = useMemo(
     () => renderTemplate(promptBody, inputValues),
     [promptBody, inputValues],
   )
-  const text = useMemo(() => renderTemplateText(segments), [segments])
+  const trimmedExtra = extraInstructions?.trim() ?? ''
+  const text = useMemo(() => {
+    const rendered = renderTemplateText(segments)
+    return trimmedExtra ? `${rendered}\n\n${trimmedExtra}` : rendered
+  }, [segments, trimmedExtra])
   const tokensEstimate = useMemo(() => estimateTokens(text), [text])
 
   return (
@@ -30,6 +35,7 @@ export function PreviewPanel({ promptBody, inputValues }: PreviewPanelProps) {
             <span key={index}>{segment.value}</span>
           ),
         )}
+        {trimmedExtra && <span>{'\n\n' + trimmedExtra}</span>}
       </pre>
       <p className="m-0 text-xs text-[#6B7280] dark:text-[#9CA3AF]">
         {text.length} ký tự · ~{tokensEstimate} tokens

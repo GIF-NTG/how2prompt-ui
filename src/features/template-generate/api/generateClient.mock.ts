@@ -41,7 +41,9 @@ export function createMockGenerateClient(accessToken?: string): GenerateClient {
         throw new ApiError('INTERNAL_ERROR', 'Đã có lỗi xảy ra, vui lòng thử lại.', 500)
       }
 
-      const finalPrompt = substitutePlaceholders(MOCK_PROMPT_BODY, request.inputValues)
+      const rendered = substitutePlaceholders(MOCK_PROMPT_BODY, request.inputValues)
+      const extra = request.extraInstructions?.trim()
+      const finalPrompt = extra ? `${rendered}\n\n${extra}` : rendered
       return {
         generatedPromptId: accessToken ? crypto.randomUUID() : null,
         finalPrompt,

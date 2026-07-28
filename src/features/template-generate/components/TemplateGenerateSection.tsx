@@ -67,7 +67,11 @@ export function TemplateGenerateSection({ template }: TemplateGenerateSectionPro
       />
 
       {/* Developer B: PreviewPanel slot */}
-      <PreviewPanel promptBody={activePromptBody} inputValues={state.inputValues} />
+      <PreviewPanel
+        promptBody={activePromptBody}
+        inputValues={state.inputValues}
+        extraInstructions={state.extraInstructions}
+      />
 
       {/* Developer B: GenerateActions + OutputBox slot */}
       <div data-slot="generate-output" className="flex flex-col gap-4">
