@@ -16,6 +16,8 @@ function isEmpty(value: string | number | boolean | string[] | undefined): boole
   return Array.isArray(value) && value.length === 0
 }
 
+const PLACEHOLDER_PATTERN = /\{\{(\w+)\}\}/g
+
 /** Substitutes `{{varKey}}` in `promptBody` with `inputValues`, pure and React-free
  *  so it can drive both the live preview and its unit tests without rendering. */
 export function renderTemplate(
@@ -23,7 +25,8 @@ export function renderTemplate(
   inputValues: Record<string, string | number | boolean | string[]>,
 ): PromptSegment[] {
   const segments: PromptSegment[] = []
-  const regex = /\{\{(\w+)\}\}/g
+  const regex = PLACEHOLDER_PATTERN
+  regex.lastIndex = 0
   let lastIndex = 0
   let match: RegExpExecArray | null
 
