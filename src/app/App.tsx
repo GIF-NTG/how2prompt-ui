@@ -12,6 +12,11 @@ import { VerifyEmailPage } from '@/features/auth/pages/VerifyEmailPage'
 import { ProfileSettingsPage } from '@/features/auth/pages/ProfileSettingsPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
 import { ThemeProvider } from '@/shared/context/ThemeProvider'
+import { RequireAdmin } from '@/features/admin/components/RequireAdmin'
+import { AiModelsPage } from '@/features/admin/pages/AiModelsPage'
+import { TaxonomyPage } from '@/features/admin/pages/TaxonomyPage'
+import { TemplatesAdminPage } from '@/features/admin/pages/TemplatesAdminPage'
+import { DashboardPage } from '@/features/admin/pages/DashboardPage'
 
 export function App() {
   return (
@@ -37,6 +42,13 @@ export function App() {
               <Route path="templates/:slug" element={<TemplateDetailPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
+
+              <Route path="admin" element={<RequireAdmin />}>
+                <Route path="ai-models" element={<AiModelsPage />} />
+                <Route path="taxonomy" element={<TaxonomyPage />} />
+                <Route path="templates" element={<TemplatesAdminPage />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>

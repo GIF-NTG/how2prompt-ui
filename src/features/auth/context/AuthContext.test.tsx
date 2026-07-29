@@ -18,6 +18,7 @@ function buildSession(overrides: Partial<Session> = {}): Session {
     issuedAt,
     expiresAt: issuedAt + SEVEN_DAYS_MS,
     emailVerified: true,
+    isAdmin: false,
     ...overrides,
   }
 }

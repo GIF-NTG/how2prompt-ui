@@ -18,6 +18,12 @@ const DEMO_EMAIL = 'demo@how2prompt.dev'
 const DEMO_PASSWORD = 'demo1234'
 const DEMO_DISPLAY_NAME = 'Người dùng Demo'
 
+// Admin demo credentials — the only mock account with isAdmin: true, so Epic 5's
+// RequireAdmin guard and admin nav entry are exercisable without a real backend.
+const ADMIN_EMAIL = 'admin@how2prompt.dev'
+const ADMIN_PASSWORD = 'admin1234'
+const ADMIN_DISPLAY_NAME = 'Quản trị viên Demo'
+
 interface MockAccountRecord {
   id: string
   displayName: string
@@ -32,6 +38,8 @@ interface MockAccountRecord {
   username: string | null
   bio: string | null
   locale: 'en' | 'vi'
+  /** Epic 5 admin gate — not editable via any UI, seeded per account. */
+  isAdmin: boolean
 }
 
 // Mock cooldown window for the "resend verification email" rate limit — short
@@ -54,6 +62,21 @@ const mockAccounts = new Map<string, MockAccountRecord>([
       username: null,
       bio: null,
       locale: 'vi',
+      isAdmin: false,
+    },
+  ],
+  [
+    ADMIN_EMAIL,
+    {
+      id: 'admin-account',
+      displayName: ADMIN_DISPLAY_NAME,
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
+      emailVerified: true,
+      username: null,
+      bio: null,
+      locale: 'vi',
+      isAdmin: true,
     },
   ],
 ])
@@ -80,7 +103,13 @@ function clearStoredSession(): void {
   window.localStorage.removeItem(SESSION_STORAGE_KEY)
 }
 
-function createSession(account: { id: string; displayName: string; email: string; emailVerified: boolean }): Session {
+function createSession(account: {
+  id: string
+  displayName: string
+  email: string
+  emailVerified: boolean
+  isAdmin: boolean
+}): Session {
   const issuedAt = Date.now()
   return {
     accountId: account.id,
@@ -90,6 +119,7 @@ function createSession(account: { id: string; displayName: string; email: string
     issuedAt,
     expiresAt: issuedAt + SESSION_TTL_MS,
     emailVerified: account.emailVerified,
+    isAdmin: account.isAdmin,
   }
 }
 
@@ -132,6 +162,7 @@ export function createMockAuthClient(): AuthClient {
         username: null,
         bio: null,
         locale: 'vi',
+        isAdmin: false,
       })
       return { status: 'success', session: null, accountCreated: true }
     },
@@ -163,6 +194,7 @@ export function createMockAuthClient(): AuthClient {
         username: null,
         bio: null,
         locale: 'vi',
+        isAdmin: false,
       }
       mockAccounts.set(credential.email, account)
       const session = createSession(account)

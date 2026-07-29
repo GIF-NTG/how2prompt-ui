@@ -8,6 +8,9 @@ interface BackendUser {
   email: string
   fullName: string
   emailVerified: boolean
+  /** Epic 5 admin gate — part of the full backend UserProfile schema
+   *  (docs/api/openapi.yaml), surfaced into Session (research.md Decision 1). */
+  isAdmin: boolean
 }
 
 /** `GET`/`PATCH /users/me` return the full backend `UserProfile` schema — this
@@ -40,6 +43,7 @@ function toSession(authResponse: AuthResponseBody, profile: BackendUser): Sessio
     issuedAt,
     expiresAt: issuedAt + authResponse.expiresIn * 1000,
     emailVerified: profile.emailVerified,
+    isAdmin: profile.isAdmin,
   }
 }
 

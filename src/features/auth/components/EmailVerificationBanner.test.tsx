@@ -25,6 +25,7 @@ async function seedUnverifiedSession() {
     issuedAt,
     expiresAt: issuedAt + 7 * 24 * 60 * 60 * 1000,
     emailVerified: false,
+    isAdmin: false,
   }
   window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
 }
