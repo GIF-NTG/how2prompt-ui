@@ -42,48 +42,52 @@ export function TemplateGenerateSection({ template, reloadOverride }: TemplateGe
   }, [generateClient, template.id, state.selectedModelCode, state.inputValues, state.extraInstructions])
 
   return (
-    <section className="flex flex-col gap-6 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
-      <h2 className="m-0 text-[1.1rem] font-semibold text-[#14171A] dark:text-[#F3F5F0]">
-        Tạo prompt từ template
-      </h2>
+    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+      <section className="flex flex-col gap-6 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
+        <h2 className="m-0 text-[1.1rem] font-semibold text-[#14171A] dark:text-[#F3F5F0]">
+          Tạo prompt từ template
+        </h2>
 
-      {/* Developer A: ModelVariantSelect slot */}
-      <ModelVariantSelect
-        supportedModels={template.supportedModels}
-        selectedModelCode={state.selectedModelCode}
-        onChange={setModelCode}
-      />
+        {/* Developer A: ModelVariantSelect slot */}
+        <ModelVariantSelect
+          supportedModels={template.supportedModels}
+          selectedModelCode={state.selectedModelCode}
+          onChange={setModelCode}
+        />
 
-      {/* Developer A: DynamicForm slot */}
-      <DynamicForm
-        variables={activeVariables}
-        inputValues={state.inputValues}
-        errors={state.errors}
-        onValueChange={setValue}
-      />
+        {/* Developer A: DynamicForm slot */}
+        <DynamicForm
+          variables={activeVariables}
+          inputValues={state.inputValues}
+          errors={state.errors}
+          onValueChange={setValue}
+        />
 
-      {/* Developer A: ExtraInstructionsField slot */}
-      <ExtraInstructionsField
-        value={state.extraInstructions}
-        onChange={setExtraInstructions}
-      />
+        {/* Developer A: ExtraInstructionsField slot */}
+        <ExtraInstructionsField
+          value={state.extraInstructions}
+          onChange={setExtraInstructions}
+        />
+
+        {/* Developer B: GenerateActions + OutputBox slot */}
+        <div data-slot="generate-output" className="flex flex-col gap-4">
+          <GenerateActions
+            isValid={state.isValid}
+            finalPrompt={generateResult?.finalPrompt ?? null}
+            onGenerate={handleGenerate}
+          />
+          <OutputBox result={generateResult} />
+        </div>
+      </section>
 
       {/* Developer B: PreviewPanel slot */}
-      <PreviewPanel
-        promptBody={activePromptBody}
-        inputValues={state.inputValues}
-        extraInstructions={state.extraInstructions}
-      />
-
-      {/* Developer B: GenerateActions + OutputBox slot */}
-      <div data-slot="generate-output" className="flex flex-col gap-4">
-        <GenerateActions
-          isValid={state.isValid}
-          finalPrompt={generateResult?.finalPrompt ?? null}
-          onGenerate={handleGenerate}
+      <aside className="rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D] lg:sticky lg:top-6">
+        <PreviewPanel
+          promptBody={activePromptBody}
+          inputValues={state.inputValues}
+          extraInstructions={state.extraInstructions}
         />
-        <OutputBox result={generateResult} />
-      </div>
-    </section>
+      </aside>
+    </div>
   )
 }
