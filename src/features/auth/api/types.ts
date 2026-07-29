@@ -13,6 +13,9 @@ export interface Session {
   issuedAt: number
   expiresAt: number
   emailVerified: boolean
+  /** Drives the Epic 5 admin route guard and nav entry — sourced from the backend's
+   *  UserProfile.isAdmin (docs/api/openapi.yaml), not editable via US-1.7's profile form. */
+  isAdmin: boolean
 }
 
 // The three literals are the codes this feature's screens actually branch on
