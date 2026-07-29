@@ -20,12 +20,16 @@ export function TemplateMeta({
 
   async function handleToggle() {
     if (toggling) return
+    // Optimistic: flip immediately (SC-004's <500ms-perceived requirement),
+    // revert if the request fails.
+    const previous = favorited
+    setFavorited(!previous)
     setToggling(true)
     try {
-      const result = await templateDetailClient.toggleFavorite(templateId)
+      const result = await templateDetailClient.toggleFavorite(templateId, previous)
       setFavorited(result.isFavorited)
     } catch {
-      // silently fail
+      setFavorited(previous)
     } finally {
       setToggling(false)
     }

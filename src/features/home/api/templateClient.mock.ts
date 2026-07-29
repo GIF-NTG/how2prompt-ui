@@ -94,7 +94,9 @@ const MOCK_TAGS: Tag[] = [
   { id: 'tg4', slug: 'sang-tao', name: 'Sáng tạo', usageCount: 10 },
 ]
 
-const MOCK_TEMPLATES: TemplateListItem[] = [
+/** Exported so other feature mocks (e.g. historyClient.mock.ts's `listFavorites`)
+ *  can read the same catalog + favorited-state without duplicating fixtures. */
+export const MOCK_TEMPLATES: TemplateListItem[] = [
   {
     id: 't1',
     slug: 'debug-loi-hieu-qua',
@@ -198,7 +200,7 @@ const MOCK_TEMPLATES: TemplateListItem[] = [
   },
 ]
 
-const favorites = new Set<string>()
+export const favorites = new Set<string>()
 
 export function createMockTemplateClient(): TemplateClient {
   return {
@@ -284,8 +286,8 @@ export function createMockTemplateClient(): TemplateClient {
       return MOCK_TAGS.filter((t) => t.name.toLowerCase().includes(q))
     },
 
-    async toggleFavorite(templateId) {
-      if (favorites.has(templateId)) {
+    async toggleFavorite(templateId, isFavorited) {
+      if (isFavorited) {
         favorites.delete(templateId)
       } else {
         favorites.add(templateId)

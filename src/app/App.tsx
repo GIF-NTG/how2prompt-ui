@@ -6,6 +6,8 @@ import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
 import { TemplateDetailPage } from '@/features/template-detail/components/TemplateDetailPage'
+import { HistoryPage } from '@/features/history/pages/HistoryPage'
+import { FavoritesPage } from '@/features/history/pages/FavoritesPage'
 import { VerifyEmailPage } from '@/features/auth/pages/VerifyEmailPage'
 import { ProfileSettingsPage } from '@/features/auth/pages/ProfileSettingsPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
@@ -33,6 +35,8 @@ export function App() {
             <Route element={<RootLayout />}>
               <Route index element={<CatalogPage />} />
               <Route path="templates/:slug" element={<TemplateDetailPage />} />
+              <Route path="history" element={<HistoryPage />} />
+              <Route path="favorites" element={<FavoritesPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

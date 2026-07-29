@@ -50,10 +50,11 @@ export function createRealTemplateClient(): TemplateClient {
       return apiFetch<Tag[]>(`/tags${qs ? `?${qs}` : ''}`)
     },
 
-    async toggleFavorite(templateId) {
-      return apiFetch<{ isFavorited: boolean }>(`/templates/${templateId}/favorite`, {
-        method: 'POST',
+    async toggleFavorite(templateId, isFavorited) {
+      await apiFetch<void>(`/templates/${templateId}/favorite`, {
+        method: isFavorited ? 'DELETE' : 'POST',
       })
+      return { isFavorited: !isFavorited }
     },
   }
 }
