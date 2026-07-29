@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { ArrowsClockwise, Bookmark, ShieldCheck } from '@phosphor-icons/react'
 import { GuestContinueLink } from './GuestContinueLink'
-import { BraceField } from './BraceField'
+import { BraceField } from '@/shared/components/BraceField'
 
 const BLANK_TAG =
   'rounded bg-[#E7EAFC] px-1.5 py-0.5 font-mono text-[0.88em] text-[#3652E0] dark:bg-[#262B4A] dark:text-[#8493FF]'
@@ -68,31 +69,29 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
               <ul className="flex flex-col gap-3 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
-                    ＋
-                  </span>
+                  <Bookmark size={18} weight="duotone" color="#0F9B8E" className="mt-0.5 shrink-0" />
                   Tự động lưu lịch sử prompt vào tài khoản của bạn
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
-                    ↻
-                  </span>
+                  <ArrowsClockwise
+                    size={18}
+                    weight="duotone"
+                    color="#C98A1F"
+                    className="mt-0.5 shrink-0"
+                  />
                   Copy nhanh một prompt cũ, không cần điền lại
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-4 shrink-0 font-mono font-bold text-[#3652E0] dark:text-[#8493FF]">
-                    ✓
-                  </span>
-                  Mật khẩu băm BCrypt, phiên đăng nhập qua JWT
+                  <ShieldCheck size={18} weight="duotone" color="#1F7FC9" className="mt-0.5 shrink-0" />
+                  Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh token
                 </li>
               </ul>
 
               <div className="mt-auto flex items-center gap-2 border-t border-dashed border-[#DBDFD3] pt-5 font-mono text-[0.7rem] text-[#8B8F86] dark:border-[#2C3130] dark:text-[#6D726A]">
                 <span className="rounded-full bg-[#1B1D1B] px-2 py-0.5 font-semibold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
-                  JWT
+                  TOKEN
                 </span>
-                phiên đăng nhập được ghi nhớ trên trình duyệt này, không cần đăng nhập lại mỗi lần
-                quay lại
+                access token 15 phút, tự làm mới ngầm — không cần đăng nhập lại
               </div>
             </section>
 

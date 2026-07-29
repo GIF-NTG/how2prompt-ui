@@ -12,7 +12,8 @@ const GLYPHS = [
 /**
  * Decorative background glyphs echoing the product's `{field_name}` template
  * syntax (SRS `raw_template`). Positions are fixed (not randomized) so the
- * decoration doesn't shift between renders.
+ * decoration doesn't shift between renders. Shared across auth (`AuthLayout`)
+ * and the main app shell (`RootLayout`) for a consistent ambient feel.
  */
 export function BraceField() {
   return (

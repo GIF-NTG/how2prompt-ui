@@ -139,10 +139,6 @@ export function CatalogPage() {
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
           {greeting}
         </h1>
-        <p className="m-0 max-w-[62ch] text-[0.94rem] leading-[1.6] text-[#5B5F58] dark:text-[#A2A79C]">
-          Duyệt theo chủ đề, model AI, hoặc tìm theo từ khóa — chọn một mẫu để điền vào các ô đã
-          định nghĩa sẵn.
-        </p>
       </div>
 
       <div

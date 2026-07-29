@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { TemplateCard } from '@/features/home/components/TemplateCard'
 import type { TemplateListItem } from '@/features/home/types'
 
@@ -22,18 +23,26 @@ export function FavoriteTemplateGrid({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
-        {templates.map((t, index) => (
-          <TemplateCard
-            key={t.id}
-            template={t}
-            isSignedIn
-            index={index}
-            onClick={(slug) => navigate(`/templates/${slug}`)}
-            onFavoriteChange={(templateId, isFavorited) => {
-              if (!isFavorited) onUnfavorited(templateId)
-            }}
-          />
-        ))}
+        <AnimatePresence>
+          {templates.map((t, index) => (
+            <motion.div
+              key={t.id}
+              layout
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TemplateCard
+                template={t}
+                isSignedIn
+                index={index}
+                onClick={(slug) => navigate(`/templates/${slug}`)}
+                onFavoriteChange={(templateId, isFavorited) => {
+                  if (!isFavorited) onUnfavorited(templateId)
+                }}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {hasNext && (

@@ -1,10 +1,14 @@
+import { motion } from 'framer-motion'
+
 interface DeleteConfirmDialogProps {
   count: number
   onConfirm: () => void
   onCancel: () => void
 }
 
-/** Confirms a single-item or bulk (N-item) history deletion — FR-014/FR-015. */
+/** Confirms a single-item or bulk (N-item) history deletion — FR-014/FR-015.
+ *  Rendered inside the caller's `<AnimatePresence>` so mount/unmount get a
+ *  fade+scale transition instead of appearing/disappearing abruptly. */
 export function DeleteConfirmDialog({ count, onConfirm, onCancel }: DeleteConfirmDialogProps) {
   const message =
     count === 1
@@ -12,13 +16,23 @@ export function DeleteConfirmDialog({ count, onConfirm, onCancel }: DeleteConfir
       : `Xoá ${count} mục đã chọn khỏi lịch sử? Hành động này không thể hoàn tác.`
 
   return (
-    <div
+    <motion.div
       role="dialog"
       aria-modal="true"
       aria-label="Xác nhận xoá"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
     >
-      <div className="flex w-full max-w-sm flex-col gap-4 rounded-panel border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.94 }}
+        transition={{ duration: 0.18 }}
+        className="flex w-full max-w-sm flex-col gap-4 rounded-panel border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]"
+      >
         <p className="m-0 text-[0.9rem] text-[#1B1D1B] dark:text-[#ECEEE8]">{message}</p>
         <div className="flex justify-end gap-2">
           <button
@@ -36,7 +50,7 @@ export function DeleteConfirmDialog({ count, onConfirm, onCancel }: DeleteConfir
             Xoá
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

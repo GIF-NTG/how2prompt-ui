@@ -1,7 +1,20 @@
 import { useState } from 'react'
+import confetti from 'canvas-confetti'
 import { AlertCircle, Check, CheckCircle2, Copy, Sparkles } from 'lucide-react'
 import { ApiError } from '@/shared/utils/httpClient'
+import { TAG_ACCENT_PALETTE_LIGHT } from '@/shared/utils/colorTag'
 import type { GenerateResponse } from '../api/generateClient.types'
+
+function fireSuccessConfetti() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  confetti({
+    particleCount: 60,
+    spread: 65,
+    startVelocity: 35,
+    origin: { y: 0.7 },
+    colors: ['#3652E0', ...TAG_ACCENT_PALETTE_LIGHT],
+  })
+}
 
 interface GenerateActionsProps {
   isValid: boolean
@@ -25,6 +38,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
     setIsGenerating(true)
     try {
       await onGenerate()
+      fireSuccessConfetti()
     } catch (error) {
       if (error instanceof ApiError && error.code === 'GUEST_QUOTA_EXCEEDED') {
         setErrorMessage(QUOTA_ERROR_MESSAGE)
@@ -53,7 +67,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
           type="button"
           onClick={handleGenerateClick}
           disabled={!isValid || isGenerating}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[#3652E0] px-4 py-2 text-sm font-medium text-white transition-transform duration-150 active:scale-[0.97] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 dark:bg-[#8493FF] dark:text-[#14171A]"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-4 py-2 text-sm font-medium text-white transition-transform duration-150 active:scale-[0.97] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
         >
           <Sparkles size={15} aria-hidden="true" />
           {isGenerating ? 'Đang tạo...' : 'Tạo prompt'}

@@ -4,6 +4,7 @@ import type { TemplateListItem } from '../types'
 import { templateClient } from '@/features/home/api/templateClient'
 import { getI18nValue } from '@/shared/utils/i18n'
 import { getModelLabel } from '@/shared/utils/modelLabel'
+import { getTagColorClasses } from '@/shared/utils/colorTag'
 
 interface TemplateCardProps {
   template: TemplateListItem
@@ -89,7 +90,7 @@ export function TemplateCard({
           {template.supportedModels.map((m) => (
             <span
               key={m}
-              className="rounded-full bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] text-[#8B8F86] dark:bg-[#23282C] dark:text-[#6D726A]"
+              className={`rounded-full border bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] dark:bg-[#23282C] ${getTagColorClasses(m)}`}
             >
               {getModelLabel(m)}
             </span>

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { ThemeToggle } from './ThemeToggle'
+import { getTagAvatarClasses } from '@/shared/utils/colorTag'
 
 export function TopBar() {
   const { session, signOut } = useAuth()
@@ -58,7 +59,9 @@ export function TopBar() {
 
         {session ? (
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E7EAFC] font-mono text-[0.85rem] font-bold text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
+            <span
+              className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-mono text-[0.85rem] font-bold ${getTagAvatarClasses(session.accountId)}`}
+            >
               {session.displayName.charAt(0).toUpperCase()}
             </span>
             <span className="text-[0.9rem] font-semibold">{session.displayName}</span>

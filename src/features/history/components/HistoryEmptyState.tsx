@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { History, SearchX } from 'lucide-react'
+import { ClockCounterClockwise, MagnifyingGlass } from '@phosphor-icons/react'
 
 interface HistoryEmptyStateProps {
   hasActiveFilters: boolean
@@ -10,7 +10,7 @@ export function HistoryEmptyState({ hasActiveFilters, onClearFilters }: HistoryE
   if (hasActiveFilters) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-[#DBDFD3] px-5 py-14 text-center dark:border-[#2C3130]">
-        <SearchX size={32} className="text-[#8B8F86] dark:text-[#6D726A]" aria-hidden="true" />
+        <MagnifyingGlass size={40} weight="duotone" color="#C98A1F" aria-hidden="true" />
         <p className="m-0 text-[0.95rem] font-semibold text-[#1B1D1B] dark:text-[#ECEEE8]">
           Không có kết quả phù hợp với bộ lọc
         </p>
@@ -32,7 +32,7 @@ export function HistoryEmptyState({ hasActiveFilters, onClearFilters }: HistoryE
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-[#DBDFD3] px-5 py-14 text-center dark:border-[#2C3130]">
-      <History size={32} className="text-[#8B8F86] dark:text-[#6D726A]" aria-hidden="true" />
+      <ClockCounterClockwise size={40} weight="duotone" color="#3652E0" aria-hidden="true" />
       <p className="m-0 text-[0.95rem] font-semibold text-[#1B1D1B] dark:text-[#ECEEE8]">
         Bạn chưa tạo prompt nào
       </p>
