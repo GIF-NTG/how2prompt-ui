@@ -22,6 +22,7 @@ const DEMO_SESSION: Session = {
   issuedAt: Date.now(),
   expiresAt: Date.now() + 900_000,
   emailVerified: true,
+  isAdmin: false,
 }
 
 function makeAuthValue(overrides: Partial<AuthContextValue>): AuthContextValue {
