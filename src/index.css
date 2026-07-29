@@ -64,6 +64,15 @@
   }
 }
 
+/* react-fast-marquee (TemplateRail) animates `.rfm-marquee` with a raw CSS
+   `transform: translateX(...)` keyframe. Without a promoted compositor
+   layer, Chrome re-rasterizes the text's subpixel/hinting every frame
+   instead of rasterizing once and translating the bitmap, which reads as
+   ghosted/doubled strokes on Vietnamese diacritics while it scrolls. */
+.rfm-marquee {
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

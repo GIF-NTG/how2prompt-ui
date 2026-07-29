@@ -1,6 +1,13 @@
+import MarqueeImport from 'react-fast-marquee'
 import type { TemplateListItem } from '../types'
-import { useDragScroll } from '@/shared/hooks/useDragScroll'
 import { TemplateCard } from './TemplateCard'
+
+// react-fast-marquee's CJS build double-wraps its default export
+// (`exports.default = Marquee` with `__esModule` set) — depending on how a
+// bundler's interop resolves it, the default import can land on the
+// component itself or on the whole `{ default: Component }` exports object.
+// Unwrap defensively so this works either way.
+const Marquee = (MarqueeImport as unknown as { default?: typeof MarqueeImport }).default ?? MarqueeImport
 
 interface TemplateRailProps {
   title: string
@@ -17,8 +24,6 @@ export function TemplateRail({
   isSignedIn,
   onTemplateClick,
 }: TemplateRailProps) {
-  const drag = useDragScroll<HTMLDivElement>()
-
   return (
     <section className="flex flex-col gap-[0.75rem]">
       <div className="flex items-baseline justify-between gap-4">
@@ -29,18 +34,9 @@ export function TemplateRail({
           </span>
         )}
       </div>
-      <div
-        ref={drag.ref}
-        onPointerDown={drag.onPointerDown}
-        onPointerMove={drag.onPointerMove}
-        onPointerUp={drag.onPointerUp}
-        onPointerLeave={drag.onPointerLeave}
-        onPointerCancel={drag.onPointerCancel}
-        onClickCapture={drag.onClickCapture}
-        className="flex cursor-grab gap-[0.9rem] overflow-x-auto pb-[0.35rem] select-none [scrollbar-width:none] active:cursor-grabbing [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-      >
+      <Marquee pauseOnHover pauseOnClick speed={40} gradient={false} className="pb-[0.35rem]">
         {templates.map((t, index) => (
-          <div key={t.id} className="min-w-[240px] flex-[0_0_auto]">
+          <div key={t.id} className="mr-[0.9rem] h-[232px] w-[264px] flex-[0_0_auto]">
             <TemplateCard
               template={t}
               isSignedIn={!!isSignedIn}
@@ -49,7 +45,7 @@ export function TemplateRail({
             />
           </div>
         ))}
-      </div>
+      </Marquee>
     </section>
   )
 }

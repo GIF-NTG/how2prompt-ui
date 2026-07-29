@@ -45,7 +45,7 @@ export function TemplateCard({
     <button
       type="button"
       style={{ animationDelay: `${Math.min(index, 14) * 35}ms` }}
-      className="group relative flex w-full animate-[fade-slide-up_400ms_ease_backwards] cursor-pointer flex-col gap-[0.55rem] rounded-card border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] active:scale-[0.98] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
+      className="group relative flex h-full w-full animate-[fade-slide-up_400ms_ease_backwards] cursor-pointer flex-col gap-[0.55rem] rounded-card border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] active:scale-[0.98] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
       onClick={() => onClick?.(template.slug)}
     >
       <div className="flex items-start justify-between gap-2">
@@ -78,14 +78,14 @@ export function TemplateCard({
         )}
       </div>
 
-      <h3 className="m-0 text-[1rem] font-bold tracking-[-0.005em]">
+      <h3 className="m-0 shrink-0 truncate text-[1rem] font-bold tracking-[-0.005em]">
         {getI18nValue(template.title)}
       </h3>
-      <p className="m-0 text-[0.85rem] leading-[1.55] text-[#5B5F58] dark:text-[#A2A79C]">
+      <p className="m-0 line-clamp-2 shrink-0 text-[0.85rem] leading-[1.55] text-[#5B5F58] dark:text-[#A2A79C]">
         {getI18nValue(template.description)}
       </p>
 
-      <div className="mt-1 flex items-center justify-between gap-2">
+      <div className="mt-auto flex items-center justify-between gap-2">
         <div className="flex flex-wrap gap-1.5">
           {template.supportedModels.map((m) => (
             <span
