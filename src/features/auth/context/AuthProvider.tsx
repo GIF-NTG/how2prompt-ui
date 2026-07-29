@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { authClient } from '../api/authClient'
 import type { Session, UpdateProfileInput } from '../api/types'
 import { AuthContext } from './AuthContext'
@@ -13,6 +13,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [isRestoring, setIsRestoring] = useState(true)
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Read by the stable (useCallback [], no deps) methods below so their
+  // identity never changes across renders — see rule 5.11 in
+  // vercel-react-best-practices: the context value and its methods must stay
+  // referentially stable, or every AuthProvider re-render (sign-in, sign-out,
+  // the silent refresh timer) cascades to all 11+ useAuth() consumers.
+  const sessionRef = useRef(session)
+  sessionRef.current = session
 
   useEffect(() => {
     let cancelled = false
@@ -51,60 +58,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session])
 
-  function signIn(nextSession: Session) {
+  const signIn = useCallback((nextSession: Session) => {
     setSession(nextSession)
-  }
+  }, [])
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     await authClient.logout()
     setSession(null)
-  }
+  }, [])
 
-  async function resendVerificationEmail() {
+  const resendVerificationEmail = useCallback(async () => {
     // Invariant: only ever called from UI that itself only renders when `session`
     // is non-null (EmailVerificationBanner) — not defended, matching signOut()'s
     // existing assumption pattern.
-    return authClient.resendVerificationEmail(session!.email)
-  }
+    return authClient.resendVerificationEmail(sessionRef.current!.email)
+  }, [])
 
-  async function verifyEmail(token: string) {
+  const verifyEmail = useCallback(async (token: string) => {
     const outcome = await authClient.verifyEmail(token)
-    if (outcome.status === 'success' && session) {
+    if (outcome.status === 'success' && sessionRef.current) {
       const refreshed = await authClient.restoreSession()
       setSession(refreshed)
     }
     return outcome
-  }
+  }, [])
 
-  async function getProfile() {
+  const getProfile = useCallback(async () => {
     // Invariant: only ever called from UI that itself only renders when `session`
     // is non-null (ProfileSettingsPage) — not defended, matching
     // resendVerificationEmail()'s existing assumption pattern.
-    return authClient.getProfile(session!.token)
-  }
+    return authClient.getProfile(sessionRef.current!.token)
+  }, [])
 
-  async function updateProfile(input: UpdateProfileInput) {
-    const outcome = await authClient.updateProfile(session!.token, input)
+  const updateProfile = useCallback(async (input: UpdateProfileInput) => {
+    const outcome = await authClient.updateProfile(sessionRef.current!.token, input)
     if (outcome.status === 'success') {
       setSession((current) => (current ? { ...current, displayName: outcome.profile.fullName } : current))
     }
     return outcome
-  }
+  }, [])
 
-  return (
-    <AuthContext.Provider
-      value={{
-        session,
-        isRestoring,
-        signIn,
-        signOut,
-        resendVerificationEmail,
-        verifyEmail,
-        getProfile,
-        updateProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      session,
+      isRestoring,
+      signIn,
+      signOut,
+      resendVerificationEmail,
+      verifyEmail,
+      getProfile,
+      updateProfile,
+    }),
+    [session, isRestoring, signIn, signOut, resendVerificationEmail, verifyEmail, getProfile, updateProfile],
   )
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

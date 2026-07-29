@@ -52,8 +52,7 @@ export function ProfileSettingsPage() {
     return () => {
       cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  }, [session, getProfile])
 
   // Wait for the initial session restore before deciding anything — see the
   // doc comment above and research.md Decision 6.
