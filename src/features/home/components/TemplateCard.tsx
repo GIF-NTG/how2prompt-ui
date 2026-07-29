@@ -10,18 +10,33 @@ interface TemplateCardProps {
   isSignedIn: boolean
   onClick?: (slug: string) => void
   index?: number
+  /** Called after a favorite toggle succeeds — lets a list (e.g.
+   *  FavoriteTemplateGrid, FR-013) react to the new state, such as removing
+   *  the card once unfavorited. */
+  onFavoriteChange?: (templateId: string, isFavorited: boolean) => void
 }
 
-export function TemplateCard({ template, isSignedIn, onClick, index = 0 }: TemplateCardProps) {
+export function TemplateCard({
+  template,
+  isSignedIn,
+  onClick,
+  index = 0,
+  onFavoriteChange,
+}: TemplateCardProps) {
   const [isFavorited, setIsFavorited] = useState(template.isFavorited)
 
   async function handleFavorite(e: React.MouseEvent) {
     e.stopPropagation()
+    // Optimistic: flip immediately (SC-004's <500ms-perceived requirement),
+    // revert if the request fails.
+    const previous = isFavorited
+    setIsFavorited(!previous)
     try {
-      const result = await templateClient.toggleFavorite(template.id)
+      const result = await templateClient.toggleFavorite(template.id, previous)
       setIsFavorited(result.isFavorited)
+      onFavoriteChange?.(template.id, result.isFavorited)
     } catch {
-      // silently fail
+      setIsFavorited(previous)
     }
   }
 

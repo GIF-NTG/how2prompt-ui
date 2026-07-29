@@ -1,11 +1,15 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { TemplateDetail } from '@/features/template-detail/types'
 import type {
+  GenerateFormOverride,
   TemplateVariable,
   UseGenerateFormResult,
 } from '../types'
 
-function getInitialModelCode(template: TemplateDetail): string {
+function getInitialModelCode(template: TemplateDetail, override?: GenerateFormOverride): string {
+  if (override?.modelCode) {
+    return override.modelCode
+  }
   if (template.supportedModels.length > 0) {
     return template.supportedModels[0]
   }
@@ -106,8 +110,11 @@ function getInitialValues(
   return values
 }
 
-export function useGenerateForm(template: TemplateDetail): UseGenerateFormResult {
-  const initialModelCode = getInitialModelCode(template)
+export function useGenerateForm(
+  template: TemplateDetail,
+  override?: GenerateFormOverride,
+): UseGenerateFormResult {
+  const initialModelCode = getInitialModelCode(template, override)
   const initialVariables = useMemo(
     () => getActiveVariables(template, initialModelCode),
     [template, initialModelCode],
@@ -115,9 +122,9 @@ export function useGenerateForm(template: TemplateDetail): UseGenerateFormResult
 
   const [selectedModelCode, setSelectedModelCode] = useState(initialModelCode)
   const [inputValues, setInputValues] = useState(() =>
-    getInitialValues(initialVariables),
+    override ? { ...getInitialValues(initialVariables), ...override.inputValues } : getInitialValues(initialVariables),
   )
-  const [extraInstructions, setExtraInstructions] = useState('')
+  const [extraInstructions, setExtraInstructions] = useState(override?.extraInstructions ?? '')
 
   const activeVariables = useMemo(
     () => getActiveVariables(template, selectedModelCode),

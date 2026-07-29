@@ -33,6 +33,7 @@ const DEBUG_TEMPLATE: TemplateDetail = {
   viewCount: 1523,
   createdAt: '2026-07-20T10:00:00Z',
   currentVersion: {
+    id: 'ver-t1-1',
     version: 1,
     promptBody:
       'Với vai trò {{role}}, hãy debug đoạn log sau:\n\n{{log}}\n\nYêu cầu:\n1. Chỉ ra nguyên nhân gốc\n2. Gợi ý fix cụ thể\n3. Kiểm tra edge case liên quan',
@@ -169,6 +170,7 @@ const REWRITE_TEMPLATE: TemplateDetail = {
   viewCount: 940,
   createdAt: '2026-07-19T00:00:00Z',
   currentVersion: {
+    id: 'ver-t2-1',
     version: 1,
     promptBody:
       'Viết lại đoạn văn sau theo giọng điệu {{tone}}, độ dài khoảng {{length}} từ:\n\n{{content}}',
@@ -267,6 +269,7 @@ const MARKETING_TEMPLATE: TemplateDetail = {
   viewCount: 620,
   createdAt: '2026-07-18T00:00:00Z',
   currentVersion: {
+    id: 'ver-t3-1',
     version: 1,
     promptBody:
       'Viết mô tả sản phẩm cho {{productName}}, nhấn mạnh các tính năng: {{features}}. Đối tượng khách hàng: {{audience}}.',
@@ -360,6 +363,7 @@ const CODE_REVIEW_TEMPLATE: TemplateDetail = {
   viewCount: 410,
   createdAt: '2026-07-22T00:00:00Z',
   currentVersion: {
+    id: 'ver-t4-1',
     version: 1,
     promptBody:
       'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n{{diff}}\n\nMức độ nghiêm ngặt: {{strictness}}',
@@ -440,6 +444,7 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
   viewCount: 1280,
   createdAt: '2026-07-21T00:00:00Z',
   currentVersion: {
+    id: 'ver-t5-1',
     version: 1,
     promptBody: 'Tóm tắt ghi chú cuộc họp sau thành các mục chính và việc cần làm:\n\n{{notes}}',
     guide: {
@@ -492,8 +497,8 @@ export function createMockTemplateDetailClient(): TemplateDetailClient {
       return { ...template, isFavorited: favorites.has(template.id) }
     },
 
-    async toggleFavorite(templateId) {
-      if (favorites.has(templateId)) {
+    async toggleFavorite(templateId, isFavorited) {
+      if (isFavorited) {
         favorites.delete(templateId)
       } else {
         favorites.add(templateId)

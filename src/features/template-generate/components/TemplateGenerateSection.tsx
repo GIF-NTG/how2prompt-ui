@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/context/useAuth'
 import { useGenerateForm } from '../hooks/useGenerateForm'
 import { createGenerateClient } from '../api/generateClient'
 import type { GenerateResponse } from '../api/generateClient.types'
+import type { GenerateFormOverride } from '../types'
 import { ModelVariantSelect } from './ModelVariantSelect'
 import { DynamicForm } from './DynamicForm'
 import { ExtraInstructionsField } from './ExtraInstructionsField'
@@ -13,6 +14,7 @@ import { OutputBox } from './OutputBox'
 
 interface TemplateGenerateSectionProps {
   template: TemplateDetail
+  reloadOverride?: GenerateFormOverride
 }
 
 function getActivePromptBody(template: TemplateDetail, modelCode: string): string {
@@ -20,9 +22,9 @@ function getActivePromptBody(template: TemplateDetail, modelCode: string): strin
   return variant?.promptBodyOverride ?? template.currentVersion.promptBody
 }
 
-export function TemplateGenerateSection({ template }: TemplateGenerateSectionProps) {
+export function TemplateGenerateSection({ template, reloadOverride }: TemplateGenerateSectionProps) {
   const { state, setModelCode, setValue, setExtraInstructions, activeVariables } =
-    useGenerateForm(template)
+    useGenerateForm(template, reloadOverride)
   const activePromptBody = getActivePromptBody(template, state.selectedModelCode)
 
   const { session } = useAuth()

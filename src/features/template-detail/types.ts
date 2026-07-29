@@ -22,6 +22,7 @@ export interface Category {
 }
 
 export interface TemplateVersion {
+  id: string
   version: number
   promptBody: string
   guide: I18nString

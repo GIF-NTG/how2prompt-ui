@@ -46,6 +46,14 @@ export type GenerateFormState = {
   isValid: boolean
 }
 
+/** Seeds the form from a reloaded history entry (US3) instead of the
+ *  template's own defaults. */
+export interface GenerateFormOverride {
+  modelCode: string
+  inputValues: Record<string, string | number | boolean | string[]>
+  extraInstructions?: string | null
+}
+
 export type UseGenerateFormResult = {
   state: GenerateFormState
   setModelCode: (code: string) => void

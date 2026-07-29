@@ -36,6 +36,18 @@ describe('createMockTemplateClient().getTemplates', () => {
     expect(lastPage.meta.hasNext).toBe(false)
   })
 
+  it('toggleFavorite flips both directions (US4 — fixes the old POST-only bug)', async () => {
+    const client = createMockTemplateClient()
+    const { data } = await client.getTemplates({ size: 1 })
+    const templateId = data[0].id
+
+    const favorited = await client.toggleFavorite(templateId, false)
+    expect(favorited.isFavorited).toBe(true)
+
+    const unfavorited = await client.toggleFavorite(templateId, true)
+    expect(unfavorited.isFavorited).toBe(false)
+  })
+
   it('orders differently for "popular" vs "newest", both still official-first', async () => {
     const client = createMockTemplateClient()
     const popular = await client.getTemplates({ sort: 'popular', size: 50 })
