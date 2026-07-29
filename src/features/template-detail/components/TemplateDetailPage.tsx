@@ -5,8 +5,6 @@ import { useTemplateDetail } from '../hooks/useTemplateDetail'
 import { BackLink } from './BackLink'
 import { TemplateHero } from './TemplateHero'
 import { ModelTags } from './ModelTags'
-import { UsageGuide } from './UsageGuide'
-import { ExampleOutput } from './ExampleOutput'
 import { TemplateMeta } from './TemplateMeta'
 import { NotFoundState } from './NotFoundState'
 import { ReloadUnavailableBanner } from './ReloadUnavailableBanner'
@@ -97,10 +95,6 @@ export function TemplateDetailPage() {
       />
 
       <ModelTags models={template.supportedModels} />
-
-      <UsageGuide guide={template.currentVersion.guide} />
-
-      <ExampleOutput exampleOutput={template.currentVersion.exampleOutput} />
 
       <TemplateMeta
         templateId={template.id}
