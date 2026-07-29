@@ -86,13 +86,6 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                   Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh token
                 </li>
               </ul>
-
-              <div className="mt-auto flex items-center gap-2 border-t border-dashed border-[#DBDFD3] pt-5 font-mono text-[0.7rem] text-[#8B8F86] dark:border-[#2C3130] dark:text-[#6D726A]">
-                <span className="rounded-full bg-[#1B1D1B] px-2 py-0.5 font-semibold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
-                  TOKEN
-                </span>
-                access token 15 phút, tự làm mới ngầm — không cần đăng nhập lại
-              </div>
             </section>
 
             <section className="flex flex-col gap-6 p-7">
