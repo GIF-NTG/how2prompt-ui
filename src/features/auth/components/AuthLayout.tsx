@@ -40,7 +40,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         <main className="flex flex-1 items-center justify-center px-4 pb-12">
           <div className="grid w-full max-w-[1000px] overflow-hidden rounded-[20px] border border-[#DBDFD3] bg-white shadow-xl dark:border-[#2C3130] dark:bg-[#1C2024] md:grid-cols-[0.92fr_1fr]">
-            <section className="flex flex-col gap-7 border-b border-[#DBDFD3] bg-[#EAEDE6] p-7 dark:border-[#2C3130] dark:bg-[#23282C] md:border-r md:border-b-0">
+            <section className="flex flex-col justify-center gap-7 border-b border-[#DBDFD3] bg-[#EAEDE6] p-7 dark:border-[#2C3130] dark:bg-[#23282C] md:border-r md:border-b-0">
               <span className="inline-flex items-center gap-1.5 font-mono text-[0.7rem] tracking-wider text-[#3652E0] uppercase dark:text-[#8493FF]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#3652E0] dark:bg-[#8493FF]" />
                 api/auth
@@ -49,11 +49,6 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               <h1 className="text-2xl leading-tight font-bold text-balance tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
                 Đừng viết prompt từ đầu. Điền vào chỗ trống.
               </h1>
-
-              <p className="max-w-[40ch] text-sm leading-relaxed text-[#5B5F58] dark:text-[#A2A79C]">
-                Tài khoản Member lưu lại mọi prompt bạn đã ghép — Vai trò, Bối cảnh, Ràng buộc — để
-                dùng lại bất cứ lúc nào.
-              </p>
 
               <div
                 aria-hidden

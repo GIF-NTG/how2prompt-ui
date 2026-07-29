@@ -110,14 +110,9 @@ export function LoginPage() {
 
   return (
     <AuthLayout>
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-          Chào bạn quay lại
-        </h2>
-        <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-          Điền hai ô trống để mở lại phiên làm việc của bạn.
-        </p>
-      </div>
+      <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+        Chào bạn quay lại
+      </h2>
 
       {justRegistered && (
         <p
