@@ -96,5 +96,16 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     return undefined as T
   }
 
+  // Per docs/api/openapi.yaml, not every 200 response is wrapped in the
+  // `{ data, meta }` envelope — several list endpoints (/ai-models,
+  // /categories, /tags, /templates/featured, /templates/trending,
+  // /workspaces, /admin/ai-models) document a bare `type: array` response
+  // instead. Unwrapping `.data` unconditionally turned every one of those
+  // into `undefined` (a JSON array never has a `.data` property), crashing
+  // any caller that immediately calls `.map()` on the result.
+  if (Array.isArray(data)) {
+    return data as T
+  }
+
   return (data as ApiEnvelope<T>).data
 }
