@@ -3,15 +3,31 @@ import type { AuthErrorCode, Session } from './types'
 import { apiFetch, ApiError } from '@/shared/utils/httpClient'
 import { requestGoogleCredential } from './googleIdentity'
 
+// openapi.yaml documents `emailVerified`/`isAdmin` as booleans, but the live
+// backend actually sends `isEmailVerified`/`isAdmin` as the strings "true"/"false"
+// — contract drift, normalized via toBool() below rather than adapted in the spec.
 interface BackendUser {
   id: string
   email: string
   fullName: string
-  emailVerified: boolean
+  isEmailVerified: boolean | string
   /** Epic 5 admin gate — part of the full backend UserProfile schema
    *  (docs/api/openapi.yaml), surfaced into Session (research.md Decision 1). */
-  isAdmin: boolean
+  isAdmin: boolean | string
 }
+
+function toBool(value: boolean | string): boolean {
+  return typeof value === 'string' ? value === 'true' : value
+}
+
+// The backend rotates refresh_token on every /auth/refresh call and invalidates the
+// old one. React StrictMode (dev) double-invokes AuthProvider's mount effect, which
+// fires restoreSession() twice back-to-back; without dedup both requests race with
+// the same pre-rotation cookie, the loser's rotation gets rejected, and the *next*
+// page reload then presents an already-invalidated cookie — session lost on the
+// second refresh even though the first looked fine. Sharing one in-flight promise
+// across concurrent callers keeps it to a single /auth/refresh call.
+let restoreSessionInFlight: Promise<Session | null> | null = null
 
 /** `GET`/`PATCH /users/me` return the full backend `UserProfile` schema — this
  *  only names the fields US-1.7 reads/writes (plus what `BackendUser` already
@@ -42,8 +58,8 @@ function toSession(authResponse: AuthResponseBody, profile: BackendUser): Sessio
     token: authResponse.accessToken,
     issuedAt,
     expiresAt: issuedAt + authResponse.expiresIn * 1000,
-    emailVerified: profile.emailVerified,
-    isAdmin: profile.isAdmin,
+    emailVerified: toBool(profile.isEmailVerified),
+    isAdmin: toBool(profile.isAdmin),
   }
 }
 
@@ -75,7 +91,11 @@ export function createRealAuthClient(): AuthClient {
           body: { email, password },
         })
         const profile = await fetchUserProfile(authResponse.accessToken)
-        return { status: 'success', session: toSession(authResponse, profile), accountCreated: false }
+        return {
+          status: 'success',
+          session: toSession(authResponse, profile),
+          accountCreated: false,
+        }
       } catch (error) {
         return toErrorOutcome(error, 'Không thể đăng nhập, vui lòng thử lại.')
       }
@@ -122,7 +142,11 @@ export function createRealAuthClient(): AuthClient {
         // The contract doesn't report whether this created a new account or linked
         // an existing one (unlike the mock's accountCreated flag) — default false;
         // FR-019/FR-020's distinct copy isn't reachable via the real flow yet.
-        return { status: 'success', session: toSession(authResponse, profile), accountCreated: false }
+        return {
+          status: 'success',
+          session: toSession(authResponse, profile),
+          accountCreated: false,
+        }
       } catch (error) {
         return toErrorOutcome(error, 'Không thể đăng nhập bằng Google.')
       }
@@ -207,14 +231,24 @@ export function createRealAuthClient(): AuthClient {
     },
 
     async restoreSession() {
-      try {
-        const authResponse = await apiFetch<AuthResponseBody>('/auth/refresh', { method: 'POST' })
-        const profile = await fetchUserProfile(authResponse.accessToken)
-        return toSession(authResponse, profile)
-      } catch {
-        // No valid refresh_token cookie (never logged in, logged out, or expired).
-        return null
-      }
+      if (restoreSessionInFlight) return restoreSessionInFlight
+
+      restoreSessionInFlight = (async () => {
+        try {
+          const authResponse = await apiFetch<AuthResponseBody>('/auth/refresh', {
+            method: 'POST',
+          })
+          const profile = await fetchUserProfile(authResponse.accessToken)
+          return toSession(authResponse, profile)
+        } catch {
+          // No valid refresh_token cookie (never logged in, logged out, or expired).
+          return null
+        } finally {
+          restoreSessionInFlight = null
+        }
+      })()
+
+      return restoreSessionInFlight
     },
 
     async getProfile(accessToken) {
@@ -222,7 +256,12 @@ export function createRealAuthClient(): AuthClient {
         const body = await apiFetch<BackendUserProfile>('/users/me', { accessToken })
         return {
           status: 'success',
-          profile: { fullName: body.fullName, username: body.username, bio: body.bio, locale: body.locale },
+          profile: {
+            fullName: body.fullName,
+            username: body.username,
+            bio: body.bio,
+            locale: body.locale,
+          },
         }
       } catch (error) {
         return toErrorOutcome(error, 'Không thể tải hồ sơ, vui lòng thử lại.')
@@ -231,10 +270,19 @@ export function createRealAuthClient(): AuthClient {
 
     async updateProfile(accessToken, input) {
       try {
-        const body = await apiFetch<BackendUserProfile>('/users/me', { method: 'PATCH', accessToken, body: input })
+        const body = await apiFetch<BackendUserProfile>('/users/me', {
+          method: 'PATCH',
+          accessToken,
+          body: input,
+        })
         return {
           status: 'success',
-          profile: { fullName: body.fullName, username: body.username, bio: body.bio, locale: body.locale },
+          profile: {
+            fullName: body.fullName,
+            username: body.username,
+            bio: body.bio,
+            locale: body.locale,
+          },
         }
       } catch (error) {
         // The contract documents only the 409 status for a duplicate username, not
