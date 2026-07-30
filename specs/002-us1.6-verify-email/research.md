@@ -21,8 +21,9 @@ needed, just widening `BackendUser` to read a field the response body already
 contains.
 
 **Alternatives considered**:
-- *Fetch `GET /users/me` separately on every route change to check verification
-  status* — rejected: redundant network call for data already present in the
+
+- _Fetch `GET /users/me` separately on every route change to check verification
+  status_ — rejected: redundant network call for data already present in the
   session-issuing responses; also fails the "works without an active session"
   edge case worse than reusing what's already fetched.
 
@@ -41,7 +42,8 @@ inherits the global `security: [bearerAuth]` requirement — the request needs
 `apiFetch('/users/me', { accessToken })` call.
 
 **Alternatives considered**:
-- *Make `AuthClient` stateful (store the current token internally)* — rejected: a
+
+- _Make `AuthClient` stateful (store the current token internally)_ — rejected: a
   much larger, unrelated architectural change (the mock and real clients are
   currently both stateless w.r.t. in-memory session data — `AuthProvider` is the only
   session holder); out of scope for this feature.
@@ -76,13 +78,14 @@ updates it, so `session.emailVerified` flips without requiring a manual logout/l
 **Rationale**: FR-004 requires the reminder banner to disappear once verified. The
 verification link can be opened without an active session (edge case), so the
 `AuthClient`-level `verifyEmail` call itself must not assume one exists. But when the
-same browser tab *does* hold a live session (e.g. the user verifies via a second tab
+same browser tab _does_ hold a live session (e.g. the user verifies via a second tab
 and switches back), refreshing it immediately is a strictly better experience than
 waiting for the next full page load, and costs only one already-existing
 `restoreSession()` round-trip.
 
 **Alternatives considered**:
-- *Manually flip `session.emailVerified = true` in place* — rejected: trusts the
+
+- _Manually flip `session.emailVerified = true` in place_ — rejected: trusts the
   client's own assumption that the token in the URL belongs to the currently logged-in
   account, which isn't guaranteed (the device may be logged into a different account
   than the one the link verifies); re-fetching via `restoreSession()` re-validates
@@ -101,5 +104,6 @@ would add complexity (storage sync, clock skew across tabs) to cover a case the
 backend's rate limit already handles correctly.
 
 **Alternatives considered**:
-- *Persist countdown end-time to `localStorage`* — rejected: unnecessary given the
+
+- _Persist countdown end-time to `localStorage`_ — rejected: unnecessary given the
   backend already rate-limits; adds a sync-bug surface for no spec-required benefit.

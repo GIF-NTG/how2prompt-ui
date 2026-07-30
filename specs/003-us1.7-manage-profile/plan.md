@@ -67,7 +67,7 @@ upload (`POST /users/me/avatar`) is explicitly out of scope per spec Assumptions
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **I. Dynamic Form Rendering Integrity (NON-NEGOTIABLE)** — N/A. This is a
   fixed, hand-built settings form (full name/username/bio/locale), not a
@@ -143,4 +143,4 @@ pattern; only one new page + small, additive changes to the existing
 
 ## Complexity Tracking
 
-*No Constitution Check violations — this section intentionally left empty.*
+_No Constitution Check violations — this section intentionally left empty._

@@ -64,10 +64,9 @@ describe('HistoryPage', () => {
   })
 
   it('shows the empty state copy when there is no history (no active filters)', async () => {
-    renderHistoryPage(
-      makeAuthValue({ session: DEMO_SESSION }),
-      ['/history?templateId=no-such-template'],
-    )
+    renderHistoryPage(makeAuthValue({ session: DEMO_SESSION }), [
+      '/history?templateId=no-such-template',
+    ])
     expect(await screen.findByText('Không có kết quả phù hợp với bộ lọc')).toBeInTheDocument()
   })
 })

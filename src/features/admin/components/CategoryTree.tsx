@@ -41,7 +41,14 @@ interface CategoryFormProps {
   onCancel: () => void
 }
 
-function CategoryForm({ categories, initial, defaultParentId, submitting, onSubmit, onCancel }: CategoryFormProps) {
+function CategoryForm({
+  categories,
+  initial,
+  defaultParentId,
+  submitting,
+  onSubmit,
+  onCancel,
+}: CategoryFormProps) {
   const [slug, setSlug] = useState(initial?.slug ?? '')
   const [nameEn, setNameEn] = useState(initial?.name.en ?? '')
   const [nameVi, setNameVi] = useState(initial?.name.vi ?? '')
@@ -224,7 +231,9 @@ function CategoryNode({
 
 export function CategoryTree({ categories, submitting, onCreate, onUpdate }: CategoryTreeProps) {
   const [activeFormFor, setActiveFormFor] = useState<string | null>(null)
-  const roots = categories.filter((c) => c.parentId === null).sort((a, b) => a.sortOrder - b.sortOrder)
+  const roots = categories
+    .filter((c) => c.parentId === null)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
 
   function handleCreate(input: CategoryUpsert) {
     onCreate(input)
@@ -269,9 +278,13 @@ export function CategoryTree({ categories, submitting, onCreate, onUpdate }: Cat
               categories={categories}
               submitting={submitting}
               activeFormFor={activeFormFor}
-              onStartEdit={(id) => setActiveFormFor((current) => (current === `edit:${id}` ? null : `edit:${id}`))}
+              onStartEdit={(id) =>
+                setActiveFormFor((current) => (current === `edit:${id}` ? null : `edit:${id}`))
+              }
               onStartAddChild={(id) =>
-                setActiveFormFor((current) => (current === `add-child:${id}` ? null : `add-child:${id}`))
+                setActiveFormFor((current) =>
+                  current === `add-child:${id}` ? null : `add-child:${id}`,
+                )
               }
               onCancelForm={() => setActiveFormFor(null)}
               onCreate={handleCreate}

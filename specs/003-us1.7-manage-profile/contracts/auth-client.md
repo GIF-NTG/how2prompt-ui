@@ -54,7 +54,7 @@ interface AuthContextValue {
   error under the username input (FR-003) without discarding other unsaved field
   values, since the form state lives in the page, not in `AuthClient`.
 - **Given** any other backend failure → resolves `{ status: 'error', errorCode,
-  message }` using the backend's actual `error.code`.
+message }` using the backend's actual `error.code`.
 - **Real implementation**: `PATCH /users/me` with body `input`
   (`{ fullName, username, bio, locale }`), per `docs/api/openapi.yaml`.
 
@@ -77,7 +77,7 @@ interface AuthContextValue {
 
 See data-model.md "Mock implementation notes" — `MockAccountRecord` gains
 `username`/`bio`/`locale`; `updateProfile` checks for a username collision against
-*other* accounts (not itself) before applying the update.
+_other_ accounts (not itself) before applying the update.
 
 ## What callers MUST NOT do (unchanged, restated for these two methods + actions)
 

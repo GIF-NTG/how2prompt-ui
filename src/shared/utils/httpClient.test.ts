@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { apiFetch, ApiError } from './httpClient'
+import { apiFetch, apiFetchPage, ApiError } from './httpClient'
 
 function mockFetchOnce(status: number, body: unknown) {
   vi.stubGlobal(
@@ -33,6 +33,20 @@ describe('apiFetch response unwrapping', () => {
     mockFetchOnce(200, { data: [{ id: '1' }], meta: { page: 0 } })
     const result = await apiFetch<{ id: string }[]>('/templates')
     expect(result).toEqual([{ id: '1' }])
+  })
+
+  it('apiFetchPage preserves the pagination meta a caller needs, unlike apiFetch', async () => {
+    const pageMeta = {
+      page: 0,
+      size: 20,
+      totalElements: 1,
+      totalPages: 1,
+      hasNext: false,
+      hasPrevious: false,
+    }
+    mockFetchOnce(200, { data: [{ id: '1' }], meta: pageMeta })
+    const result = await apiFetchPage<{ id: string }[]>('/templates')
+    expect(result).toEqual({ data: [{ id: '1' }], meta: pageMeta })
   })
 
   it('unwraps a single-object envelope', async () => {

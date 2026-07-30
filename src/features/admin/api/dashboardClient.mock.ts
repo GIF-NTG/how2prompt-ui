@@ -1,4 +1,8 @@
-import type { DashboardClient, DashboardDateRange, DashboardMetricSnapshot } from './dashboardClient.types'
+import type {
+  DashboardClient,
+  DashboardDateRange,
+  DashboardMetricSnapshot,
+} from './dashboardClient.types'
 
 const BASE_STATS: DashboardMetricSnapshot = {
   totalUsers: 1240,
@@ -27,7 +31,9 @@ function scaleForRange(range: DashboardDateRange): number {
   if (!range.from || !range.to) return 1
   const days = Math.max(
     1,
-    Math.round((new Date(range.to).getTime() - new Date(range.from).getTime()) / (24 * 60 * 60 * 1000)),
+    Math.round(
+      (new Date(range.to).getTime() - new Date(range.from).getTime()) / (24 * 60 * 60 * 1000),
+    ),
   )
   return Math.min(1, days / 30)
 }

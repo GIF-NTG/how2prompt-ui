@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Implement Epic 5 — Admin & Content Management for the Admin persona, per how2prompt-agentic/docs/user-stories/us-5.1-*.md through us-5.4-*.md and agent/BA.md §2 (US-5.1–5.4): admin CRUD for AI models (us-5.1), admin CRUD for categories and tags with nested taxonomy (us-5.2), create and publish official templates with is_official=true (us-5.3), and an analytics dashboard (us-5.4). Admin-only access per the persona/access matrix in agent/BA.md §1.2 — Guest and User must be blocked from these routes/actions."
+**Input**: User description: "Implement Epic 5 — Admin & Content Management for the Admin persona, per how2prompt-agentic/docs/user-stories/us-5.1-_.md through us-5.4-_.md and agent/BA.md §2 (US-5.1–5.4): admin CRUD for AI models (us-5.1), admin CRUD for categories and tags with nested taxonomy (us-5.2), create and publish official templates with is_official=true (us-5.3), and an analytics dashboard (us-5.4). Admin-only access per the persona/access matrix in agent/BA.md §1.2 — Guest and User must be blocked from these routes/actions."
 
 ## User Scenarios & Testing _(mandatory)_
 

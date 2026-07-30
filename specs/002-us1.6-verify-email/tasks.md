@@ -1,7 +1,5 @@
 ---
-
-description: "Task list for Verify Email (+ Resend)"
-
+description: 'Task list for Verify Email (+ Resend)'
 ---
 
 # Tasks: Verify Email (+ Resend)
@@ -48,10 +46,10 @@ implementations depend on — MUST complete before Phase 3 starts.
 
 **⚠️ CRITICAL**: No User Story 1 work can begin until this phase is complete.
 
-- [X] T001 [P] Add `emailVerified: boolean` to `Session`, plus new
+- [x] T001 [P] Add `emailVerified: boolean` to `Session`, plus new
       `VerifyEmailOutcome` and `ResendVerificationOutcome` types, in
       `src/features/auth/api/types.ts` (data-model.md)
-- [X] T002 Add `verifyEmail(token: string): Promise<VerifyEmailOutcome>` and
+- [x] T002 Add `verifyEmail(token: string): Promise<VerifyEmailOutcome>` and
       `resendVerificationEmail(accessToken: string): Promise<ResendVerificationOutcome>`
       to the `AuthClient` interface in `src/features/auth/api/authClient.types.ts`
       (depends on T001 for the imported types; contracts/auth-client.md)
@@ -72,7 +70,7 @@ token, and confirm the banner disappears on the next authenticated page view.
 
 ### Implementation for User Story 1
 
-- [X] T003 [P] [US1] Implement `verifyEmail` and `resendVerificationEmail` in the
+- [x] T003 [P] [US1] Implement `verifyEmail` and `resendVerificationEmail` in the
       mock client `src/features/auth/api/authClient.mock.ts` — add
       `emailVerified: boolean` to `MockAccountRecord` (`false` for newly registered
       accounts, `true` for the seeded demo account); use a fixed sentinel token
@@ -80,7 +78,7 @@ token, and confirm the banner disappears on the next authenticated page view.
       in-memory `lastSentAt` timestamp per account to exercise the `RATE_LIMITED`
       branch on a rapid second call (contracts/auth-client.md "Mock implementation
       notes") — depends on Phase 2
-- [X] T004 [P] [US1] Implement `verifyEmail` and `resendVerificationEmail` in the
+- [x] T004 [P] [US1] Implement `verifyEmail` and `resendVerificationEmail` in the
       real client `src/features/auth/api/authClient.real.ts` — extend the
       `BackendUser` interface with `email_verified: boolean` and update `toSession()`
       to map it onto `Session.emailVerified` (research.md Decision 1);
@@ -89,7 +87,7 @@ token, and confirm the banner disappears on the next authenticated page view.
       `Authorization: Bearer <accessToken>`; map `ApiError.status === 410` to
       `errorCode: 'VERIFY_TOKEN_EXPIRED'` and `ApiError.status === 429` to
       `errorCode: 'RATE_LIMITED'` (contracts/auth-client.md) — depends on Phase 2
-- [X] T005 [US1] Add `resendVerificationEmail(): Promise<ResendVerificationOutcome>`
+- [x] T005 [US1] Add `resendVerificationEmail(): Promise<ResendVerificationOutcome>`
       and `verifyEmail(token: string): Promise<VerifyEmailOutcome>` to the
       `AuthContext` value type in `src/features/auth/context/AuthContext.tsx`, and
       implement both in `src/features/auth/context/AuthProvider.tsx` —
@@ -98,7 +96,7 @@ token, and confirm the banner disappears on the next authenticated page view.
       `authClient.verifyEmail`, and on success re-runs `authClient.restoreSession()`
       and updates `session` if one is currently held (research.md Decision 4) —
       depends on T003, T004
-- [X] T006 [P] [US1] Create `EmailVerificationBanner` in
+- [x] T006 [P] [US1] Create `EmailVerificationBanner` in
       `src/features/auth/components/EmailVerificationBanner.tsx` — a persistent
       banner with a "resend email" action; on click, calls
       `useAuth().resendVerificationEmail()`, shows a confirmation message on
@@ -106,7 +104,7 @@ token, and confirm the banner disappears on the next authenticated page view.
       `errorCode: 'RATE_LIMITED'` (spec FR-003), and disables the action with a
       visible 5-minute countdown in local component state (research.md Decision 5)
       — depends on T005
-- [X] T007 [P] [US1] Create `VerifyEmailPage` in
+- [x] T007 [P] [US1] Create `VerifyEmailPage` in
       `src/features/auth/pages/VerifyEmailPage.tsx` — reads `token` from the URL
       query string via `useSearchParams` (same pattern as `ResetPasswordPage`),
       calls `useAuth().verifyEmail(token)` on mount; on
@@ -115,17 +113,17 @@ token, and confirm the banner disappears on the next authenticated page view.
       confirmation. Must render and complete the flow whether or not a session is
       currently held (spec Edge Case: works without an active session) — depends on
       T005
-- [X] T008 [US1] Render `EmailVerificationBanner` from
+- [x] T008 [US1] Render `EmailVerificationBanner` from
       `src/app/layout/RootLayout.tsx` when `session && !session.emailVerified` (spec
       FR-001) — depends on T006
-- [X] T009 [US1] Register the `verify-email` route (rendering `VerifyEmailPage`)
+- [x] T009 [US1] Register the `verify-email` route (rendering `VerifyEmailPage`)
       under the existing `RootLayout` route in `src/app/App.tsx` — depends on T007
-- [X] T010 [P] [US1] Write
+- [x] T010 [P] [US1] Write
       `src/features/auth/components/EmailVerificationBanner.test.tsx` covering
       Acceptance Scenarios 1–3 (banner renders reminder + resend action, resend
       shows confirmation + disables with countdown, rate-limited resend shows a
       friendly message) — depends on T006
-- [X] T011 [P] [US1] Write `src/features/auth/pages/VerifyEmailPage.test.tsx`
+- [x] T011 [P] [US1] Write `src/features/auth/pages/VerifyEmailPage.test.tsx`
       covering Acceptance Scenario 4 (valid token marks account verified),
       Acceptance Scenario 5 (expired/already-used token shows the expired-link
       message), and both Edge Cases (works with no active session; a re-opened
@@ -142,11 +140,11 @@ is the entire feature (single-story spec).
 **Purpose**: Verification gates required before the feature can be reported done
 (Constitution Principle V)
 
-- [X] T012 [P] Run `npm run lint` and fix any issues in the changed/new files
-- [X] T013 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors
-- [X] T014 Run `npm run test` and confirm `EmailVerificationBanner.test.tsx` and
+- [x] T012 [P] Run `npm run lint` and fix any issues in the changed/new files
+- [x] T013 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors
+- [x] T014 Run `npm run test` and confirm `EmailVerificationBanner.test.tsx` and
       `VerifyEmailPage.test.tsx` pass
-- [X] T015 Manually exercise all 6 scenarios in `quickstart.md` in a running browser
+- [x] T015 Manually exercise all 6 scenarios in `quickstart.md` in a running browser
       (`npm run dev`) — a passing type-check is not sufficient evidence per
       Constitution Principle V
 

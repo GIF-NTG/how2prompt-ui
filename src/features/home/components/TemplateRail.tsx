@@ -7,7 +7,8 @@ import { TemplateCard } from './TemplateCard'
 // bundler's interop resolves it, the default import can land on the
 // component itself or on the whole `{ default: Component }` exports object.
 // Unwrap defensively so this works either way.
-const Marquee = (MarqueeImport as unknown as { default?: typeof MarqueeImport }).default ?? MarqueeImport
+const Marquee =
+  (MarqueeImport as unknown as { default?: typeof MarqueeImport }).default ?? MarqueeImport
 
 interface TemplateRailProps {
   title: string

@@ -8,7 +8,7 @@
 
 **Input**: User description: "Fix /auth/resend-verification contract mismatch and add a resend-verification action reachable from the login screen: the real backend endpoint takes { email } in the request body and requires no Authorization header (public, like forgot-password) — contradicting docs/api/openapi.yaml, which currently documents it as requiring Bearer auth with no body. Update the contract doc, change AuthClient.resendVerificationEmail to take an email instead of an accessToken (EmailVerificationBanner keeps working since Session already has .email), and add a "resend verification email" action on LoginPage that appears when login fails with EMAIL_NOT_VERIFIED, resolving the previously-identified dead-end where a newly registered user with a lost/expired verification email had no way to request a new one before this endpoint's real shape was discovered."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Unverified user recovers from login via resend action (Priority: P1)
 
@@ -90,7 +90,7 @@ before, without requiring any code change to the banner itself.
   attempt independently re-shows the resend action; it is not a one-time offer per
   session.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -127,7 +127,7 @@ before, without requiring any code change to the banner itself.
   session or account ID) that asks the system to send a new verification email to
   that address if eligible.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -153,6 +153,6 @@ before, without requiring any code change to the banner itself.
 - The login screen already validates the email field's syntax before submission; the
   resend action reuses that same validation rather than introducing a new rule.
 - No new persona, permission, or account state is introduced — this only changes how
-  an existing capability (requesting a new verification email) is invoked and where
-  it's reachable from.
+an existing capability (requesting a new verification email) is invoked and where
+it's reachable from.
 </content>

@@ -34,7 +34,7 @@ Structure). No `tests/` directory changes are needed for this feature.
 **Purpose**: Establish a known-green baseline before touching any styling, so
 regressions introduced by this feature are unambiguous.
 
-- [X] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run` at
+- [x] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run` at
       the repo root and confirm all three currently pass, establishing the
       pre-restyle baseline
 
@@ -63,31 +63,31 @@ badge, and section header must match.
 
 ### Implementation for User Story 1
 
-- [X] T002 [P] [US1] Remove the `uppercase` class from the "Chính thức"
+- [x] T002 [P] [US1] Remove the `uppercase` class from the "Chính thức"
       official badge and fix the light-theme favorite/danger hex from
       `#C23A2A` to `#C23A2E` in
       `src/features/home/components/TemplateCard.tsx` (research.md drift #1, #2)
-- [X] T003 [P] [US1] Verify `src/features/home/components/SearchBox.tsx`
+- [x] T003 [P] [US1] Verify `src/features/home/components/SearchBox.tsx`
       against the mockup's `.search-box` rule (surface bg, `--line` border,
       12px radius, `--ink-faint` placeholder/glyph); adjust only if a
       discrepancy is found — research.md found none (confirmed: exact match, no change)
-- [X] T004 [P] [US1] Verify `src/features/home/components/FilterBar.tsx`
+- [x] T004 [P] [US1] Verify `src/features/home/components/FilterBar.tsx`
       against the mockup's `.chip` and `.model-select` rules (pill shape,
       `--accent`-filled pressed state, `--line` border); adjust only if a
       discrepancy is found — research.md found none (confirmed via ModelFilter.tsx
       and TagFilterChips.tsx: exact match, no change)
-- [X] T005 [P] [US1] Verify `src/features/home/components/TemplateRail.tsx`
+- [x] T005 [P] [US1] Verify `src/features/home/components/TemplateRail.tsx`
       against the mockup's `.rail`/`.section-head` rules (0.9rem gap, 240px min
       card width, mono/`--ink-faint` count label); adjust only if a
       discrepancy is found — research.md found none (confirmed: exact match, no change)
-- [X] T006 [P] [US1] Verify `src/features/home/components/TemplateGrid.tsx`
+- [x] T006 [P] [US1] Verify `src/features/home/components/TemplateGrid.tsx`
       against the mockup's `.template-grid`/`.section-head` rules
       (`repeat(auto-fill, minmax(240px, 1fr))`, 1rem gap); adjust only if a
       discrepancy is found — research.md found none (confirmed: exact match, no change)
-- [X] T007 [P] [US1] Verify `src/features/home/pages/CatalogPage.tsx` against
+- [x] T007 [P] [US1] Verify `src/features/home/pages/CatalogPage.tsx` against
       the mockup's `.page-head` rule (title/lede sizing, gap, max-width); adjust
       only if a discrepancy is found — research.md found none (confirmed: exact match, no change)
-- [X] T008 [US1] Manually verify the catalog page against
+- [x] T008 [US1] Manually verify the catalog page against
       `docs/design/how2prompt-workspace-mockup.html` in light and dark themes
       per `quickstart.md` step 3, confirming SC-001 (depends on T002-T007)
       (verified via Playwright screenshots, light + dark, zero console errors —
@@ -111,41 +111,41 @@ themes and compare each section against the design reference per
 
 ### Implementation for User Story 2
 
-- [X] T009 [P] [US2] Remove the `uppercase` class from the "Chính thức"
+- [x] T009 [P] [US2] Remove the `uppercase` class from the "Chính thức"
       official badge in
       `src/features/template-detail/components/TemplateHero.tsx`
       (research.md drift #1)
-- [X] T010 [P] [US2] Verify `src/features/template-detail/components/ModelTags.tsx`
+- [x] T010 [P] [US2] Verify `src/features/template-detail/components/ModelTags.tsx`
       against the mockup's `.model-tag` rule (mono, 0.68rem, `--ink-faint`,
       `--surface-2` background); adjust only if a discrepancy is found —
       research.md found none (confirmed: exact match, no change)
-- [X] T011 [P] [US2] Align the card to 14px border radius and `1.1rem 1.2rem`
+- [x] T011 [P] [US2] Align the card to 14px border radius and `1.1rem 1.2rem`
       padding (matching `.output-box`) in
       `src/features/template-detail/components/UsageGuide.tsx`
       (research.md drift #5)
-- [X] T012 [P] [US2] Align the card to 14px border radius and `1.1rem 1.2rem`
+- [x] T012 [P] [US2] Align the card to 14px border radius and `1.1rem 1.2rem`
       padding (matching `.output-box`) in
       `src/features/template-detail/components/ExampleOutput.tsx`
       (research.md drift #5)
-- [X] T013 [P] [US2] Fix the light-theme favorite/danger hex from `#C23A2A`
+- [x] T013 [P] [US2] Fix the light-theme favorite/danger hex from `#C23A2A`
       to `#C23A2E` and reduce the usage-count text to `0.7rem` in
       `src/features/template-detail/components/TemplateMeta.tsx`
       (research.md drift #2, #6)
-- [X] T014 [P] [US2] Switch the back-link to monospace, underlined text at
+- [x] T014 [P] [US2] Switch the back-link to monospace, underlined text at
       `0.8rem` (matching `.back-link`) in
       `src/features/template-detail/components/BackLink.tsx`
       (research.md drift #4)
-- [X] T015 [P] [US2] Verify `src/features/template-detail/components/NotFoundState.tsx`
+- [x] T015 [P] [US2] Verify `src/features/template-detail/components/NotFoundState.tsx`
       against the mockup's `.empty-state` rule (`--ink-faint`, 0.88rem,
       centered); adjust only if a discrepancy is found (confirmed: mockup has no
       literal 404/not-found reference — component already uses approved tokens
       only, no change)
-- [X] T016 [P] [US2] Verify `src/features/template-detail/components/TemplateDetailPage.tsx`
+- [x] T016 [P] [US2] Verify `src/features/template-detail/components/TemplateDetailPage.tsx`
       layout/spacing against the mockup's `.page-head`/`.detail-layout`
       conventions; adjust only if a discrepancy is found (found: top padding was
       `pt-8` (2rem) vs the mockup's `.app-main` `0.5rem` top padding — fixed to
       `pt-2` across all three render branches)
-- [X] T017 [US2] Manually verify the template detail page against
+- [x] T017 [US2] Manually verify the template detail page against
       `docs/design/how2prompt-workspace-mockup.html` in light and dark themes
       per `quickstart.md` step 4, confirming SC-002 (depends on T009-T016)
       (verified via Playwright screenshots, light + dark, zero console errors —
@@ -168,11 +168,11 @@ signed-in, both themes) against the mockup's topbar per `quickstart.md` step 5.
 
 ### Implementation for User Story 3
 
-- [X] T018 [US3] Add a hover border-bottom in `--ink-faint`
+- [x] T018 [US3] Add a hover border-bottom in `--ink-faint`
       (`#8B8F86` light / `#6D726A` dark) to the "Thư viện"/"Lịch sử" nav links
       and add the missing `dark:border-b-[#6D726A]` to the active-route state
       in `src/shared/components/TopBar.tsx` (research.md drift #3)
-- [X] T019 [US3] Manually verify the top navigation bar (guest and signed-in
+- [x] T019 [US3] Manually verify the top navigation bar (guest and signed-in
       states) against `docs/design/how2prompt-workspace-mockup.html` in light
       and dark themes per `quickstart.md` step 5, confirming SC-003 (depends
       on T018) (verified: nav-link hover border-bottom computed style resolves
@@ -189,14 +189,14 @@ reference.
 **Purpose**: Confirm no functional regression was introduced and close out the
 feature's success criteria.
 
-- [X] T020 [P] Run `npm run lint` at the repo root and fix any issues
+- [x] T020 [P] Run `npm run lint` at the repo root and fix any issues
       introduced by the restyle tasks above (clean — 0 issues in `src/`)
-- [X] T021 [P] Run `npm run build` at the repo root and fix any type/build
+- [x] T021 [P] Run `npm run build` at the repo root and fix any type/build
       errors introduced by the restyle tasks above (build succeeded)
-- [X] T022 [P] Run `npm run test -- --run` at the repo root and confirm 100%
+- [x] T022 [P] Run `npm run test -- --run` at the repo root and confirm 100%
       of existing tests still pass, confirming SC-004 and FR-007 (no
       behavioral regression) (36/36 passed)
-- [X] T023 Run the full `quickstart.md` validation end-to-end (all of
+- [x] T023 Run the full `quickstart.md` validation end-to-end (all of
       SC-001–SC-004, light and dark themes) and capture before/after
       screenshots of the catalog page, a template detail page, and the topbar
       for the PR description (depends on T008, T017, T019, T020, T021, T022)

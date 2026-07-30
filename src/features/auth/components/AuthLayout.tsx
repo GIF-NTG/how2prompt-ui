@@ -64,7 +64,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
               <ul className="flex flex-col gap-3 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
                 <li className="flex items-start gap-2.5">
-                  <Bookmark size={18} weight="duotone" color="#0F9B8E" className="mt-0.5 shrink-0" />
+                  <Bookmark
+                    size={18}
+                    weight="duotone"
+                    color="#0F9B8E"
+                    className="mt-0.5 shrink-0"
+                  />
                   Tự động lưu lịch sử prompt vào tài khoản của bạn
                 </li>
                 <li className="flex items-start gap-2.5">
@@ -77,7 +82,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                   Copy nhanh một prompt cũ, không cần điền lại
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <ShieldCheck size={18} weight="duotone" color="#1F7FC9" className="mt-0.5 shrink-0" />
+                  <ShieldCheck
+                    size={18}
+                    weight="duotone"
+                    color="#1F7FC9"
+                    className="mt-0.5 shrink-0"
+                  />
                   Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh token
                 </li>
               </ul>

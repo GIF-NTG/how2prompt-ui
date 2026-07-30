@@ -42,8 +42,7 @@ export function DashboardPage() {
           Bảng điều khiển phân tích
         </h1>
         <p className="m-0 max-w-[62ch] text-[0.94rem] leading-[1.6] text-[#5B5F58] dark:text-[#A2A79C]">
-          Theo dõi người dùng hoạt động, số prompt được tạo và các template/model phổ
-          biến nhất.
+          Theo dõi người dùng hoạt động, số prompt được tạo và các template/model phổ biến nhất.
         </p>
       </div>
 

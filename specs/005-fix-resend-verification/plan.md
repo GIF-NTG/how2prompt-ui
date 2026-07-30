@@ -44,7 +44,7 @@ observable behavior (FR-006)
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **Principle II (Spec-Before-Code)**: Satisfied — this plan follows an approved spec
   (`specs/005-fix-resend-verification/spec.md`) generated via `/speckit-specify`.
@@ -110,4 +110,4 @@ files" convention and the small blast radius of this fix.
 
 ## Complexity Tracking
 
-*No violations — section intentionally empty.*
+_No violations — section intentionally empty._

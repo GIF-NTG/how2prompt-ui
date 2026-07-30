@@ -18,7 +18,9 @@ export function AiModelForm({ initial, submitting, onSubmit, onCancel }: AiModel
   const [code, setCode] = useState(initial?.code ?? '')
   const [name, setName] = useState(initial?.name ?? '')
   const [provider, setProvider] = useState(initial?.provider ?? '')
-  const [modelType, setModelType] = useState<AiModelUpsert['modelType']>(initial?.modelType ?? 'text')
+  const [modelType, setModelType] = useState<AiModelUpsert['modelType']>(
+    initial?.modelType ?? 'text',
+  )
   const [description, setDescription] = useState(initial?.description ?? '')
   const [iconUrl, setIconUrl] = useState(initial?.iconUrl ?? '')
   const [isActive, setIsActive] = useState(initial?.isActive ?? true)
@@ -160,7 +162,9 @@ export function AiModelForm({ initial, submitting, onSubmit, onCancel }: AiModel
           onChange={(e) => setCapabilitiesJson(e.target.value)}
         />
         {capabilitiesError && (
-          <p className="m-0 text-[0.75rem] text-[#C23A2A] dark:text-[#FF7A6B]">{capabilitiesError}</p>
+          <p className="m-0 text-[0.75rem] text-[#C23A2A] dark:text-[#FF7A6B]">
+            {capabilitiesError}
+          </p>
         )}
       </div>
 

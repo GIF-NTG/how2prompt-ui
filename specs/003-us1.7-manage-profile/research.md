@@ -23,15 +23,19 @@ premature separation; revisit only if profile-related screens grow substantially
 ## Decision 2 — `AuthClient` gains `getProfile`/`updateProfile`, mirroring the `resendVerificationEmail` pattern
 
 **Decision**: Add to `AuthClient`:
+
 ```ts
 getProfile(accessToken: string): Promise<ProfileOutcome>
 updateProfile(accessToken: string, input: UpdateProfileInput): Promise<ProfileOutcome>
 ```
+
 and to `AuthContext`/`AuthProvider`:
+
 ```ts
 getProfile(): Promise<ProfileOutcome>
 updateProfile(input: UpdateProfileInput): Promise<ProfileOutcome>
 ```
+
 where the `AuthContext` versions read `session.token` internally (same invariant
 as `resendVerificationEmail`: only ever called from UI that itself requires an
 active session, not defended against `session === null`).

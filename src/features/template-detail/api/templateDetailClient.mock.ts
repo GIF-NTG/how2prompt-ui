@@ -52,7 +52,10 @@ const DEBUG_TEMPLATE: TemplateDetail = {
         label: { en: 'Your Role', vi: 'Vai trò của bạn' },
         description: { en: 'Your technical role', vi: 'Vai trò kỹ thuật của bạn' },
         placeholder: { en: 'e.g. Backend Developer', vi: 'ví dụ: Backend Developer' },
-        helpText: { en: 'This helps tailor the debugging approach', vi: 'Giúp điều chỉnh cách tiếp cận debug' },
+        helpText: {
+          en: 'This helps tailor the debugging approach',
+          vi: 'Giúp điều chỉnh cách tiếp cận debug',
+        },
         inputType: 'text',
         isRequired: true,
         defaultValue: null,
@@ -80,7 +83,10 @@ const DEBUG_TEMPLATE: TemplateDetail = {
         label: { en: 'Severity Level', vi: 'Mức độ nghiêm trọng' },
         description: { en: 'How critical is this bug?', vi: 'Lỗi này nghiêm trọng đến mức nào?' },
         placeholder: { en: 'Select severity...', vi: 'Chọn mức độ...' },
-        helpText: { en: 'Higher severity gets more detailed analysis', vi: 'Mức độ cao hơn sẽ được phân tích chi tiết hơn' },
+        helpText: {
+          en: 'Higher severity gets more detailed analysis',
+          vi: 'Mức độ cao hơn sẽ được phân tích chi tiết hơn',
+        },
         inputType: 'select',
         isRequired: false,
         defaultValue: 'medium',
@@ -98,7 +104,10 @@ const DEBUG_TEMPLATE: TemplateDetail = {
         label: { en: 'Include Edge Cases', vi: 'Bao gồm edge case' },
         description: { en: 'Check related edge cases?', vi: 'Kiểm tra edge case liên quan?' },
         placeholder: { en: '', vi: '' },
-        helpText: { en: 'Adds edge case analysis to the output', vi: 'Thêm phân tích edge case vào kết quả' },
+        helpText: {
+          en: 'Adds edge case analysis to the output',
+          vi: 'Thêm phân tích edge case vào kết quả',
+        },
         inputType: 'boolean',
         isRequired: false,
         defaultValue: 'true',
@@ -110,9 +119,15 @@ const DEBUG_TEMPLATE: TemplateDetail = {
         id: 'v5',
         varKey: 'maxTokens',
         label: { en: 'Max Response Length', vi: 'Độ dài phản hồi tối đa' },
-        description: { en: 'Approximate max tokens for the response', vi: 'Số token tối đa xấp xỉ cho phản hồi' },
+        description: {
+          en: 'Approximate max tokens for the response',
+          vi: 'Số token tối đa xấp xỉ cho phản hồi',
+        },
         placeholder: { en: '1000', vi: '1000' },
-        helpText: { en: 'Longer responses provide more detail', vi: 'Phản hồi dài hơn sẽ chi tiết hơn' },
+        helpText: {
+          en: 'Longer responses provide more detail',
+          vi: 'Phản hồi dài hơn sẽ chi tiết hơn',
+        },
         inputType: 'number',
         isRequired: false,
         defaultValue: '1000',
@@ -231,9 +246,24 @@ const REWRITE_TEMPLATE: TemplateDetail = {
       },
     ],
     variants: [
-      { aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
-      { aiModelCode: 'claude', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
-      { aiModelCode: 'gemini', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+      {
+        aiModelCode: 'gpt-4o',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
+      {
+        aiModelCode: 'claude',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
+      {
+        aiModelCode: 'gemini',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
     ],
   },
 }
@@ -326,8 +356,18 @@ const MARKETING_TEMPLATE: TemplateDetail = {
       },
     ],
     variants: [
-      { aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
-      { aiModelCode: 'gemini', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} },
+      {
+        aiModelCode: 'gpt-4o',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
+      {
+        aiModelCode: 'gemini',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
     ],
   },
 }
@@ -409,7 +449,14 @@ const CODE_REVIEW_TEMPLATE: TemplateDetail = {
         sortOrder: 2,
       },
     ],
-    variants: [{ aiModelCode: 'claude', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} }],
+    variants: [
+      {
+        aiModelCode: 'claude',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
+    ],
   },
 }
 
@@ -423,7 +470,13 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
   },
   coverImage: null,
   isOfficial: false,
-  author: { id: 'u1', fullName: 'Nguyễn Văn A', username: 'nguyenvana', avatarUrl: null, type: 'user' },
+  author: {
+    id: 'u1',
+    fullName: 'Nguyễn Văn A',
+    username: 'nguyenvana',
+    avatarUrl: null,
+    type: 'user',
+  },
   categories: [
     {
       id: 'c3',
@@ -471,7 +524,14 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
         sortOrder: 1,
       },
     ],
-    variants: [{ aiModelCode: 'gpt-4o', promptBodyOverride: null, systemPromptOverride: null, modelConfig: {} }],
+    variants: [
+      {
+        aiModelCode: 'gpt-4o',
+        promptBodyOverride: null,
+        systemPromptOverride: null,
+        modelConfig: {},
+      },
+    ],
   },
 }
 

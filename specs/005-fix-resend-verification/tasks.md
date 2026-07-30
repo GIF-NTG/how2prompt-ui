@@ -1,6 +1,5 @@
 ---
-
-description: "Task list for Fix Resend-Verification Contract & Add Login-Screen Resend Action"
+description: 'Task list for Fix Resend-Verification Contract & Add Login-Screen Resend Action'
 ---
 
 # Tasks: Fix Resend-Verification Contract & Add Login-Screen Resend Action
@@ -46,41 +45,41 @@ be verified.
 
 **⚠️ CRITICAL**: No user story task can be completed until this phase is done.
 
-- [X] T001 Update `docs/api/openapi.yaml`'s `/auth/resend-verification` path: add
-  `security: []` and a `requestBody` requiring `{ email: string }`, matching
-  `/auth/forgot-password`'s existing shape (see contracts/auth-client.md's "Contract
-  doc changes" section for the exact YAML).
-- [X] T002 In the same file, extend `/auth/login`'s documented `401` response to note
-  `EMAIL_NOT_VERIFIED` as a possible `error.code` alongside the already-documented
-  `INVALID_CREDENTIALS` (spec.md FR-008; data-model.md; research.md Decision 4) — no
-  schema change, documentation/example only.
-- [X] T003 Change `resendVerificationEmail`'s signature in
-  `src/features/auth/api/authClient.types.ts` from `(accessToken: string)` to
-  `(email: string)`, updating its doc comment to describe the public/no-auth,
-  email-body request (contracts/auth-client.md).
-- [X] T004 Update `src/features/auth/api/authClient.real.ts`'s
-  `resendVerificationEmail` implementation: call
-  `apiFetch<void>('/auth/resend-verification', { method: 'POST', body: { email } })`
-  with no `accessToken`, keeping the existing `RATE_LIMITED` (429) branch and generic
-  fallback unchanged.
-- [X] T005 Update `src/features/auth/api/authClient.mock.ts`'s
-  `resendVerificationEmail` implementation to accept `email` directly and look up the
-  matching `MockAccountRecord` in `mockAccounts` by that email (instead of resolving
-  the account via the currently stored session), keeping the existing
-  `lastVerificationSentAt`/`MOCK_RESEND_COOLDOWN_MS` rate-limit logic unchanged
-  (data-model.md).
-- [X] T006 In the same file, update `login(email, password)` so that when the
-  submitted credentials match a stored account whose `emailVerified` is `false`, it
-  resolves `{ status: 'error', errorCode: 'EMAIL_NOT_VERIFIED', message: '...' }`
-  instead of the current unconditional success on password match (research.md
-  Decision 5); verified accounts (including the seeded demo account) are unaffected.
-- [X] T007 Update `src/features/auth/context/AuthProvider.tsx`'s
-  `resendVerificationEmail()` to call `authClient.resendVerificationEmail(session!.email)`
-  instead of `authClient.resendVerificationEmail(session!.token)` — no change to its
-  own no-argument public signature (contracts/auth-client.md).
-- [X] T008 [P] Update the doc comment on `resendVerificationEmail` in
-  `src/features/auth/context/AuthContext.ts` to reflect that it now reads
-  `session.email` internally instead of `session.token`.
+- [x] T001 Update `docs/api/openapi.yaml`'s `/auth/resend-verification` path: add
+      `security: []` and a `requestBody` requiring `{ email: string }`, matching
+      `/auth/forgot-password`'s existing shape (see contracts/auth-client.md's "Contract
+      doc changes" section for the exact YAML).
+- [x] T002 In the same file, extend `/auth/login`'s documented `401` response to note
+      `EMAIL_NOT_VERIFIED` as a possible `error.code` alongside the already-documented
+      `INVALID_CREDENTIALS` (spec.md FR-008; data-model.md; research.md Decision 4) — no
+      schema change, documentation/example only.
+- [x] T003 Change `resendVerificationEmail`'s signature in
+      `src/features/auth/api/authClient.types.ts` from `(accessToken: string)` to
+      `(email: string)`, updating its doc comment to describe the public/no-auth,
+      email-body request (contracts/auth-client.md).
+- [x] T004 Update `src/features/auth/api/authClient.real.ts`'s
+      `resendVerificationEmail` implementation: call
+      `apiFetch<void>('/auth/resend-verification', { method: 'POST', body: { email } })`
+      with no `accessToken`, keeping the existing `RATE_LIMITED` (429) branch and generic
+      fallback unchanged.
+- [x] T005 Update `src/features/auth/api/authClient.mock.ts`'s
+      `resendVerificationEmail` implementation to accept `email` directly and look up the
+      matching `MockAccountRecord` in `mockAccounts` by that email (instead of resolving
+      the account via the currently stored session), keeping the existing
+      `lastVerificationSentAt`/`MOCK_RESEND_COOLDOWN_MS` rate-limit logic unchanged
+      (data-model.md).
+- [x] T006 In the same file, update `login(email, password)` so that when the
+      submitted credentials match a stored account whose `emailVerified` is `false`, it
+      resolves `{ status: 'error', errorCode: 'EMAIL_NOT_VERIFIED', message: '...' }`
+      instead of the current unconditional success on password match (research.md
+      Decision 5); verified accounts (including the seeded demo account) are unaffected.
+- [x] T007 Update `src/features/auth/context/AuthProvider.tsx`'s
+      `resendVerificationEmail()` to call `authClient.resendVerificationEmail(session!.email)`
+      instead of `authClient.resendVerificationEmail(session!.token)` — no change to its
+      own no-argument public signature (contracts/auth-client.md).
+- [x] T008 [P] Update the doc comment on `resendVerificationEmail` in
+      `src/features/auth/context/AuthContext.ts` to reflect that it now reads
+      `session.email` internally instead of `session.token`.
 
 **Checkpoint**: Contract, client, and mock all agree on the new email-based shape.
 `npm run build` (TypeScript) should pass with no other files needing changes yet.
@@ -99,39 +98,39 @@ confirm the success/rate-limited outcomes render in place.
 
 ### Tests for User Story 1
 
-- [X] T009 [P] [US1] Add a test in `src/features/auth/pages/LoginPage.test.tsx`:
-  register an unverified account via `authClient.register(...)`, attempt login with
-  its credentials, and assert a "resend verification email" action becomes visible
-  alongside the failure message (following the existing `renderLoginPage()` +
-  `userEvent` pattern already in this file).
-- [X] T010 [P] [US1] Add a test in the same file: activate the resend action and
-  assert a success/confirmation message appears, using
-  `authClient.resendVerificationEmail` spied or the mock's natural cooldown behavior
-  to also assert a second immediate activation shows the rate-limited message
-  (Acceptance Scenarios 2–3).
-- [X] T011 [P] [US1] Add a test in the same file asserting the resend action is
-  **absent** after a login failure for a wrong password on a verified account (e.g.
-  the seeded demo account) — Acceptance Scenario 4.
+- [x] T009 [P] [US1] Add a test in `src/features/auth/pages/LoginPage.test.tsx`:
+      register an unverified account via `authClient.register(...)`, attempt login with
+      its credentials, and assert a "resend verification email" action becomes visible
+      alongside the failure message (following the existing `renderLoginPage()` +
+      `userEvent` pattern already in this file).
+- [x] T010 [P] [US1] Add a test in the same file: activate the resend action and
+      assert a success/confirmation message appears, using
+      `authClient.resendVerificationEmail` spied or the mock's natural cooldown behavior
+      to also assert a second immediate activation shows the rate-limited message
+      (Acceptance Scenarios 2–3).
+- [x] T011 [P] [US1] Add a test in the same file asserting the resend action is
+      **absent** after a login failure for a wrong password on a verified account (e.g.
+      the seeded demo account) — Acceptance Scenario 4.
 
 ### Implementation for User Story 1
 
-- [X] T012 [US1] In `src/features/auth/pages/LoginPage.tsx`, add local state to track
-  whether the last failed login's `errorCode` was `'EMAIL_NOT_VERIFIED'` and to hold
-  the resend action's own status/error message, mirroring
-  `EmailVerificationBanner.tsx`'s `sending`/`statusMessage`/`errorMessage` state shape.
-- [X] T013 [US1] In the same file's `handleSubmit`, when `authClient.login(...)`
-  resolves `{ status: 'error', errorCode: 'EMAIL_NOT_VERIFIED', message }`, set that
-  new state instead of (or in addition to) the existing generic `errorMessage` display.
-- [X] T014 [US1] In the same file, render a "resend verification email" button next to
-  the failure message when the `EMAIL_NOT_VERIFIED` state is set; clicking it calls
-  `authClient.resendVerificationEmail(trimmedEmail)` (the same `trimmedEmail` already
-  computed in `handleSubmit`) and displays the outcome using the same
-  `role="status"` / `role="alert"` pattern `EmailVerificationBanner.tsx` already uses,
-  including a disabled/cooldown state on `RATE_LIMITED` (contracts/auth-client.md).
-- [X] T015 [US1] Ensure the resend action and its state reset whenever the email
-  field changes or a new login attempt is submitted, so a stale resend action from a
-  previous failed attempt doesn't linger against a newly typed email (spec.md Edge
-  Cases).
+- [x] T012 [US1] In `src/features/auth/pages/LoginPage.tsx`, add local state to track
+      whether the last failed login's `errorCode` was `'EMAIL_NOT_VERIFIED'` and to hold
+      the resend action's own status/error message, mirroring
+      `EmailVerificationBanner.tsx`'s `sending`/`statusMessage`/`errorMessage` state shape.
+- [x] T013 [US1] In the same file's `handleSubmit`, when `authClient.login(...)`
+      resolves `{ status: 'error', errorCode: 'EMAIL_NOT_VERIFIED', message }`, set that
+      new state instead of (or in addition to) the existing generic `errorMessage` display.
+- [x] T014 [US1] In the same file, render a "resend verification email" button next to
+      the failure message when the `EMAIL_NOT_VERIFIED` state is set; clicking it calls
+      `authClient.resendVerificationEmail(trimmedEmail)` (the same `trimmedEmail` already
+      computed in `handleSubmit`) and displays the outcome using the same
+      `role="status"` / `role="alert"` pattern `EmailVerificationBanner.tsx` already uses,
+      including a disabled/cooldown state on `RATE_LIMITED` (contracts/auth-client.md).
+- [x] T015 [US1] Ensure the resend action and its state reset whenever the email
+      field changes or a new login attempt is submitted, so a stale resend action from a
+      previous failed attempt doesn't linger against a newly typed email (spec.md Edge
+      Cases).
 
 **Checkpoint**: User Story 1 is independently functional — `npm run test` passes for
 `LoginPage.test.tsx`, and the flow is reachable end-to-end against the mock backend.
@@ -148,17 +147,17 @@ every existing assertion still passes.
 
 ### Tests for User Story 2
 
-- [X] T016 [P] [US2] Run the existing
-  `src/features/auth/components/EmailVerificationBanner.test.tsx` suite as-is (no
-  test file changes expected) and confirm all cases still pass after Phase 2's
-  changes — this is the acceptance check for FR-006, not new test authoring.
-  Result: all 3 existing tests pass unchanged.
+- [x] T016 [P] [US2] Run the existing
+      `src/features/auth/components/EmailVerificationBanner.test.tsx` suite as-is (no
+      test file changes expected) and confirm all cases still pass after Phase 2's
+      changes — this is the acceptance check for FR-006, not new test authoring.
+      Result: all 3 existing tests pass unchanged.
 
 ### Implementation for User Story 2
 
-- [X] T017 [US2] Not needed — T016 passed with no failures, so no fix was required in
-  `AuthProvider.tsx`/`authClient.mock.ts`, and `EmailVerificationBanner.tsx` itself
-  was not touched (data-model.md).
+- [x] T017 [US2] Not needed — T016 passed with no failures, so no fix was required in
+      `AuthProvider.tsx`/`authClient.mock.ts`, and `EmailVerificationBanner.tsx` itself
+      was not touched (data-model.md).
 
 **Checkpoint**: Both user stories work independently; the banner's behavior is
 provably unchanged.
@@ -167,23 +166,23 @@ provably unchanged.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [X] T018 [P] Run `npm run lint` and fix any findings across all files touched in
-  Phases 2–4. Result: clean, no findings.
-- [X] T019 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors.
-  Result: build succeeds.
-- [X] T020 Run `npm run test` and confirm the full suite passes, including T009–T011,
-  T016, and every other existing auth test file. Result: 11 files / 36 tests, all
-  passing (one pre-existing test, `ProfileSettingsPage.test.tsx`'s Acceptance 3, had
-  to be updated — it registered+logged-in a throwaway second account to seed a taken
-  username, which broke once login correctly started rejecting unverified accounts;
-  fixed by seeding that account's session directly, the same technique
-  `EmailVerificationBanner.test.tsx` already used, instead of going through login).
+- [x] T018 [P] Run `npm run lint` and fix any findings across all files touched in
+      Phases 2–4. Result: clean, no findings.
+- [x] T019 [P] Run `npm run build` (`tsc -b && vite build`) and fix any type errors.
+      Result: build succeeds.
+- [x] T020 Run `npm run test` and confirm the full suite passes, including T009–T011,
+      T016, and every other existing auth test file. Result: 11 files / 36 tests, all
+      passing (one pre-existing test, `ProfileSettingsPage.test.tsx`'s Acceptance 3, had
+      to be updated — it registered+logged-in a throwaway second account to seed a taken
+      username, which broke once login correctly started rejecting unverified accounts;
+      fixed by seeding that account's session directly, the same technique
+      `EmailVerificationBanner.test.tsx` already used, instead of going through login).
 - [ ] T021 Manually execute `quickstart.md` scenarios 2–5 against `npm run dev` (mock
-  backend) in a running browser — **NOT completed**: no browser-driving tool is
-  available in this environment/session, so this step could not be executed. The dev
-  server was started and confirmed to boot cleanly (`vite` ready, no console errors),
-  but the login screen's resend action was not visually exercised in a real browser.
-  This should be done manually before merging, per Constitution Principle V.
+      backend) in a running browser — **NOT completed**: no browser-driving tool is
+      available in this environment/session, so this step could not be executed. The dev
+      server was started and confirmed to boot cleanly (`vite` ready, no console errors),
+      but the login screen's resend action was not visually exercised in a real browser.
+      This should be done manually before merging, per Constitution Principle V.
 
 ---
 

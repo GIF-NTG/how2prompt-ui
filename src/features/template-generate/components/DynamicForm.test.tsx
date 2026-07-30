@@ -24,7 +24,12 @@ function makeVariable(overrides: Partial<TemplateVariable> & { varKey: string })
 }
 
 const textVar = makeVariable({ varKey: 'role', inputType: 'text', isRequired: true, sortOrder: 1 })
-const textareaVar = makeVariable({ varKey: 'log', inputType: 'textarea', isRequired: true, sortOrder: 2 })
+const textareaVar = makeVariable({
+  varKey: 'log',
+  inputType: 'textarea',
+  isRequired: true,
+  sortOrder: 2,
+})
 const selectVar = makeVariable({
   varKey: 'severity',
   inputType: 'select',
@@ -120,8 +125,11 @@ describe('DynamicForm', () => {
 
   it('shows required asterisk for required fields', () => {
     renderForm()
-    const roleLabel = screen.getByText((_, el) =>
-      el?.tagName === 'LABEL' && el.textContent?.includes('role') && el.textContent?.includes('*'),
+    const roleLabel = screen.getByText(
+      (_, el) =>
+        el?.tagName === 'LABEL' &&
+        el.textContent?.includes('role') &&
+        el.textContent?.includes('*'),
     )
     expect(roleLabel).toBeInTheDocument()
   })

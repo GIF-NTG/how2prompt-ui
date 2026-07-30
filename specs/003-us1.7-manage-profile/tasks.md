@@ -1,6 +1,5 @@
 ---
-
-description: "Task list for Manage Personal Profile (US-1.7)"
+description: 'Task list for Manage Personal Profile (US-1.7)'
 ---
 
 # Tasks: Manage Personal Profile (US-1.7)
@@ -31,7 +30,7 @@ Single project — `src/features/auth/**`, `src/app/App.tsx`,
 
 ## Phase 1: Setup
 
-- [X] T001 Run `npm run lint`, `npm run test`, and `npm run build` from the repo root and confirm all three are green *before* any change in this feature.
+- [x] T001 Run `npm run lint`, `npm run test`, and `npm run build` from the repo root and confirm all three are green _before_ any change in this feature.
 
 ---
 
@@ -42,8 +41,8 @@ implementations (and the page itself) depend on.
 
 **⚠️ CRITICAL**: No implementation task below can compile until this phase is complete.
 
-- [X] T002 Add `UserProfile`, `UpdateProfileInput`, `ProfileOutcome` types to `src/features/auth/api/types.ts` (data-model.md).
-- [X] T003 Add `getProfile(accessToken)` and `updateProfile(accessToken, input)` to the `AuthClient` interface in `src/features/auth/api/authClient.types.ts` (contracts/auth-client.md; depends on T002).
+- [x] T002 Add `UserProfile`, `UpdateProfileInput`, `ProfileOutcome` types to `src/features/auth/api/types.ts` (data-model.md).
+- [x] T003 Add `getProfile(accessToken)` and `updateProfile(accessToken, input)` to the `AuthClient` interface in `src/features/auth/api/authClient.types.ts` (contracts/auth-client.md; depends on T002).
 
 **Checkpoint**: Types and interface exist — mock/real implementation can begin.
 
@@ -60,17 +59,17 @@ the top bar immediately (quickstart.md Sections 2–6).
 
 ### Implementation for User Story 1
 
-- [X] T004 [P] [US1] Add `username: string | null`, `bio: string | null`, `locale: 'en' | 'vi'` fields to `MockAccountRecord` in `src/features/auth/api/authClient.mock.ts`, with sensible defaults (`locale: 'vi'`, `username`/`bio` `null`) for the seeded demo account and any newly registered mock account (data-model.md "Mock implementation notes"; depends on T002).
-- [X] T005 [US1] Implement `getProfile(accessToken)` in `src/features/auth/api/authClient.mock.ts` — resolve the account matching the session persisted under that token (same lookup pattern as `resendVerificationEmail`/`verifyEmail`), mapped to `UserProfile` (depends on T004).
-- [X] T006 [US1] Implement `updateProfile(accessToken, input)` in `src/features/auth/api/authClient.mock.ts` — if `input.username` is non-null and already used by a *different* mock account, resolve `{ status: 'error', errorCode: 'USERNAME_TAKEN', message }` without mutating; otherwise update the record's four fields in place and resolve `{ status: 'success', profile }` (depends on T004).
-- [X] T007 [P] [US1] Implement `getProfile(accessToken)` in `src/features/auth/api/authClient.real.ts` — `GET /users/me` with `Authorization: Bearer <accessToken>`, mapping the response onto `UserProfile` (depends on T003).
-- [X] T008 [US1] Implement `updateProfile(accessToken, input)` in `src/features/auth/api/authClient.real.ts` — `PATCH /users/me` with body `input`; `error.status === 409` → `USERNAME_TAKEN`; otherwise the backend's actual `error.code`/`message` via the existing `toErrorOutcome` helper (depends on T007).
-- [X] T009 [US1] Add `getProfile()`/`updateProfile(input)` to `AuthContext.ts`'s interface and implement both in `AuthProvider.tsx` — both read `session.token` internally (invariant, not defended against `session === null`); `updateProfile`'s success path also calls `setSession({ ...session, displayName: outcome.profile.fullName })` (contracts/auth-client.md; depends on T005, T006, T007, T008).
-- [X] T010 [US1] Create `src/features/auth/pages/ProfileSettingsPage.tsx`: read both `session` and `isRestoring` from `useAuth()` — while `isRestoring` is `true`, render nothing/a loading state (do NOT redirect yet); once `isRestoring` is `false`, redirect to `/login` via `<Navigate to="/login" replace />` only if `session` is still `null` (research.md Decision 6 — this guards against incorrectly redirecting an already-logged-in user during a page reload/direct navigation while the real backend's session restore is still in flight); on mount (once a session exists) call `getProfile()` to prefill the form; client-side validation (`fullName` required, max 150 chars; `username` optional, max 50 chars, blank allowed); on submit call `updateProfile()`; show an inline error under the username field for `USERNAME_TAKEN` without discarding other unsaved field values; show a success confirmation on save (depends on T009).
-- [X] T011 [US1] Add `<Route path="profile" element={<ProfileSettingsPage />} />` in `src/app/App.tsx` (depends on T010).
-- [X] T012 [P] [US1] Add a "Hồ sơ" link to the existing top-bar in `src/app/layout/RootLayout.tsx`, next to the display name and "Đăng xuất" button, pointing to `/profile` (touches a different file than T011, no import dependency on it — can run in parallel; depends only on T010).
-- [X] T013 [P] [US1] Write `src/features/auth/pages/ProfileSettingsPage.test.tsx` covering: prefilled form (Acceptance 1), successful save reflected in top bar (Acceptance 2), duplicate-username inline error preserving other fields (Acceptance 3), length-validation blocking submission (Acceptance 4), blank username allowed (Edge Case), redirect-to-`/login` when logged out, and — by forcing `isRestoring: true` initially (e.g. a test-only `AuthContext` provider stub) — that the page does NOT redirect while a restore is still in flight, only after it settles with no session (depends on T010, T011).
-- [X] T014 [US1] Run `npm run test` and confirm the new test file passes and no existing test regresses (depends on T013).
+- [x] T004 [P] [US1] Add `username: string | null`, `bio: string | null`, `locale: 'en' | 'vi'` fields to `MockAccountRecord` in `src/features/auth/api/authClient.mock.ts`, with sensible defaults (`locale: 'vi'`, `username`/`bio` `null`) for the seeded demo account and any newly registered mock account (data-model.md "Mock implementation notes"; depends on T002).
+- [x] T005 [US1] Implement `getProfile(accessToken)` in `src/features/auth/api/authClient.mock.ts` — resolve the account matching the session persisted under that token (same lookup pattern as `resendVerificationEmail`/`verifyEmail`), mapped to `UserProfile` (depends on T004).
+- [x] T006 [US1] Implement `updateProfile(accessToken, input)` in `src/features/auth/api/authClient.mock.ts` — if `input.username` is non-null and already used by a _different_ mock account, resolve `{ status: 'error', errorCode: 'USERNAME_TAKEN', message }` without mutating; otherwise update the record's four fields in place and resolve `{ status: 'success', profile }` (depends on T004).
+- [x] T007 [P] [US1] Implement `getProfile(accessToken)` in `src/features/auth/api/authClient.real.ts` — `GET /users/me` with `Authorization: Bearer <accessToken>`, mapping the response onto `UserProfile` (depends on T003).
+- [x] T008 [US1] Implement `updateProfile(accessToken, input)` in `src/features/auth/api/authClient.real.ts` — `PATCH /users/me` with body `input`; `error.status === 409` → `USERNAME_TAKEN`; otherwise the backend's actual `error.code`/`message` via the existing `toErrorOutcome` helper (depends on T007).
+- [x] T009 [US1] Add `getProfile()`/`updateProfile(input)` to `AuthContext.ts`'s interface and implement both in `AuthProvider.tsx` — both read `session.token` internally (invariant, not defended against `session === null`); `updateProfile`'s success path also calls `setSession({ ...session, displayName: outcome.profile.fullName })` (contracts/auth-client.md; depends on T005, T006, T007, T008).
+- [x] T010 [US1] Create `src/features/auth/pages/ProfileSettingsPage.tsx`: read both `session` and `isRestoring` from `useAuth()` — while `isRestoring` is `true`, render nothing/a loading state (do NOT redirect yet); once `isRestoring` is `false`, redirect to `/login` via `<Navigate to="/login" replace />` only if `session` is still `null` (research.md Decision 6 — this guards against incorrectly redirecting an already-logged-in user during a page reload/direct navigation while the real backend's session restore is still in flight); on mount (once a session exists) call `getProfile()` to prefill the form; client-side validation (`fullName` required, max 150 chars; `username` optional, max 50 chars, blank allowed); on submit call `updateProfile()`; show an inline error under the username field for `USERNAME_TAKEN` without discarding other unsaved field values; show a success confirmation on save (depends on T009).
+- [x] T011 [US1] Add `<Route path="profile" element={<ProfileSettingsPage />} />` in `src/app/App.tsx` (depends on T010).
+- [x] T012 [P] [US1] Add a "Hồ sơ" link to the existing top-bar in `src/app/layout/RootLayout.tsx`, next to the display name and "Đăng xuất" button, pointing to `/profile` (touches a different file than T011, no import dependency on it — can run in parallel; depends only on T010).
+- [x] T013 [P] [US1] Write `src/features/auth/pages/ProfileSettingsPage.test.tsx` covering: prefilled form (Acceptance 1), successful save reflected in top bar (Acceptance 2), duplicate-username inline error preserving other fields (Acceptance 3), length-validation blocking submission (Acceptance 4), blank username allowed (Edge Case), redirect-to-`/login` when logged out, and — by forcing `isRestoring: true` initially (e.g. a test-only `AuthContext` provider stub) — that the page does NOT redirect while a restore is still in flight, only after it settles with no session (depends on T010, T011).
+- [x] T014 [US1] Run `npm run test` and confirm the new test file passes and no existing test regresses (depends on T013).
 - [ ] T015 [US1] Manually validate quickstart.md Sections 2–6 in a running browser (depends on T014). **Not run**: no browser-automation tool available in this environment — needs a human (or a session with browser tooling) to complete.
 
 **Checkpoint**: User Story 1 fully functional and independently testable.
@@ -79,7 +78,7 @@ the top bar immediately (quickstart.md Sections 2–6).
 
 ## Phase 4: Polish & Cross-Cutting Concerns
 
-- [X] T016 Run `npm run lint`, `npm run test`, and `npm run build` as the final Constitution Principle V gate (depends on T014).
+- [x] T016 Run `npm run lint`, `npm run test`, and `npm run build` as the final Constitution Principle V gate (depends on T014).
 - [ ] T017 If a live backend with a working `GET`/`PATCH /users/me` is reachable, run quickstart.md Section 7 (reload-on-`/profile` race check — validates the H1/`isRestoring` fix against a real async session restore, which the mock can't exercise); otherwise record that this remains blocked by the already-reported `/users/me` 404 gap (see plan.md's "Known live-backend caveat") (depends on T016). **Not run**: no live backend with a working `/users/me` is reachable from this environment.
 
 ---

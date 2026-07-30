@@ -36,7 +36,7 @@ interface AuthClient {
 ## Changed (internals only, signature stable): `AuthClient.signInWithGoogle(options?)`
 
 - **Real implementation, before**: `GET /auth/oauth/google` → `window.location.href =
-  authorization_url` (navigates away, promise never settles) → user comes back via
+authorization_url` (navigates away, promise never settles) → user comes back via
   `GoogleCallbackPage` → `completeGoogleOAuth`.
 - **Real implementation, after**: obtains a Google ID token client-side via
   `googleIdentity.ts` (the same GIS integration the mock already uses), then
@@ -50,7 +50,7 @@ interface AuthClient {
     resolves the existing `GoogleSignInOptions.simulate === 'cancel'`-equivalent error
     outcome the mock already models; the real client surfaces `googleIdentity.ts`'s
     thrown error message as `{ status: 'error', errorCode: 'VALIDATION_ERROR', message
-    }`.
+}`.
   - **Given** the backend rejects the token (`401`) or Google's own verification fails
     (`502`) → resolves `{ status: 'error', errorCode, message }` from the backend's
     `ErrorResponse` (or a fallback message for the undocumented `502` case).
@@ -108,7 +108,7 @@ interface AuthClient {
   rename.
 - `apiFetch<T>` unwraps the `{ data, meta }` envelope (research.md Decision 2) before
   returning `T` to callers — every existing call site's generic type parameter (e.g.
-  `apiFetch<AuthResponseBody>`) continues to describe the *unwrapped* payload shape, no
+  `apiFetch<AuthResponseBody>`) continues to describe the _unwrapped_ payload shape, no
   call site changes its type argument.
 
 ## Mock implementation notes (`authClient.mock.ts`)

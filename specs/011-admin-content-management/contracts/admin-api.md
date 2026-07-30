@@ -12,21 +12,21 @@ non-admin caller who somehow bypasses the frontend route guard.
 
 ## AI Models (User Story 1)
 
-| Method | Path | Request | Response | Used for |
-|---|---|---|---|---|
-| `GET` | `/admin/ai-models` | — | `AiModel[]` (includes inactive) | Listing the catalog for management, incl. inactive entries the public `/ai-models` list hides. |
-| `POST` | `/admin/ai-models` | `AiModelUpsert` | `201`, created `AiModel` | Create (FR-002). |
-| `PATCH` | `/admin/ai-models/{id}` | `AiModelUpsert` | `200`, updated `AiModel` | Edit, including toggling `isActive` (FR-002, FR-003, deactivation path for FR-004). |
+| Method  | Path                    | Request         | Response                        | Used for                                                                                       |
+| ------- | ----------------------- | --------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `GET`   | `/admin/ai-models`      | —               | `AiModel[]` (includes inactive) | Listing the catalog for management, incl. inactive entries the public `/ai-models` list hides. |
+| `POST`  | `/admin/ai-models`      | `AiModelUpsert` | `201`, created `AiModel`        | Create (FR-002).                                                                               |
+| `PATCH` | `/admin/ai-models/{id}` | `AiModelUpsert` | `200`, updated `AiModel`        | Edit, including toggling `isActive` (FR-002, FR-003, deactivation path for FR-004).            |
 
 No `DELETE` endpoint exists — see `research.md` Decision 3. FR-005 (hard delete when
 unreferenced) is not implemented against this contract.
 
 ## Taxonomy — Categories only (User Story 2)
 
-| Method | Path | Request | Response | Used for |
-|---|---|---|---|---|
-| `POST` | `/admin/categories` | `CategoryUpsert` | `201`, created `Category` | Create, optionally with `parentId` for nesting (FR-006). |
-| `PATCH` | `/admin/categories/{id}` | `CategoryUpsert` | `200`, updated `Category` | Edit, including re-parenting (FR-006). |
+| Method  | Path                     | Request          | Response                  | Used for                                                 |
+| ------- | ------------------------ | ---------------- | ------------------------- | -------------------------------------------------------- |
+| `POST`  | `/admin/categories`      | `CategoryUpsert` | `201`, created `Category` | Create, optionally with `parentId` for nesting (FR-006). |
+| `PATCH` | `/admin/categories/{id}` | `CategoryUpsert` | `200`, updated `Category` | Edit, including re-parenting (FR-006).                   |
 
 Category listing (for the tree view) reuses whatever public/read endpoint already
 lists categories (e.g. `GET /categories`, per the existing catalog feature) rather
@@ -41,11 +41,11 @@ broken control.
 
 ## Templates (User Story 3)
 
-| Method | Path | Request | Response | Used for |
-|---|---|---|---|---|
-| `POST` | `/admin/templates` | `TemplateUpsert` | `201`, `TemplateDetail` (`status=draft`) | Create a new draft (FR-009, FR-010). |
-| `PATCH` | `/admin/templates/{id}` | `TemplateUpsert` | `200`, `TemplateDetail` | Edit a draft in place, or edit a published template (creates a new version server-side per FR-014). |
-| `POST` | `/admin/templates/{id}/publish` | — | `200` on success; `422` if a `{{placeholder}}` has no matching declared variable | Publish (FR-011, FR-013). |
+| Method  | Path                            | Request          | Response                                                                         | Used for                                                                                            |
+| ------- | ------------------------------- | ---------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `POST`  | `/admin/templates`              | `TemplateUpsert` | `201`, `TemplateDetail` (`status=draft`)                                         | Create a new draft (FR-009, FR-010).                                                                |
+| `PATCH` | `/admin/templates/{id}`         | `TemplateUpsert` | `200`, `TemplateDetail`                                                          | Edit a draft in place, or edit a published template (creates a new version server-side per FR-014). |
+| `POST`  | `/admin/templates/{id}/publish` | —                | `200` on success; `422` if a `{{placeholder}}` has no matching declared variable | Publish (FR-011, FR-013).                                                                           |
 
 The `422` response on publish is the backend's authoritative placeholder/variable
 validation (FR-011) — the frontend should mirror this check locally for immediate
@@ -54,9 +54,9 @@ pre-check, per Constitution Principle III.
 
 ## Analytics Dashboard (User Story 4)
 
-| Method | Path | Request | Response | Used for |
-|---|---|---|---|---|
-| `GET` | `/admin/dashboard/stats` | Query: `from`, `to` (ISO dates, both optional) | `200`, `DashboardStats` | Metrics + custom date-range filter (FR-015, FR-016). |
+| Method | Path                     | Request                                        | Response                | Used for                                             |
+| ------ | ------------------------ | ---------------------------------------------- | ----------------------- | ---------------------------------------------------- |
+| `GET`  | `/admin/dashboard/stats` | Query: `from`, `to` (ISO dates, both optional) | `200`, `DashboardStats` | Metrics + custom date-range filter (FR-015, FR-016). |
 
 No conversion-funnel field exists in `DashboardStats` — see `research.md` Decision 3
 and `data-model.md`'s Dashboard Metric Snapshot scope note. Caching (FR-017) is a

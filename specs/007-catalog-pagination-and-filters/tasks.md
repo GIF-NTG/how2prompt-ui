@@ -34,7 +34,7 @@ Structure). No new directories.
 
 ## Phase 1: Setup
 
-- [X] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
+- [x] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
       at the repo root and confirm all three currently pass, establishing
       the pre-feature baseline
 
@@ -49,32 +49,32 @@ without this layer in place first (see research.md's contract-fix decision).
 
 **⚠️ CRITICAL**: Complete this phase before starting any user story phase.
 
-- [X] T002 [P] Replace `PageInfo` with `PageMeta` (`{ page, size,
-      totalElements, totalPages, hasNext, hasPrevious }`) in
+- [x] T002 [P] Replace `PageInfo` with `PageMeta` (`{ page, size,
+    totalElements, totalPages, hasNext, hasPrevious }`) in
       `src/shared/types/api.ts`, matching `docs/api/openapi.yaml`'s
       `PageMeta` schema exactly (data-model.md)
-- [X] T003 [P] Add `tags: Tag[]` to `TemplateListItem` and remove the unused
+- [x] T003 [P] Add `tags: Tag[]` to `TemplateListItem` and remove the unused
       `CatalogPageData` type in `src/features/home/types.ts` (data-model.md)
-- [X] T004 Update `getTemplates`'s params (`page?: number`, `size?: number`
+- [x] T004 Update `getTemplates`'s params (`page?: number`, `size?: number`
       replacing `cursor?: string`) and return type (`{ data, meta: PageMeta
-      }` replacing `{ data, page_info, total_count }`) in
+    }` replacing `{ data, page_info, total_count }`) in
       `src/features/home/api/templateClient.types.ts` (depends on T002;
       data-model.md)
-- [X] T005 Update `getTemplates` in
+- [x] T005 Update `getTemplates` in
       `src/features/home/api/templateClient.real.ts` to send `page`/`size`
       query params and read the response as `{ data, meta: PageMeta }` per
       `contracts/templates-list.md` (depends on T004)
-- [X] T006 [P] Add a `MOCK_TAGS: Tag[]` array and a `tags: Tag[]` value (1-2
+- [x] T006 [P] Add a `MOCK_TAGS: Tag[]` array and a `tags: Tag[]` value (1-2
       tags) on each `MOCK_TEMPLATES` entry in
       `src/features/home/api/templateClient.mock.ts` (depends on T003;
       data-model.md)
-- [X] T007 In `src/features/home/api/templateClient.mock.ts`'s
+- [x] T007 In `src/features/home/api/templateClient.mock.ts`'s
       `getTemplates`, implement: independent `category` filtering (by
       `t.categories`) separate from `tags` filtering (by the new `t.tags`);
       sort application (`popular` → `usage_count` desc, `newest` →
       `created_at` desc) before official-first stable partitioning;
       `page`/`size` slicing producing a real `PageMeta` (`hasNext = (page +
-      1) * size < totalElements`); and implement `getTags()` to return
+    1) * size < totalElements`); and implement `getTags()` to return
       `MOCK_TAGS` (optionally filtered by `params?.q`) instead of `[]`
       (depends on T004, T006; research.md's sort/official-first/Category-Tag
       decisions)
@@ -97,21 +97,21 @@ thêm", with official templates always ahead of non-official ones
 
 ### Implementation for User Story 1
 
-- [X] T008 [US1] Add a "Xem thêm" load-more control to
+- [x] T008 [US1] Add a "Xem thêm" load-more control to
       `src/features/home/components/TemplateGrid.tsx`, rendered only when
       the current `meta.hasNext` is true, calling an `onLoadMore` prop
-- [X] T009 [US1] In `src/features/home/pages/CatalogPage.tsx`, add `page`
+- [x] T009 [US1] In `src/features/home/pages/CatalogPage.tsx`, add `page`
       state and an accumulated-templates array; wire `onLoadMore` to fetch
       `page + 1` with the current filters/sort and append results; reset to
       `page = 0` and clear the accumulator whenever `q`, `model`,
       `category`, `tag`, or `sort` changes (depends on T008, and on
       Foundational T002-T007)
-- [X] T010 [US1] Add test cases to
+- [x] T010 [US1] Add test cases to
       `src/features/home/pages/CatalogPage.test.tsx` covering: "Xem thêm"
       appears when `hasNext` is true and disappears once exhausted; loaded
       templates accumulate across clicks without duplicates; official
       templates render ahead of non-official ones
-- [X] T011 [US1] Manually verify pagination and official-first ordering
+- [x] T011 [US1] Manually verify pagination and official-first ordering
       against `quickstart.md` step 2, confirming SC-001 and SC-003
       (verified via Playwright against the real mock client with PAGE_SIZE
       temporarily lowered to 2: "Xem thêm" appears while pages remain and
@@ -136,21 +136,21 @@ active filter preserved (`quickstart.md` step 3).
 
 ### Implementation for User Story 2
 
-- [X] T012 [US2] Add a sort `<select>` (Phổ biến nhất / Mới nhất) to
+- [x] T012 [US2] Add a sort `<select>` (Phổ biến nhất / Mới nhất) to
       `src/features/home/components/FilterBar.tsx`, styled per the existing
       `.model-select` token pattern
-- [X] T013 [US2] Add `sort: 'popular' | 'newest'` URL-synced state
+- [x] T013 [US2] Add `sort: 'popular' | 'newest'` URL-synced state
       (`?sort=`, default `'popular'`) to
       `src/features/home/hooks/useCatalogFilters.ts`
-- [X] T014 [US2] In `src/features/home/pages/CatalogPage.tsx`, wire the
+- [x] T014 [US2] In `src/features/home/pages/CatalogPage.tsx`, wire the
       selected sort value into the `getTemplates` call and trigger the
       pagination reset from T009 whenever `sort` changes (depends on T009,
       T012, T013)
-- [X] T015 [US2] Add test cases to
+- [x] T015 [US2] Add test cases to
       `src/features/home/pages/CatalogPage.test.tsx` covering: selecting
       "Mới nhất" re-orders the grid and resets to page one; an active filter
       survives a sort change
-- [X] T016 [US2] Manually verify sort switching against `quickstart.md` step
+- [x] T016 [US2] Manually verify sort switching against `quickstart.md` step
       3, confirming SC-002
 
 **Checkpoint**: User Stories 1 and 2 both work independently and together.
@@ -171,30 +171,30 @@ the exact same filtered view restores (`quickstart.md` step 4).
 
 ### Implementation for User Story 3
 
-- [X] T017 [US3] Add a `category: string` URL-synced state (`?category=`) to
+- [x] T017 [US3] Add a `category: string` URL-synced state (`?category=`) to
       `src/features/home/hooks/useCatalogFilters.ts` alongside the existing
       `tag` field, and repoint `tag` to represent the Tag filter (not
       Category) going forward (depends on T013, same file)
-- [X] T018 [US3] Generalize
+- [x] T018 [US3] Generalize
       `src/features/home/components/TagFilterChips.tsx` into a reusable
       chip-group component parameterized by `{ items, value, onChange,
-      label }`, preserving its current visual/ARIA behavior
-- [X] T019 [US3] In `src/features/home/components/FilterBar.tsx`, compose
+    label }`, preserving its current visual/ARIA behavior
+- [x] T019 [US3] In `src/features/home/components/FilterBar.tsx`, compose
       two chip-group instances — one fed by `getCategories()` driving
       `category`, one fed by `getTags()` driving `tag` — alongside the
       existing model filter and the sort control from T012 (depends on
       T012, T018)
-- [X] T020 [US3] In `src/features/home/pages/CatalogPage.tsx`, pass
+- [x] T020 [US3] In `src/features/home/pages/CatalogPage.tsx`, pass
       `category: queryKey.category` and `tags: queryKey.tag` to
       `getTemplates` (previously both were incorrectly sent as `tags`), and
       include `category`/`tag` in the pagination-reset dependency list from
       T009/T014 (depends on T014, T017, T019)
-- [X] T021 [US3] Add test cases to
+- [x] T021 [US3] Add test cases to
       `src/features/home/pages/CatalogPage.test.tsx` covering: selecting a
       Category and a Tag together narrows results with AND logic; clearing
       one preserves the other; loading a URL with both params pre-selects
       both filters
-- [X] T022 [US3] Manually verify Category/Tag composition and URL
+- [x] T022 [US3] Manually verify Category/Tag composition and URL
       deep-linking against `quickstart.md` step 4, confirming SC-004 and
       SC-005
 
@@ -205,13 +205,13 @@ combination.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [X] T023 [P] Run `npm run lint` at the repo root and fix any issues
+- [x] T023 [P] Run `npm run lint` at the repo root and fix any issues
       introduced above
-- [X] T024 [P] Run `npm run build` at the repo root and fix any type/build
+- [x] T024 [P] Run `npm run build` at the repo root and fix any type/build
       errors introduced above
-- [X] T025 [P] Run `npm run test -- --run` at the repo root and confirm
+- [x] T025 [P] Run `npm run test -- --run` at the repo root and confirm
       100% pass, including the new cases from T010/T015/T021
-- [X] T026 Run the full `quickstart.md` validation end-to-end (SC-001
+- [x] T026 Run the full `quickstart.md` validation end-to-end (SC-001
       through SC-005) in a running browser against the mock client (depends
       on T011, T016, T022, T023, T024, T025) (final combined pass: applied
       Category filter + sort=newest together in the same session, light and

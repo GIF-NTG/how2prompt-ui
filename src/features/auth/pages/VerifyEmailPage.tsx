@@ -40,7 +40,9 @@ export function VerifyEmailPage() {
   return (
     <AuthLayout>
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">Xác minh email</h2>
+        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+          Xác minh email
+        </h2>
       </div>
 
       {state === 'verifying' && (

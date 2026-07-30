@@ -15,7 +15,7 @@
 - Q: When a user hits the old `/auth/google/callback` URL after migration, what should happen? → A: Delete the callback page, but redirect that path straight to the login screen.
 - Q: `.specify/memory/constitution.md` Principle III still quotes the error envelope's `trace_id` in snake_case, which the new contract renames to `traceId`; how should that stale reference be handled? → A: Fix it as part of this migration (a small constitution PATCH), not a separate follow-up.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Existing account flows keep working (Priority: P1)
 
@@ -66,7 +66,7 @@ core session flows.
 **Independent Test**: Can be fully tested by completing a Google sign-in end to end
 against the v1.1.0 backend and confirming the user reaches the authenticated app
 state without being routed through a callback page that no longer has a backend
-endpoint to call. Independently *testable/demoable* on its own merits — but it shares
+endpoint to call. Independently _testable/demoable_ on its own merits — but it shares
 the same session-assembly step User Story 1 introduces (`AuthResponse` + `GET
 /users/me` → `Session`), so in build order User Story 1 must land first even though
 the two remain separately verifiable.
@@ -137,7 +137,7 @@ message as before.
   arrives? Out of scope for this migration — this only changes what the app takes
   as confirmation of acceptance, not delivery guarantees, which are unchanged.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -190,7 +190,7 @@ message as before.
   email, now made as a single token-in-body request instead of a token-in-URL
   request, with an "accepted for delivery" outcome distinct from a "sent" outcome.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

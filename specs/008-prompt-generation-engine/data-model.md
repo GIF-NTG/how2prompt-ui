@@ -20,8 +20,17 @@ export interface TemplateVariable {
   placeholder: I18nString
   helpText: I18nString
   inputType:
-    | 'text' | 'textarea' | 'select' | 'multiselect' | 'number'
-    | 'boolean' | 'date' | 'file' | 'url' | 'color' | 'slider'
+    | 'text'
+    | 'textarea'
+    | 'select'
+    | 'multiselect'
+    | 'number'
+    | 'boolean'
+    | 'date'
+    | 'file'
+    | 'url'
+    | 'color'
+    | 'slider'
   isRequired: boolean
   defaultValue: string | null
   options: TemplateVariableOption[]
@@ -51,6 +60,7 @@ export interface TemplateVariant {
 ## `TemplateVersion` extension — `src/features/template-detail/types.ts`
 
 **Before**:
+
 ```ts
 export interface TemplateVersion {
   version: number
@@ -63,6 +73,7 @@ export interface TemplateVersion {
 
 **After** (two fields added, camelCase per research.md's decision; nothing
 else in this interface is touched by this feature):
+
 ```ts
 export interface TemplateVersion {
   version: number
@@ -124,6 +135,7 @@ export interface UseGenerateFormResult {
 ```
 
 **Validation rules** (drives `errors`/`isValid`, per FR-002/FR-007):
+
 - `isRequired: true` and value is empty/undefined → required error.
 - `validation.min`/`max` on `number`/`slider` → range error.
 - `validation.regex` on `text`/`textarea` → pattern error.
@@ -131,6 +143,7 @@ export interface UseGenerateFormResult {
   passes its own rule.
 
 **State transitions**:
+
 - Changing `selectedModelCode` recomputes `activeVariables` (variant's
   variables if a `TemplateVariant` exists for that model, else the
   template's own `variables`) and preserves any `inputValues` entries whose

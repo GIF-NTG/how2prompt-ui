@@ -112,82 +112,84 @@ export function HistoryList({
             transition={{ duration: 0.25, delay: Math.min(index, 14) * 0.03 }}
             className="flex flex-col gap-1.5 rounded-card border border-[#DBDFD3] bg-white p-4 dark:border-[#2C3130] dark:bg-[#1C2024]"
           >
-          <div className="flex items-start justify-between gap-3">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                aria-label={`Chọn mục ${getI18nValue(item.templateTitle)}`}
-                checked={selected.has(item.id)}
-                onChange={() => toggleSelected(item.id)}
-              />
-              <h3 className="m-0 text-[0.95rem] font-bold tracking-[-0.005em]">
-                {getI18nValue(item.templateTitle)}
-              </h3>
-            </label>
-            <span className="font-mono text-[0.72rem] text-[#8B8F86] dark:text-[#6D726A]">
-              {formatDate(item.createdAt)}
-            </span>
-          </div>
-          <span
-            className={`w-fit rounded-full border bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] dark:bg-[#23282C] ${getTagColorClasses(item.aiModelCode)}`}
-          >
-            {getModelLabel(item.aiModelCode)}
-          </span>
-          <p className="m-0 line-clamp-2 text-[0.85rem] leading-[1.55] text-[#5B5F58] dark:text-[#A2A79C]">
-            {item.promptSnippet}
-          </p>
-
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            {item.templateId ? (
-              <button
-                type="button"
-                title="Tạo lại"
-                aria-label={`Tạo lại ${getI18nValue(item.templateTitle)}`}
-                onClick={() => navigate(`/templates/${item.templateId}?reload=${item.id}`)}
-                className={ICON_BUTTON_CLASSES}
-              >
-                <RotateCcw size={15} aria-hidden="true" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                title="Template đã bị xoá — xem prompt đã lưu"
-                aria-label={`Xem prompt đã lưu (template của ${getI18nValue(item.templateTitle)} đã bị xoá)`}
-                onClick={() => void handleViewUnavailable(item.id)}
-                className={ICON_BUTTON_CLASSES}
-              >
-                <Eye size={15} aria-hidden="true" />
-              </button>
-            )}
-
-            <button
-              type="button"
-              title="Xoá"
-              aria-label={`Xoá mục ${getI18nValue(item.templateTitle)}`}
-              onClick={() => setPendingDelete([item.id])}
-              className={`${ICON_BUTTON_CLASSES} hover:border-[#C23A2E] hover:text-[#C23A2E] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]`}
+            <div className="flex items-start justify-between gap-3">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  aria-label={`Chọn mục ${getI18nValue(item.templateTitle)}`}
+                  checked={selected.has(item.id)}
+                  onChange={() => toggleSelected(item.id)}
+                />
+                <h3 className="m-0 text-[0.95rem] font-bold tracking-[-0.005em]">
+                  {getI18nValue(item.templateTitle)}
+                </h3>
+              </label>
+              <span className="font-mono text-[0.72rem] text-[#8B8F86] dark:text-[#6D726A]">
+                {formatDate(item.createdAt)}
+              </span>
+            </div>
+            <span
+              className={`w-fit rounded-full border bg-[#EAEDE6] px-2 py-[0.14rem] font-mono text-[0.68rem] dark:bg-[#23282C] ${getTagColorClasses(item.aiModelCode)}`}
             >
-              <Trash2 size={15} aria-hidden="true" />
-            </button>
-          </div>
+              {getModelLabel(item.aiModelCode)}
+            </span>
+            <p className="m-0 line-clamp-2 text-[0.85rem] leading-[1.55] text-[#5B5F58] dark:text-[#A2A79C]">
+              {item.promptSnippet}
+            </p>
 
-          <AnimatePresence>
-            {expandedId === item.id && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              {item.templateId ? (
+                <button
+                  type="button"
+                  title="Tạo lại"
+                  aria-label={`Tạo lại ${getI18nValue(item.templateTitle)}`}
+                  onClick={() => navigate(`/templates/${item.templateId}?reload=${item.id}`)}
+                  className={ICON_BUTTON_CLASSES}
+                >
+                  <RotateCcw size={15} aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  title="Template đã bị xoá — xem prompt đã lưu"
+                  aria-label={`Xem prompt đã lưu (template của ${getI18nValue(item.templateTitle)} đã bị xoá)`}
+                  onClick={() => void handleViewUnavailable(item.id)}
+                  className={ICON_BUTTON_CLASSES}
+                >
+                  <Eye size={15} aria-hidden="true" />
+                </button>
+              )}
+
+              <button
+                type="button"
+                title="Xoá"
+                aria-label={`Xoá mục ${getI18nValue(item.templateTitle)}`}
+                onClick={() => setPendingDelete([item.id])}
+                className={`${ICON_BUTTON_CLASSES} hover:border-[#C23A2E] hover:text-[#C23A2E] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]`}
               >
-                {expandLoading ? (
-                  <p className="m-0 text-[0.8rem] text-[#8B8F86] dark:text-[#6D726A]">Đang tải...</p>
-                ) : (
-                  expandedPrompt && <ReloadUnavailableBanner finalPrompt={expandedPrompt} />
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <Trash2 size={15} aria-hidden="true" />
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {expandedId === item.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  {expandLoading ? (
+                    <p className="m-0 text-[0.8rem] text-[#8B8F86] dark:text-[#6D726A]">
+                      Đang tải...
+                    </p>
+                  ) : (
+                    expandedPrompt && <ReloadUnavailableBanner finalPrompt={expandedPrompt} />
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.article>
         ))}
       </AnimatePresence>

@@ -30,13 +30,17 @@ describe('VerifyEmailPage', () => {
   it('shows a clear expired-link message for an expired/already-used token (Scenario 5)', async () => {
     renderVerifyEmailPage('expired-token')
 
-    expect(await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Quay lại trang chính' })).toBeInTheDocument()
   })
 
   it('re-validates the token on every load, so reopening an already-used link via back navigation still shows the expired-link message (Edge Case)', async () => {
     renderVerifyEmailPage('expired-token')
 
-    expect(await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+    ).toBeInTheDocument()
   })
 })

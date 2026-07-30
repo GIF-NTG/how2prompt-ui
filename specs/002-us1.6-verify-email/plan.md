@@ -55,15 +55,15 @@ mock/real implementations), 2 new `AuthContext` actions, 1 new field on `Session
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Applicability | Status |
-|---|---|---|
-| I. Dynamic Form Rendering Integrity | N/A — not Epic 3; no `template_variables`-driven form involved. The banner and verify page are plain auth-surface UI, not a new pill/form pattern for template generation. | PASS |
-| II. Spec-Before-Code | This plan follows an approved, clarified spec (`spec.md`, clarified via `/speckit-clarify`). | PASS |
-| III. Contract & Error Consistency | New calls target `/auth/verify-email` and `/auth/resend-verification` from `docs/api/openapi.yaml`; error envelope parsed via the existing `httpClient.ts`/`ApiError` (status-based branching reused from `001`'s Decision 1, no changes needed); `resendVerificationEmail` correctly carries `Authorization: Bearer` per the endpoint's inherited global `bearerAuth` requirement (research.md Decision 2). | PASS |
-| IV. Security Non-Negotiables | No password hashing, HTTPS enforcement, or secret storage happens client-side; only calls already-deployed backend endpoints. No secrets introduced. | PASS |
-| V. Verified Before Done | `oxlint`, `tsc -b && vite build`, and `vitest` must pass; the verify page and banner (incl. resend + countdown) must be exercised in a running browser before this feature is reported done. | PASS (gate noted for implementation) |
+| Principle                           | Applicability                                                                                                                                                                                                                                                                                                                                                                                                | Status                               |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| I. Dynamic Form Rendering Integrity | N/A — not Epic 3; no `template_variables`-driven form involved. The banner and verify page are plain auth-surface UI, not a new pill/form pattern for template generation.                                                                                                                                                                                                                                   | PASS                                 |
+| II. Spec-Before-Code                | This plan follows an approved, clarified spec (`spec.md`, clarified via `/speckit-clarify`).                                                                                                                                                                                                                                                                                                                 | PASS                                 |
+| III. Contract & Error Consistency   | New calls target `/auth/verify-email` and `/auth/resend-verification` from `docs/api/openapi.yaml`; error envelope parsed via the existing `httpClient.ts`/`ApiError` (status-based branching reused from `001`'s Decision 1, no changes needed); `resendVerificationEmail` correctly carries `Authorization: Bearer` per the endpoint's inherited global `bearerAuth` requirement (research.md Decision 2). | PASS                                 |
+| IV. Security Non-Negotiables        | No password hashing, HTTPS enforcement, or secret storage happens client-side; only calls already-deployed backend endpoints. No secrets introduced.                                                                                                                                                                                                                                                         | PASS                                 |
+| V. Verified Before Done             | `oxlint`, `tsc -b && vite build`, and `vitest` must pass; the verify page and banner (incl. resend + countdown) must be exercised in a running browser before this feature is reported done.                                                                                                                                                                                                                 | PASS (gate noted for implementation) |
 
 No violations — Complexity Tracking section is empty and omitted.
 
@@ -127,4 +127,4 @@ same reason it already reads `useAuth()`.
 
 ## Complexity Tracking
 
-*No Constitution Check violations — this section intentionally left empty.*
+_No Constitution Check violations — this section intentionally left empty._

@@ -69,7 +69,7 @@ Decisions 1–2 are inferred from the OpenAPI doc, not yet observed on the wire)
 
 1. Open the browser's Network tab, perform a login.
 2. Confirm the raw response body is `{ "data": { "accessToken": ..., "expiresIn": ... },
-   "meta": ... }` (or, if the backend does *not* actually wrap it, revisit research.md
+"meta": ... }` (or, if the backend does _not_ actually wrap it, revisit research.md
    Decision 2 and adjust `httpClient.ts`'s unwrapping accordingly — this is the one
    assumption in this migration not independently verifiable from the spec doc alone).
 3. Confirm a subsequent `GET /users/me` call fires automatically and its response

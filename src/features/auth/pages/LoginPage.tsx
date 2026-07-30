@@ -55,7 +55,9 @@ export function LoginPage() {
     try {
       const outcome = await authClient.resendVerificationEmail(trimmedEmail)
       if (outcome.status === 'success') {
-        setResendStatusMessage('Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.')
+        setResendStatusMessage(
+          'Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.',
+        )
       } else {
         setResendErrorMessage(outcome.message)
       }
@@ -210,7 +212,10 @@ export function LoginPage() {
       </form>
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        <Link to="/forgot-password" className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]">
+        <Link
+          to="/forgot-password"
+          className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
+        >
           Quên mật khẩu?
         </Link>
       </p>

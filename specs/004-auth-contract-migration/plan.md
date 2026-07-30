@@ -73,7 +73,7 @@ unimplemented and out of scope, per spec Assumptions.
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **I. Dynamic Form Rendering Integrity (NON-NEGOTIABLE)** — N/A. This migration
   touches no template-generation/dynamic-form screen; it is confined to
@@ -158,4 +158,4 @@ existing co-located `*.test.tsx` convention.
 
 ## Complexity Tracking
 
-*No Constitution Check violations — this section intentionally left empty.*
+_No Constitution Check violations — this section intentionally left empty._

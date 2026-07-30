@@ -111,7 +111,7 @@ blocked, focused, no call made.
       `src/features/auth/api/authClient.mock.ts`: known-valid demo credentials →
       `{ status: 'success', session, accountCreated: false }`; anything else →
       `{ status: 'error', errorCode: 'INVALID_CREDENTIALS', message: 'Email hoặc mật
-    khẩu không chính xác' }`, per contracts/auth-client.md. Depends on T003.
+  khẩu không chính xác' }`, per contracts/auth-client.md. Depends on T003.
       _Demo credentials: `demo@how2prompt.dev` / `demo1234` (documented here since no
       other artifact pinned a concrete value — see spec-analysis finding C1)._
 - [x] T011 [US1] Build `LoginPage` using `InlineBlankForm` and
@@ -162,7 +162,7 @@ an email the mock already knows → inline "Email này đã được đăng ký,
       `{ status: 'success', session: null, accountCreated: true }` and records the
       mock account; already-used email →
       `{ status: 'error', errorCode: 'EMAIL_ALREADY_EXISTS', message: 'Email
-    này đã được đăng ký, hãy đăng nhập' }`, per contracts/auth-client.md. Depends
+  này đã được đăng ký, hãy đăng nhập' }`, per contracts/auth-client.md. Depends
       on T003.
       _Implementation note: added a shared in-memory `mockAccounts` Map (seeded with
       the T010 demo account) and revised `login()` to check it, so an account
@@ -418,7 +418,7 @@ UI-facing changes (SC-004 extended to the real client, not just the mock-swap ca
       `ApiError`, and `isApiConfigured()` gate. Add `VITE_API_BASE_URL` to
       `vite-env.d.ts` and `.env.example`.
 - [x] T031 Extend `AuthClient` (`authClient.types.ts`): `restoreSession()` → `Promise<
-    Session | null>` (async, both implementations); add
+  Session | null>` (async, both implementations); add
       `completeGoogleOAuth(code, state): Promise<AuthOutcome>`. Update
       `authClient.mock.ts` to match (trivial async wrap; `completeGoogleOAuth` stub
       returns an error — unreachable in mock mode).

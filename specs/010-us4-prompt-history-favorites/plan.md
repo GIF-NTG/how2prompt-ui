@@ -59,7 +59,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **I. Dynamic Form Rendering Integrity** — N/A to this feature's own new
   screens (history list, favorites list are not template-input forms), but
-  the "Re-run" pre-fill path feeds into the *existing* dynamic form
+  the "Re-run" pre-fill path feeds into the _existing_ dynamic form
   (`useGenerateForm`/`DynamicForm`) without altering how it renders
   per-`template_variables` controls — it only adds an optional initial-value
   override. PASS.

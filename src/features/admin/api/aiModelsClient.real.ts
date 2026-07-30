@@ -15,7 +15,11 @@ export function createRealAiModelsClient(): AiModelsClient {
       return apiFetch<AiModel>('/admin/ai-models', { method: 'POST', accessToken, body: input })
     },
     async update(accessToken: string, id: string, input: AiModelUpsert) {
-      return apiFetch<AiModel>(`/admin/ai-models/${id}`, { method: 'PATCH', accessToken, body: input })
+      return apiFetch<AiModel>(`/admin/ai-models/${id}`, {
+        method: 'PATCH',
+        accessToken,
+        body: input,
+      })
     },
   }
 }

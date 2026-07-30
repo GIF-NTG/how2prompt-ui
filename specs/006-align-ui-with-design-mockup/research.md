@@ -12,21 +12,21 @@ Extracted from the mockup's `:root` / `:root[data-theme='dark']` blocks
 (`docs/design/how2prompt-workspace-mockup.html` lines 8–47). These are the only
 colors any restyled element may resolve to.
 
-| Token | Light | Dark |
-|---|---|---|
-| `--bg` | `#f3f5f0` | `#14171a` |
-| `--surface` | `#ffffff` | `#1c2024` |
-| `--surface-2` | `#eaede6` | `#23282c` |
-| `--ink` | `#1b1d1b` | `#eceee8` |
-| `--ink-soft` | `#5b5f58` | `#a2a79c` |
-| `--ink-faint` | `#8b8f86` | `#6d726a` |
-| `--accent` | `#3652e0` | `#8493ff` |
-| `--accent-ink` | `#ffffff` | `#14171a` |
+| Token           | Light     | Dark      |
+| --------------- | --------- | --------- |
+| `--bg`          | `#f3f5f0` | `#14171a` |
+| `--surface`     | `#ffffff` | `#1c2024` |
+| `--surface-2`   | `#eaede6` | `#23282c` |
+| `--ink`         | `#1b1d1b` | `#eceee8` |
+| `--ink-soft`    | `#5b5f58` | `#a2a79c` |
+| `--ink-faint`   | `#8b8f86` | `#6d726a` |
+| `--accent`      | `#3652e0` | `#8493ff` |
+| `--accent-ink`  | `#ffffff` | `#14171a` |
 | `--accent-soft` | `#e7eafc` | `#262c4a` |
-| `--line` | `#dbdfd3` | `#2c3130` |
-| `--danger` | `#c23a2e` | `#ff7a6b` |
+| `--line`        | `#dbdfd3` | `#2c3130` |
+| `--danger`      | `#c23a2e` | `#ff7a6b` |
 | `--danger-soft` | `#fbe7e4` | `#3a2224` |
-| `--focus` | `#3652e0` | `#8493ff` |
+| `--focus`       | `#3652e0` | `#8493ff` |
 
 `--font-sans`: system sans stack. `--font-mono`: system mono stack, reserved for
 placeholder/template-token content, badges, meta labels, and link-style buttons

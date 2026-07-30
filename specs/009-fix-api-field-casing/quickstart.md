@@ -56,6 +56,7 @@ resolved to `undefined`).
 ## 3. Field-by-field sanity check
 
 Cross-reference `data-model.md`'s mapping tables against:
+
 - `src/features/home/types.ts`, `src/features/template-detail/types.ts`
 - `templateClient.real.ts`, `templateDetailClient.real.ts`
 - `templateClient.mock.ts`, `templateDetailClient.mock.ts`

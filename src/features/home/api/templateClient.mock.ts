@@ -233,29 +233,20 @@ export function createMockTemplateClient(): TemplateClient {
       } else {
         filtered.sort((a, b) => b.usageCount - a.usageCount)
       }
-      filtered = [
-        ...filtered.filter((t) => t.isOfficial),
-        ...filtered.filter((t) => !t.isOfficial),
-      ]
+      filtered = [...filtered.filter((t) => t.isOfficial), ...filtered.filter((t) => !t.isOfficial)]
 
       filtered = filtered.map((t) => ({ ...t, isFavorited: favorites.has(t.id) }))
 
-      const page = params.page ?? 0
+      const offset = params.cursor ? Number(params.cursor) : 0
       const size = params.size ?? 20
-      const totalElements = filtered.length
-      const totalPages = Math.max(1, Math.ceil(totalElements / size))
-      const pageData = filtered.slice(page * size, page * size + size)
+      const items = filtered.slice(offset, offset + size)
+      const nextOffset = offset + size
+      const hasMore = nextOffset < filtered.length
 
       return {
-        data: pageData,
-        meta: {
-          page,
-          size,
-          totalElements,
-          totalPages,
-          hasNext: (page + 1) * size < totalElements,
-          hasPrevious: page > 0,
-        },
+        items,
+        nextCursor: hasMore ? String(nextOffset) : null,
+        hasMore,
       }
     },
 

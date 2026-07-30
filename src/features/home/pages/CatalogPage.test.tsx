@@ -63,8 +63,9 @@ describe('CatalogPage', () => {
 
   it('renders the page heading and eyebrow', async () => {
     mockedClient.getTemplates.mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     renderPage()
@@ -76,8 +77,9 @@ describe('CatalogPage', () => {
 
   it('shows "Xem thêm" while more pages remain, and hides it once exhausted', async () => {
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 1, totalElements: 2, totalPages: 2, hasNext: true, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: 'cursor-1',
+      hasMore: true,
     })
 
     const user = userEvent.setup()
@@ -86,8 +88,9 @@ describe('CatalogPage', () => {
     const loadMoreButton = await screen.findByRole('button', { name: 'Xem thêm' })
 
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
-      meta: { page: 1, size: 1, totalElements: 2, totalPages: 2, hasNext: false, hasPrevious: true },
+      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     await user.click(loadMoreButton)
@@ -99,8 +102,9 @@ describe('CatalogPage', () => {
 
   it('accumulates templates across "load more" clicks without losing the first page', async () => {
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 1, totalElements: 2, totalPages: 2, hasNext: true, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: 'cursor-1',
+      hasMore: true,
     })
 
     const user = userEvent.setup()
@@ -109,8 +113,9 @@ describe('CatalogPage', () => {
     expect(await screen.findByText('First')).toBeInTheDocument()
 
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
-      meta: { page: 1, size: 1, totalElements: 2, totalPages: 2, hasNext: false, hasPrevious: true },
+      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     await user.click(screen.getByRole('button', { name: 'Xem thêm' }))
@@ -124,7 +129,7 @@ describe('CatalogPage', () => {
     // official templates first; this guards against the catalog UI silently
     // re-ordering or dropping that order on render.
     mockedClient.getTemplates.mockResolvedValue({
-      data: [
+      items: [
         makeTemplate({
           id: 't1',
           slug: 't1',
@@ -138,7 +143,8 @@ describe('CatalogPage', () => {
           isOfficial: false,
         }),
       ],
-      meta: { page: 0, size: 20, totalElements: 2, totalPages: 1, hasNext: false, hasPrevious: false },
+      nextCursor: null,
+      hasMore: false,
     })
 
     renderPage()
@@ -150,10 +156,11 @@ describe('CatalogPage', () => {
     ).toBeTruthy()
   })
 
-  it('re-fetches sorted by newest and resets to page one when the sort control changes', async () => {
+  it('re-fetches sorted by newest and resets pagination when the sort control changes', async () => {
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     const user = userEvent.setup()
@@ -161,15 +168,17 @@ describe('CatalogPage', () => {
     await screen.findByText('First')
 
     mockedClient.getTemplates.mockResolvedValueOnce({
-      data: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest', vi: 'Newest' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest', vi: 'Newest' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     await user.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp theo' }), 'newest')
 
     await screen.findByText('Newest')
     const lastCall = mockedClient.getTemplates.mock.calls.at(-1)?.[0]
-    expect(lastCall).toMatchObject({ sort: 'newest', page: 0 })
+    expect(lastCall).toMatchObject({ sort: 'newest' })
+    expect(lastCall?.cursor).toBeUndefined()
   })
 
   it('keeps an active model filter applied after changing the sort order', async () => {
@@ -188,8 +197,9 @@ describe('CatalogPage', () => {
       },
     ])
     mockedClient.getTemplates.mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     const user = userEvent.setup()
@@ -215,14 +225,25 @@ describe('CatalogPage', () => {
 
   it('composes Category and Tag filters with AND logic, updating the URL independently', async () => {
     mockedClient.getCategories.mockResolvedValue([
-      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parentId: null, sortOrder: 1, templateCount: 1 },
+      {
+        id: 'c1',
+        slug: 'debugging',
+        name: { en: 'Debugging', vi: 'Debugging' },
+        description: { en: '', vi: '' },
+        icon: null,
+        color: null,
+        parentId: null,
+        sortOrder: 1,
+        templateCount: 1,
+      },
     ])
     mockedClient.getTags.mockResolvedValue([
       { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     const user = userEvent.setup()
@@ -259,14 +280,25 @@ describe('CatalogPage', () => {
 
   it('pre-selects Category and Tag filters when the catalog is opened with both in the URL', async () => {
     mockedClient.getCategories.mockResolvedValue([
-      { id: 'c1', slug: 'debugging', name: { en: 'Debugging', vi: 'Debugging' }, description: { en: '', vi: '' }, icon: null, color: null, parentId: null, sortOrder: 1, templateCount: 1 },
+      {
+        id: 'c1',
+        slug: 'debugging',
+        name: { en: 'Debugging', vi: 'Debugging' },
+        description: { en: '', vi: '' },
+        icon: null,
+        color: null,
+        parentId: null,
+        sortOrder: 1,
+        templateCount: 1,
+      },
     ])
     mockedClient.getTags.mockResolvedValue([
       { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: { page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false, hasPrevious: false },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
 
     renderPage(['/?category=debugging&tag=chi-tiet'])

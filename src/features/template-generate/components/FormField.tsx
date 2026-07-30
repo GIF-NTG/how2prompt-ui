@@ -8,10 +8,7 @@ interface FormFieldProps {
   onChange: (value: string | number | boolean | string[]) => void
 }
 
-function getLocalizedText(
-  obj: { en: string; vi?: string },
-  locale: 'en' | 'vi',
-): string {
+function getLocalizedText(obj: { en: string; vi?: string }, locale: 'en' | 'vi'): string {
   return (locale === 'vi' && obj.vi) || obj.en
 }
 
@@ -88,9 +85,7 @@ function SelectInput({
       onChange={(e) => onChange(e.target.value)}
       className={`${inputBase} cursor-pointer border-[#DBDFD3] dark:border-[#2C3130]`}
     >
-      <option value="">
-        {getLocalizedText(variable.placeholder, locale) || '-- Chọn --'}
-      </option>
+      <option value="">{getLocalizedText(variable.placeholder, locale) || '-- Chọn --'}</option>
       {variable.options.map((opt) => (
         <option key={opt.value} value={opt.value}>
           {getLocalizedText(opt.label, locale)}
@@ -186,10 +181,7 @@ function BooleanInput({
   const label = getLocalizedText(variable.label, locale)
 
   return (
-    <label
-      htmlFor={variable.varKey}
-      className="flex cursor-pointer items-center gap-3"
-    >
+    <label htmlFor={variable.varKey} className="flex cursor-pointer items-center gap-3">
       <button
         id={variable.varKey}
         type="button"
@@ -197,9 +189,7 @@ function BooleanInput({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-[1.35rem] w-[2.4rem] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
-          checked
-            ? 'bg-[#3652E0] dark:bg-[#8493FF]'
-            : 'bg-[#DBDFD3] dark:bg-[#2C3130]'
+          checked ? 'bg-[#3652E0] dark:bg-[#8493FF]' : 'bg-[#DBDFD3] dark:bg-[#2C3130]'
         }`}
       >
         <span
@@ -208,9 +198,7 @@ function BooleanInput({
           }`}
         />
       </button>
-      <span className="text-[0.86rem] text-[#1B1D1B] dark:text-[#ECEEE8]">
-        {label}
-      </span>
+      <span className="text-[0.86rem] text-[#1B1D1B] dark:text-[#ECEEE8]">{label}</span>
     </label>
   )
 }
@@ -272,13 +260,7 @@ function FallbackInput({
   )
 }
 
-export function FormField({
-  variable,
-  value,
-  error,
-  locale = 'vi',
-  onChange,
-}: FormFieldProps) {
+export function FormField({ variable, value, error, locale = 'vi', onChange }: FormFieldProps) {
   const label = getLocalizedText(variable.label, locale)
   const helpText = getLocalizedText(variable.helpText, locale)
 
@@ -287,7 +269,9 @@ export function FormField({
       case 'text':
         return <TextInput variable={variable} value={value} locale={locale} onChange={onChange} />
       case 'textarea':
-        return <TextareaInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        return (
+          <TextareaInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        )
       case 'select':
         return <SelectInput variable={variable} value={value} locale={locale} onChange={onChange} />
       case 'multiselect':
@@ -300,7 +284,13 @@ export function FormField({
           />
         )
       case 'number':
-        return <NumberInput variable={variable} value={value} onChange={onChange as (v: number) => void} />
+        return (
+          <NumberInput
+            variable={variable}
+            value={value}
+            onChange={onChange as (v: number) => void}
+          />
+        )
       case 'boolean':
         return (
           <BooleanInput
@@ -311,9 +301,17 @@ export function FormField({
           />
         )
       case 'slider':
-        return <SliderInput variable={variable} value={value} onChange={onChange as (v: number) => void} />
+        return (
+          <SliderInput
+            variable={variable}
+            value={value}
+            onChange={onChange as (v: number) => void}
+          />
+        )
       default:
-        return <FallbackInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        return (
+          <FallbackInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        )
     }
   }
 
@@ -330,9 +328,7 @@ export function FormField({
       </label>
       {renderControl()}
       {helpText && (
-        <p className="m-0 text-[0.75rem] text-[#8A8F8A] dark:text-[#6B706B]">
-          {helpText}
-        </p>
+        <p className="m-0 text-[0.75rem] text-[#8A8F8A] dark:text-[#6B706B]">{helpText}</p>
       )}
       {error && (
         <p className="m-0 animate-[fade-slide-up_150ms_ease] text-[0.75rem] text-[#C23A2A] dark:text-[#FF7A6B]">

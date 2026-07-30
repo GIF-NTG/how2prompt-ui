@@ -48,7 +48,8 @@ function renderProfilePageWithContext(value: AuthContextValue) {
 
 async function loginAsDemo() {
   const outcome = await authClient.login(DEMO_EMAIL, DEMO_PASSWORD)
-  if (outcome.status !== 'success' || !outcome.session) throw new Error('expected demo login to succeed')
+  if (outcome.status !== 'success' || !outcome.session)
+    throw new Error('expected demo login to succeed')
   return outcome.session
 }
 
@@ -81,8 +82,14 @@ describe('ProfileSettingsPage', () => {
       signOut: async () => {},
       resendVerificationEmail: async () => ({ status: 'success' }),
       verifyEmail: async () => ({ status: 'success' }),
-      getProfile: async () => ({ status: 'success', profile: { fullName: '', username: null, bio: null, locale: 'vi' } }),
-      updateProfile: async () => ({ status: 'success', profile: { fullName: '', username: null, bio: null, locale: 'vi' } }),
+      getProfile: async () => ({
+        status: 'success',
+        profile: { fullName: '', username: null, bio: null, locale: 'vi' },
+      }),
+      updateProfile: async () => ({
+        status: 'success',
+        profile: { fullName: '', username: null, bio: null, locale: 'vi' },
+      }),
     })
     expect(screen.queryByText('Trang đăng nhập')).not.toBeInTheDocument()
   })
@@ -150,7 +157,9 @@ describe('ProfileSettingsPage', () => {
     await user.type(usernameInput, 'taken-name')
     await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
 
-    await waitFor(() => expect(screen.getByText('Tên người dùng này đã được sử dụng.')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('Tên người dùng này đã được sử dụng.')).toBeInTheDocument(),
+    )
     // The full name change from this same edit must still be shown, not reset.
     expect(screen.getByDisplayValue('Tên Chưa Lưu')).toBeInTheDocument()
   })

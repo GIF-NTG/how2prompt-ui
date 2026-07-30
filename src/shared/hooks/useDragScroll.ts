@@ -8,7 +8,13 @@ const DRAG_THRESHOLD_PX = 4
  *  dragged over so a drag doesn't also trigger navigation. */
 export function useDragScroll<T extends HTMLElement>() {
   const ref = useRef<T>(null)
-  const drag = useRef({ isDown: false, startX: 0, startScrollLeft: 0, dragged: false, pointerId: 0 })
+  const drag = useRef({
+    isDown: false,
+    startX: 0,
+    startScrollLeft: 0,
+    dragged: false,
+    pointerId: 0,
+  })
 
   const onPointerDown = useCallback((e: ReactPointerEvent<T>) => {
     const el = ref.current

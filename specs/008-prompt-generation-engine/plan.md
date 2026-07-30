@@ -90,7 +90,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
   treating it as literal text — no execution/interpretation on the FE side.
   Pass.
 - **V. Verified Before Done** — Applies directly: `oxlint`, `tsc -b && vite
-  build`, and `vitest` must all pass, and the dynamic form's field types,
+build`, and `vitest` must all pass, and the dynamic form's field types,
   validation, live preview, and generate/copy toast must be exercised in a
   running browser (per this Constitution's own rationale for this
   principle) before this feature is reported done.

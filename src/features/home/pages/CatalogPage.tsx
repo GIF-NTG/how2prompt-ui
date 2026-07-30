@@ -22,9 +22,8 @@ export function CatalogPage() {
   const [featured, setFeatured] = useState<TemplateListItem[]>([])
   const [trending, setTrending] = useState<TemplateListItem[]>([])
   const [templates, setTemplates] = useState<TemplateListItem[]>([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [page, setPage] = useState(0)
-  const [hasNext, setHasNext] = useState(false)
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -47,12 +46,14 @@ export function CatalogPage() {
     setError(null)
 
     try {
-      const [featuredData, trendingData, allData] = await Promise.all([
-        templateClient.getFeatured(),
-        templateClient.getTrending(),
+      // Featured/trending are supplementary rails — fetch them independently so a
+      // failure there (e.g. a not-yet-implemented backend endpoint) doesn't block
+      // the main template list, which is the page's core functionality.
+      const [featuredResult, trendingResult, allData] = await Promise.all([
+        templateClient.getFeatured().catch(() => []),
+        templateClient.getTrending().catch(() => []),
         templateClient.getTemplates({
           sort: queryKey.sort,
-          page: 0,
           size: PAGE_SIZE,
           q: queryKey.q || undefined,
           model: queryKey.model || undefined,
@@ -62,12 +63,11 @@ export function CatalogPage() {
       ])
 
       if (generation !== requestGeneration.current) return
-      setFeatured(featuredData)
-      setTrending(trendingData)
-      setTemplates(allData.data)
-      setTotalCount(allData.meta.totalElements)
-      setPage(0)
-      setHasNext(allData.meta.hasNext)
+      setFeatured(featuredResult)
+      setTrending(trendingResult)
+      setTemplates(allData.items)
+      setCursor(allData.nextCursor)
+      setHasMore(allData.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải thư viện mẫu, vui lòng thử lại sau.')
@@ -82,12 +82,12 @@ export function CatalogPage() {
 
   const handleLoadMore = useCallback(async () => {
     const generation = requestGeneration.current
-    const nextPage = page + 1
+    if (!cursor) return
     setIsLoadingMore(true)
     try {
       const allData = await templateClient.getTemplates({
         sort: queryKey.sort,
-        page: nextPage,
+        cursor,
         size: PAGE_SIZE,
         q: queryKey.q || undefined,
         model: queryKey.model || undefined,
@@ -95,16 +95,16 @@ export function CatalogPage() {
         tags: queryKey.tag || undefined,
       })
       if (generation !== requestGeneration.current) return
-      setTemplates((prev) => [...prev, ...allData.data])
-      setPage(nextPage)
-      setHasNext(allData.meta.hasNext)
+      setTemplates((prev) => [...prev, ...allData.items])
+      setCursor(allData.nextCursor)
+      setHasMore(allData.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải thêm mẫu, vui lòng thử lại sau.')
     } finally {
       if (generation === requestGeneration.current) setIsLoadingMore(false)
     }
-  }, [page, queryKey])
+  }, [cursor, queryKey])
 
   const handleTemplateClick = useCallback(
     (slug: string) => {
@@ -179,10 +179,9 @@ export function CatalogPage() {
 
           <TemplateGrid
             templates={templates}
-            totalCount={totalCount}
             isSignedIn={!!session}
             onTemplateClick={handleTemplateClick}
-            hasNext={hasNext}
+            hasNext={hasMore}
             isLoadingMore={isLoadingMore}
             onLoadMore={() => void handleLoadMore()}
           />

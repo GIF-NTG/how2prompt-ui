@@ -16,7 +16,11 @@ export function createRealTaxonomyClient(): TaxonomyClient {
       return apiFetch<Category>('/admin/categories', { method: 'POST', accessToken, body: input })
     },
     async updateCategory(accessToken: string, id: string, input: CategoryUpsert) {
-      return apiFetch<Category>(`/admin/categories/${id}`, { method: 'PATCH', accessToken, body: input })
+      return apiFetch<Category>(`/admin/categories/${id}`, {
+        method: 'PATCH',
+        accessToken,
+        body: input,
+      })
     },
     async listTags() {
       return apiFetch<Tag[]>('/tags')

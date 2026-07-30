@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Implement Epic 4 — Prompt History & Favorites for registered Users, per how2prompt-agentic/docs/user-stories/us-4.1-*.md through us-4.5-*.md and agent/BA.md §2 (US-4.1–4.5): auto-save each successful /templates/{id}/generate call to history (no separate log call), a /history page filterable by template/model/date, reload a history item back onto the generate form (pre-fills input_values, creates a new record on re-generate rather than overwriting), favorite/unfavorite templates (toggleFavorite API already exists in templateClient/templateDetailClient — reuse it, don't reintroduce), and soft-delete history records."
+**Input**: User description: "Implement Epic 4 — Prompt History & Favorites for registered Users, per how2prompt-agentic/docs/user-stories/us-4.1-_.md through us-4.5-_.md and agent/BA.md §2 (US-4.1–4.5): auto-save each successful /templates/{id}/generate call to history (no separate log call), a /history page filterable by template/model/date, reload a history item back onto the generate form (pre-fills input_values, creates a new record on re-generate rather than overwriting), favorite/unfavorite templates (toggleFavorite API already exists in templateClient/templateDetailClient — reuse it, don't reintroduce), and soft-delete history records."
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -273,7 +273,7 @@ refresh.
 
 - The backend already implements history persistence (auto-save on
   generation), the `GET /generated-prompts` list and `GET
-  /generated-prompts/{id}` detail endpoints, `DELETE /generated-prompts/{id}`
+/generated-prompts/{id}` detail endpoints, `DELETE /generated-prompts/{id}`
   soft-delete, and the favorite/unfavorite endpoints, per
   `docs/api/openapi.yaml` — this feature is frontend-only: consuming those
   contracts, not defining new backend behavior.

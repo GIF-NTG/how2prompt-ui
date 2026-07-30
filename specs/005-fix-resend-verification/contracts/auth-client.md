@@ -36,7 +36,7 @@ interface AuthContextValue {
   rate-limited → resolves `{ status: 'success' }`.
 - **Given** the account was already sent a verification email within the backend's
   rate-limit window → resolves `{ status: 'error', errorCode: 'RATE_LIMITED', message
-  }` (derived from `ApiError.status === 429`) — shown as a friendly "please wait"
+}` (derived from `ApiError.status === 429`) — shown as a friendly "please wait"
   message, never the raw error text, matching the existing banner's pattern.
 - **Real implementation** (CHANGED): `POST /auth/resend-verification` with
   `body: { email }`, no `Authorization` header (`docs/api/openapi.yaml` now marks this
@@ -82,10 +82,10 @@ interface AuthContextValue {
             properties:
               email: { type: string, format: email }
     responses:
-      "202":
+      '202':
         description: Yêu cầu đã được chấp nhận, email sẽ được gửi bất đồng bộ (Accepted)
-      "429":
-        $ref: "#/components/responses/RateLimited"
+      '429':
+        $ref: '#/components/responses/RateLimited'
 ```
 
 ### `POST /auth/login` — `401` response gains `EMAIL_NOT_VERIFIED`

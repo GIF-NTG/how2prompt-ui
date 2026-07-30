@@ -9,15 +9,15 @@ the contract.
 
 `GET /templates?q=&category=&tags=&model=&sort=&page=&size=`
 
-| Param | Type | Notes |
-|---|---|---|
-| `q` | string | Full-text search, EN & VI — unchanged by this feature |
-| `category` | string | Comma-separated category slugs — **now actually sent**, was previously always omitted by the Catalog page |
-| `tags` | string | Comma-separated tag slugs — **now actually sent as tags**, was previously receiving a category slug by mistake |
-| `model` | string | AI-model code — unchanged |
-| `sort` | `popular \| newest \| most_used \| official` | default `popular`; this feature exposes `popular`/`newest` as UI choices |
-| `page` | integer | 0-based, default 0 — **new**, replaces the fictional `cursor` param this repo's client previously declared |
-| `size` | integer | default 20, max 50 — **new**, replaces `limit` |
+| Param      | Type                                         | Notes                                                                                                          |
+| ---------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `q`        | string                                       | Full-text search, EN & VI — unchanged by this feature                                                          |
+| `category` | string                                       | Comma-separated category slugs — **now actually sent**, was previously always omitted by the Catalog page      |
+| `tags`     | string                                       | Comma-separated tag slugs — **now actually sent as tags**, was previously receiving a category slug by mistake |
+| `model`    | string                                       | AI-model code — unchanged                                                                                      |
+| `sort`     | `popular \| newest \| most_used \| official` | default `popular`; this feature exposes `popular`/`newest` as UI choices                                       |
+| `page`     | integer                                      | 0-based, default 0 — **new**, replaces the fictional `cursor` param this repo's client previously declared     |
+| `size`     | integer                                      | default 20, max 50 — **new**, replaces `limit`                                                                 |
 
 Guests and members both call this endpoint unauthenticated (`security: []`
 per openapi.yaml) — no change to auth requirements.
@@ -26,7 +26,7 @@ per openapi.yaml) — no change to auth requirements.
 
 ```json
 {
-  "data": [ /* TemplateListItem[], each now including a `tags` array */ ],
+  "data": [/* TemplateListItem[], each now including a `tags` array */],
   "meta": {
     "page": 0,
     "size": 20,
@@ -46,7 +46,7 @@ nested `data`/`meta` layers by coincidence of naming (the outer transport
 envelope, and this endpoint's own paginated-list shape), both using the same
 field names. `templateClient.real.ts` must call
 `apiFetch<{ data: TemplateListItem[]; meta: PageMeta }>('/templates?...')`
-and use the *returned* object's `.data`/`.meta` directly (that return value
+and use the _returned_ object's `.data`/`.meta` directly (that return value
 is already past the outer-envelope unwrap).
 
 ## Client-side (this feature)

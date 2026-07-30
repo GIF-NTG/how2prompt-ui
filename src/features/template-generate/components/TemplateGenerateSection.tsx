@@ -10,7 +10,6 @@ import { DynamicForm } from './DynamicForm'
 import { ExtraInstructionsField } from './ExtraInstructionsField'
 import { PreviewPanel } from './PreviewPanel'
 import { GenerateActions } from './GenerateActions'
-import { OutputBox } from './OutputBox'
 
 interface TemplateGenerateSectionProps {
   template: TemplateDetail
@@ -22,9 +21,14 @@ function getActivePromptBody(template: TemplateDetail, modelCode: string): strin
   return variant?.promptBodyOverride ?? template.currentVersion.promptBody
 }
 
-export function TemplateGenerateSection({ template, reloadOverride }: TemplateGenerateSectionProps) {
-  const { state, setModelCode, setValue, setExtraInstructions, activeVariables } =
-    useGenerateForm(template, reloadOverride)
+export function TemplateGenerateSection({
+  template,
+  reloadOverride,
+}: TemplateGenerateSectionProps) {
+  const { state, setModelCode, setValue, setExtraInstructions, activeVariables } = useGenerateForm(
+    template,
+    reloadOverride,
+  )
   const activePromptBody = getActivePromptBody(template, state.selectedModelCode)
 
   const { session } = useAuth()
@@ -39,7 +43,38 @@ export function TemplateGenerateSection({ template, reloadOverride }: TemplateGe
     })
     setGenerateResult(result)
     return result
-  }, [generateClient, template.id, state.selectedModelCode, state.inputValues, state.extraInstructions])
+  }, [
+    generateClient,
+    template.id,
+    state.selectedModelCode,
+    state.inputValues,
+    state.extraInstructions,
+  ])
+
+  // Editing the form after a generate invalidates that result — the BE-rendered
+  // text no longer matches what's on screen, so drop back to the live client
+  // preview until the visitor generates again.
+  const handleModelChange = useCallback(
+    (code: string) => {
+      setGenerateResult(null)
+      setModelCode(code)
+    },
+    [setModelCode],
+  )
+  const handleValueChange = useCallback(
+    (varKey: string, value: string | number | boolean | string[]) => {
+      setGenerateResult(null)
+      setValue(varKey, value)
+    },
+    [setValue],
+  )
+  const handleExtraInstructionsChange = useCallback(
+    (text: string) => {
+      setGenerateResult(null)
+      setExtraInstructions(text)
+    },
+    [setExtraInstructions],
+  )
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
@@ -52,7 +87,7 @@ export function TemplateGenerateSection({ template, reloadOverride }: TemplateGe
         <ModelVariantSelect
           supportedModels={template.supportedModels}
           selectedModelCode={state.selectedModelCode}
-          onChange={setModelCode}
+          onChange={handleModelChange}
         />
 
         {/* Developer A: DynamicForm slot */}
@@ -60,24 +95,21 @@ export function TemplateGenerateSection({ template, reloadOverride }: TemplateGe
           variables={activeVariables}
           inputValues={state.inputValues}
           errors={state.errors}
-          onValueChange={setValue}
+          onValueChange={handleValueChange}
         />
 
         {/* Developer A: ExtraInstructionsField slot */}
         <ExtraInstructionsField
           value={state.extraInstructions}
-          onChange={setExtraInstructions}
+          onChange={handleExtraInstructionsChange}
         />
 
-        {/* Developer B: GenerateActions + OutputBox slot */}
-        <div data-slot="generate-output" className="flex flex-col gap-4">
-          <GenerateActions
-            isValid={state.isValid}
-            finalPrompt={generateResult?.finalPrompt ?? null}
-            onGenerate={handleGenerate}
-          />
-          <OutputBox result={generateResult} />
-        </div>
+        {/* Developer B: GenerateActions slot */}
+        <GenerateActions
+          isValid={state.isValid}
+          finalPrompt={generateResult?.finalPrompt ?? null}
+          onGenerate={handleGenerate}
+        />
       </section>
 
       {/* Developer B: PreviewPanel slot */}
@@ -86,6 +118,7 @@ export function TemplateGenerateSection({ template, reloadOverride }: TemplateGe
           promptBody={activePromptBody}
           inputValues={state.inputValues}
           extraInstructions={state.extraInstructions}
+          result={generateResult}
         />
       </aside>
     </div>

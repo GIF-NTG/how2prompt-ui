@@ -3,7 +3,11 @@ import { TemplateVariableEditor } from './TemplateVariableEditor'
 import { findMissingPlaceholders } from '@/features/admin/utils/validatePlaceholders'
 import { aiModelsClient } from '@/features/admin/api/aiModelsClient'
 import { taxonomyClient } from '@/features/admin/api/taxonomyClient'
-import type { Template, TemplateUpsert, TemplateVariable } from '@/features/admin/api/templatesAdminClient.types'
+import type {
+  Template,
+  TemplateUpsert,
+  TemplateVariable,
+} from '@/features/admin/api/templatesAdminClient.types'
 import type { AiModel } from '@/features/admin/api/aiModelsClient.types'
 import type { Category, Tag } from '@/features/admin/api/taxonomyClient.types'
 
@@ -104,7 +108,12 @@ export function TemplateEditorForm({
           <label className={labelBase} htmlFor="tpl-title-vi">
             Tiêu đề (VI)
           </label>
-          <input id="tpl-title-vi" className={inputBase} value={titleVi} onChange={(e) => setTitleVi(e.target.value)} />
+          <input
+            id="tpl-title-vi"
+            className={inputBase}
+            value={titleVi}
+            onChange={(e) => setTitleVi(e.target.value)}
+          />
         </div>
       </div>
 
@@ -191,7 +200,8 @@ export function TemplateEditorForm({
 
       <div className="flex flex-col gap-[0.35rem]">
         <label className={labelBase} htmlFor="tpl-prompt-body">
-          Nội dung prompt ({'{{placeholder}}'})<span className="ml-0.5 text-[#C23A2A] dark:text-[#FF7A6B]">*</span>
+          Nội dung prompt ({'{{placeholder}}'})
+          <span className="ml-0.5 text-[#C23A2A] dark:text-[#FF7A6B]">*</span>
         </label>
         <textarea
           id="tpl-prompt-body"

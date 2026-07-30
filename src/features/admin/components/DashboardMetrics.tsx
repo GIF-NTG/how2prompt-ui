@@ -10,7 +10,9 @@ function StatTile({ label, value }: { label: string; value: number }) {
       <span className="text-[0.76rem] uppercase tracking-[0.04em] text-[#8A8F8A] dark:text-[#6B706B]">
         {label}
       </span>
-      <span className="text-[1.4rem] font-semibold tracking-[-0.01em]">{value.toLocaleString('vi-VN')}</span>
+      <span className="text-[1.4rem] font-semibold tracking-[-0.01em]">
+        {value.toLocaleString('vi-VN')}
+      </span>
     </div>
   )
 }
@@ -68,7 +70,11 @@ export function DashboardMetrics({ stats }: DashboardMetricsProps) {
         />
         <TopList
           title="Model được dùng nhiều nhất"
-          items={stats.topModels.map((m) => ({ key: m.modelCode, label: m.modelCode, usageCount: m.usageCount }))}
+          items={stats.topModels.map((m) => ({
+            key: m.modelCode,
+            label: m.modelCode,
+            usageCount: m.usageCount,
+          }))}
         />
       </div>
     </div>

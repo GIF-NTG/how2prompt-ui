@@ -16,7 +16,9 @@ describe('findMissingPlaceholders', () => {
   })
 
   it('returns the missing placeholder key when no variable is declared for it', () => {
-    const result = findMissingPlaceholders('Hello {{name}}, welcome to {{place}}', [makeVariable('name')])
+    const result = findMissingPlaceholders('Hello {{name}}, welcome to {{place}}', [
+      makeVariable('name'),
+    ])
     expect(result).toEqual(['place'])
   })
 
@@ -32,7 +34,10 @@ describe('findMissingPlaceholders', () => {
 
 describe('findUnusedVariables', () => {
   it('flags a declared variable with no matching placeholder', () => {
-    const result = findUnusedVariables('Hello {{name}}', [makeVariable('name'), makeVariable('unused')])
+    const result = findUnusedVariables('Hello {{name}}', [
+      makeVariable('name'),
+      makeVariable('unused'),
+    ])
     expect(result).toEqual(['unused'])
   })
 

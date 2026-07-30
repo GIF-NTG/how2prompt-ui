@@ -35,7 +35,7 @@ Single frontend project — all paths are relative to the repo root, under `src/
 **Purpose**: Scaffold the new feature folder; no new dependencies needed (plan.md
 Technical Context — no new runtime dependency required for this feature).
 
-- [X] T001 Create the `src/features/admin/` feature-folder skeleton
+- [x] T001 Create the `src/features/admin/` feature-folder skeleton
       (`components/`, `pages/`, `api/`, `utils/` subdirectories) per
       `plan.md`'s Project Structure section
 
@@ -47,25 +47,25 @@ Technical Context — no new runtime dependency required for this feature).
 admin screens depends on. **No user story work can begin until this phase is
 complete.**
 
-- [X] T002 Extend `Session` in `src/features/auth/api/types.ts` with `isAdmin: boolean`
+- [x] T002 Extend `Session` in `src/features/auth/api/types.ts` with `isAdmin: boolean`
       (research.md Decision 1)
-- [X] T003 [P] Add `isAdmin` to the mock account fixture and seed a second admin demo
+- [x] T003 [P] Add `isAdmin` to the mock account fixture and seed a second admin demo
       account in `src/features/auth/api/authClient.mock.ts`; include `isAdmin` in
       every constructed `Session` (login, restoreSession, etc.)
-- [X] T004 [P] Add `isAdmin` to `BackendUser`/session construction in
+- [x] T004 [P] Add `isAdmin` to `BackendUser`/session construction in
       `src/features/auth/api/authClient.real.ts` (`toSession()` now reads
       `profile.isAdmin`)
-- [X] T005 Create the `RequireAdmin` route guard in
+- [x] T005 Create the `RequireAdmin` route guard in
       `src/features/admin/components/RequireAdmin.tsx`: render nothing while
       `isRestoring`, redirect to `/login` if `session` is null, redirect to `/` if
       `!session.isAdmin`, otherwise render `<Outlet />` (research.md Decision 2)
       (depends on T002)
-- [X] T006 [P] Add colocated test
+- [x] T006 [P] Add colocated test
       `src/features/admin/components/RequireAdmin.test.tsx` covering: unauthenticated
       → redirected to `/login`; authenticated non-admin → redirected to `/`;
       authenticated admin → renders `Outlet`; `isRestoring` → renders nothing
       (depends on T005)
-- [X] T007 Add a conditional "Admin" nav entry to `src/shared/components/TopBar.tsx`,
+- [x] T007 Add a conditional "Admin" nav entry to `src/shared/components/TopBar.tsx`,
       visible only when `session?.isAdmin` is true (depends on T002)
 
 **Checkpoint**: `isAdmin` flows through session restore/login, `RequireAdmin` blocks
@@ -85,31 +85,31 @@ deactivate it — per `quickstart.md` §2.
 
 ### Implementation for User Story 1
 
-- [X] T008 [P] [US1] Define `AiModel`/`AiModelUpsert` types in
+- [x] T008 [P] [US1] Define `AiModel`/`AiModelUpsert` types in
       `src/features/admin/api/aiModelsClient.types.ts` per `data-model.md`
-- [X] T009 [P] [US1] Implement the mock AI models client (in-memory fixtures incl. one
+- [x] T009 [P] [US1] Implement the mock AI models client (in-memory fixtures incl. one
       active, one inactive, one template-referenced model; `list`/`create`/`update`)
       in `src/features/admin/api/aiModelsClient.mock.ts`
-- [X] T010 [US1] Implement the real AI models client against
+- [x] T010 [US1] Implement the real AI models client against
       `GET/POST /admin/ai-models` and `PATCH /admin/ai-models/{id}`
       (`contracts/admin-api.md`) in `src/features/admin/api/aiModelsClient.real.ts`
       (depends on T008)
-- [X] T011 [US1] Create the mock/real client switch in
+- [x] T011 [US1] Create the mock/real client switch in
       `src/features/admin/api/aiModelsClient.ts`, following the existing
       `isApiConfigured()` pattern (depends on T009, T010)
-- [X] T012 [P] [US1] Build `AiModelForm` (create/edit: code, name, provider,
+- [x] T012 [P] [US1] Build `AiModelForm` (create/edit: code, name, provider,
       modelType, capabilities, iconUrl, isActive, sortOrder) in
       `src/features/admin/components/AiModelForm.tsx`
-- [X] T013 [P] [US1] Build `AiModelTable` (list incl. inactive, edit + deactivate
+- [x] T013 [P] [US1] Build `AiModelTable` (list incl. inactive, edit + deactivate
       actions — **no delete action**, per research.md Decision 3) in
       `src/features/admin/components/AiModelTable.tsx`
-- [X] T014 [US1] Build `AiModelsPage` wiring `AiModelTable` + `AiModelForm` to the
+- [x] T014 [US1] Build `AiModelsPage` wiring `AiModelTable` + `AiModelForm` to the
       client in `src/features/admin/pages/AiModelsPage.tsx` (depends on T011, T012,
       T013)
-- [X] T015 [P] [US1] Add colocated test
+- [x] T015 [P] [US1] Add colocated test
       `src/features/admin/pages/AiModelsPage.test.tsx` covering create, edit,
       deactivate, and confirming no delete control is rendered (depends on T014)
-- [X] T016 [US1] Add the `/admin/ai-models` route, nested under `RootLayout` and
+- [x] T016 [US1] Add the `/admin/ai-models` route, nested under `RootLayout` and
       wrapped in `RequireAdmin`, in `src/app/App.tsx` (depends on T005, T014)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
@@ -127,31 +127,31 @@ tag-management area shows the "not yet available" note — per `quickstart.md` �
 
 ### Implementation for User Story 2
 
-- [X] T017 [P] [US2] Define `Category`/`CategoryUpsert`/read-only `Tag` types in
+- [x] T017 [P] [US2] Define `Category`/`CategoryUpsert`/read-only `Tag` types in
       `src/features/admin/api/taxonomyClient.types.ts` per `data-model.md`
-- [X] T018 [P] [US2] Implement the mock taxonomy client (nested category fixtures,
+- [x] T018 [P] [US2] Implement the mock taxonomy client (nested category fixtures,
       read-only tag list; `list`/`create`/`update` for categories) in
       `src/features/admin/api/taxonomyClient.mock.ts`
-- [X] T019 [US2] Implement the real taxonomy client against
+- [x] T019 [US2] Implement the real taxonomy client against
       `POST/PATCH /admin/categories` plus the existing public category-read endpoint
       (`contracts/admin-api.md`) in `src/features/admin/api/taxonomyClient.real.ts`
       (depends on T017)
-- [X] T020 [US2] Create the mock/real client switch in
+- [x] T020 [US2] Create the mock/real client switch in
       `src/features/admin/api/taxonomyClient.ts` (depends on T018, T019)
-- [X] T021 [P] [US2] Build `CategoryTree` (collapsible nested tree view; create/edit
+- [x] T021 [P] [US2] Build `CategoryTree` (collapsible nested tree view; create/edit
       incl. re-parenting; client-side guard against selecting a category as its own
       ancestor, per `data-model.md`) in
       `src/features/admin/components/CategoryTree.tsx`
-- [X] T022 [P] [US2] Build `TagManagementNotice` (static "tag management is not yet
+- [x] T022 [P] [US2] Build `TagManagementNotice` (static "tag management is not yet
       available" notice, still displaying existing tags read-only) in
       `src/features/admin/components/TagManagementNotice.tsx`
-- [X] T023 [US2] Build `TaxonomyPage` wiring `CategoryTree` + `TagManagementNotice` to
+- [x] T023 [US2] Build `TaxonomyPage` wiring `CategoryTree` + `TagManagementNotice` to
       the client in `src/features/admin/pages/TaxonomyPage.tsx` (depends on T020,
       T021, T022)
-- [X] T024 [P] [US2] Add colocated test
+- [x] T024 [P] [US2] Add colocated test
       `src/features/admin/pages/TaxonomyPage.test.tsx` covering nested category
       create/edit/re-parent and the tag notice's presence (depends on T023)
-- [X] T025 [US2] Add the `/admin/taxonomy` route, nested under `RootLayout` and
+- [x] T025 [US2] Add the `/admin/taxonomy` route, nested under `RootLayout` and
       wrapped in `RequireAdmin`, in `src/app/App.tsx` (depends on T005, T023)
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
@@ -172,43 +172,43 @@ per `quickstart.md` §4.
 
 ### Implementation for User Story 3
 
-- [X] T026 [P] [US3] Define `Template`/`TemplateUpsert`/`TemplateVariable`/publish
+- [x] T026 [P] [US3] Define `Template`/`TemplateUpsert`/`TemplateVariable`/publish
       response types in
       `src/features/admin/api/templatesAdminClient.types.ts` per `data-model.md`
-- [X] T027 [P] [US3] Implement the mock templates-admin client (draft/publish state
+- [x] T027 [P] [US3] Implement the mock templates-admin client (draft/publish state
       machine; editing a published template produces a new version rather than
       overwriting) in `src/features/admin/api/templatesAdminClient.mock.ts`
-- [X] T028 [US3] Implement the real templates-admin client against
+- [x] T028 [US3] Implement the real templates-admin client against
       `POST/PATCH /admin/templates` and `POST /admin/templates/{id}/publish`
       (`contracts/admin-api.md`) in
       `src/features/admin/api/templatesAdminClient.real.ts` (depends on T026)
-- [X] T029 [US3] Create the mock/real client switch in
+- [x] T029 [US3] Create the mock/real client switch in
       `src/features/admin/api/templatesAdminClient.ts` (depends on T027, T028)
-- [X] T030 [P] [US3] Build a placeholder-vs-declared-variable validation util
+- [x] T030 [P] [US3] Build a placeholder-vs-declared-variable validation util
       (mirrors the placeholder-parsing logic already in
       `src/features/template-generate/utils/renderTemplate.ts`) in
       `src/features/admin/utils/validatePlaceholders.ts`
-- [X] T031 [P] [US3] Add colocated test
+- [x] T031 [P] [US3] Add colocated test
       `src/features/admin/utils/validatePlaceholders.test.ts` covering matched,
       missing, and extra-unused-variable cases (depends on T030)
-- [X] T032 [P] [US3] Build `TemplateVariableEditor` (declare/reorder variables:
+- [x] T032 [P] [US3] Build `TemplateVariableEditor` (declare/reorder variables:
       varKey, label i18n, inputType, options, validation, sortOrder) in
       `src/features/admin/components/TemplateVariableEditor.tsx`
-- [X] T033 [US3] Build `TemplateEditorForm` (title/description i18n, cover image,
+- [x] T033 [US3] Build `TemplateEditorForm` (title/description i18n, cover image,
       category/tag/model selectors, prompt body editor, variables via
       `TemplateVariableEditor`, optional per-model variants, guide, example output,
       Save Draft / Publish actions running the T030 validation before calling
       publish) in `src/features/admin/components/TemplateEditorForm.tsx` (depends on
       T030, T032)
-- [X] T034 [US3] Build `TemplatesAdminPage` (list drafts/published templates +
+- [x] T034 [US3] Build `TemplatesAdminPage` (list drafts/published templates +
       create/edit flow) wiring `TemplateEditorForm` to the client in
       `src/features/admin/pages/TemplatesAdminPage.tsx` (depends on T029, T033)
-- [X] T035 [P] [US3] Add colocated test
+- [x] T035 [P] [US3] Add colocated test
       `src/features/admin/pages/TemplatesAdminPage.test.tsx` covering: publish
       blocked on a missing variable with the offending placeholder surfaced, publish
       succeeds once declared, and editing a published template produces a new
       version (depends on T034)
-- [X] T036 [US3] Add the `/admin/templates` route, nested under `RootLayout` and
+- [x] T036 [US3] Add the `/admin/templates` route, nested under `RootLayout` and
       wrapped in `RequireAdmin`, in `src/app/App.tsx` (depends on T005, T034)
 
 **Checkpoint**: User Stories 1, 2, and 3 (all P1) are complete and independently
@@ -228,30 +228,30 @@ render, then apply a custom date range and confirm the figures update — per
 
 ### Implementation for User Story 4
 
-- [X] T037 [P] [US4] Define the `DashboardMetricSnapshot` type (per `data-model.md`,
+- [x] T037 [P] [US4] Define the `DashboardMetricSnapshot` type (per `data-model.md`,
       omitting the conversion funnel) in
       `src/features/admin/api/dashboardClient.types.ts`
-- [X] T038 [P] [US4] Implement the mock dashboard client with non-empty fixture
+- [x] T038 [P] [US4] Implement the mock dashboard client with non-empty fixture
       metrics that vary with the requested date range in
       `src/features/admin/api/dashboardClient.mock.ts`
-- [X] T039 [US4] Implement the real dashboard client against
+- [x] T039 [US4] Implement the real dashboard client against
       `GET /admin/dashboard/stats?from&to` (`contracts/admin-api.md`) in
       `src/features/admin/api/dashboardClient.real.ts` (depends on T037)
-- [X] T040 [US4] Create the mock/real client switch in
+- [x] T040 [US4] Create the mock/real client switch in
       `src/features/admin/api/dashboardClient.ts` (depends on T038, T039)
-- [X] T041 [P] [US4] Build `DateRangeFilter` in
+- [x] T041 [P] [US4] Build `DateRangeFilter` in
       `src/features/admin/components/DateRangeFilter.tsx`
-- [X] T042 [P] [US4] Build `DashboardMetrics` (DAU/WAU/MAU tiles, prompts-over-time,
+- [x] T042 [P] [US4] Build `DashboardMetrics` (DAU/WAU/MAU tiles, prompts-over-time,
       top-templates and top-models tables/bars using existing Tailwind utilities —
       no new charting dependency per plan.md) in
       `src/features/admin/components/DashboardMetrics.tsx`
-- [X] T043 [US4] Build `DashboardPage` wiring `DateRangeFilter` + `DashboardMetrics`
+- [x] T043 [US4] Build `DashboardPage` wiring `DateRangeFilter` + `DashboardMetrics`
       to the client in `src/features/admin/pages/DashboardPage.tsx` (depends on T040,
       T041, T042)
-- [X] T044 [P] [US4] Add colocated test
+- [x] T044 [P] [US4] Add colocated test
       `src/features/admin/pages/DashboardPage.test.tsx` covering metrics rendering
       and date-range-triggered updates (depends on T043)
-- [X] T045 [US4] Add the `/admin/dashboard` route, nested under `RootLayout` and
+- [x] T045 [US4] Add the `/admin/dashboard` route, nested under `RootLayout` and
       wrapped in `RequireAdmin`, in `src/app/App.tsx` (depends on T005, T043)
 
 **Checkpoint**: All four user stories are independently functional.
@@ -263,13 +263,13 @@ render, then apply a custom date range and confirm the figures update — per
 **Purpose**: Repo-wide verification gates (Constitution Principle V) and closing out
 the documented scope gaps.
 
-- [X] T046 [P] Run `npm run lint` and fix any findings across `src/features/admin/**`
-- [X] T047 [P] Run `npx tsc -b && npm run build` and fix any type errors across
+- [x] T046 [P] Run `npm run lint` and fix any findings across `src/features/admin/**`
+- [x] T047 [P] Run `npx tsc -b && npm run build` and fix any type errors across
       `src/features/admin/**` and the touched `auth`/`shared` files
-- [X] T048 Run `npm run test` (full suite) and fix any failures
+- [x] T048 Run `npm run test` (full suite) and fix any failures
 - [ ] T049 Execute the full `quickstart.md` manual browser walkthrough (all 5
       sections) against the running dev server and confirm every "Expected" outcome
-- [X] T050 [P] Update CLAUDE.md's Epic 5 bullet to note the frontend is now
+- [x] T050 [P] Update CLAUDE.md's Epic 5 bullet to note the frontend is now
       implemented, cross-referencing the three documented backend-gap follow-ups
       (AI-model/category delete, admin tag endpoints, conversion funnel — research.md
       Decision 3) for future tracking

@@ -65,7 +65,12 @@ describe('TaxonomyPage', () => {
   it('renders a nested category tree', async () => {
     mockedClient.listCategories.mockResolvedValue([
       makeCategory(),
-      makeCategory({ id: 'c2', slug: 'social-media', name: { en: 'Social Media' }, parentId: 'c1' }),
+      makeCategory({
+        id: 'c2',
+        slug: 'social-media',
+        name: { en: 'Social Media' },
+        parentId: 'c1',
+      }),
     ])
     mockedClient.listTags.mockResolvedValue([])
     renderPage()
@@ -87,7 +92,9 @@ describe('TaxonomyPage', () => {
     await user.type(screen.getByPlaceholderText('Tên (EN)'), 'Marketing')
     await user.click(screen.getByRole('button', { name: /^tạo$/i }))
 
-    await waitFor(() => expect(mockedClient.createCategory).toHaveBeenCalledWith('admin-token', expect.any(Object)))
+    await waitFor(() =>
+      expect(mockedClient.createCategory).toHaveBeenCalledWith('admin-token', expect.any(Object)),
+    )
   })
 
   it('re-parents an existing category on edit', async () => {
@@ -105,12 +112,20 @@ describe('TaxonomyPage', () => {
     await user.click(editButtons[1])
     await user.click(screen.getByRole('button', { name: /^lưu$/i }))
 
-    await waitFor(() => expect(mockedClient.updateCategory).toHaveBeenCalledWith('admin-token', 'c2', expect.any(Object)))
+    await waitFor(() =>
+      expect(mockedClient.updateCategory).toHaveBeenCalledWith(
+        'admin-token',
+        'c2',
+        expect.any(Object),
+      ),
+    )
   })
 
   it('shows the tag management limitation notice', async () => {
     mockedClient.listCategories.mockResolvedValue([])
-    mockedClient.listTags.mockResolvedValue([{ id: 't1', slug: 'email', name: 'email', usageCount: 4 }])
+    mockedClient.listTags.mockResolvedValue([
+      { id: 't1', slug: 'email', name: 'email', usageCount: 4 },
+    ])
     renderPage()
 
     await waitFor(() => expect(screen.getByText(/chưa khả dụng/i)).toBeInTheDocument())

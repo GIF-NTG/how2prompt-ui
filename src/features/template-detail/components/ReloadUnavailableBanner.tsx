@@ -40,7 +40,11 @@ export function ReloadUnavailableBanner({ finalPrompt }: ReloadUnavailableBanner
         onClick={() => void handleCopy()}
         className="inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-[#E2E5DC] px-4 py-2 text-sm font-medium text-[#14171A] transition-transform duration-150 active:scale-[0.97] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:text-[#F3F5F0]"
       >
-        {justCopied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
+        {justCopied ? (
+          <Check size={15} aria-hidden="true" />
+        ) : (
+          <Copy size={15} aria-hidden="true" />
+        )}
         Sao chép
       </button>
     </section>

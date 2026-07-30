@@ -125,7 +125,11 @@ export function AiModelsPage() {
       {loading ? (
         <p className="m-0 text-[0.86rem] text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
       ) : (
-        <AiModelTable models={models} onEdit={handleEdit} onToggleActive={(m) => void handleToggleActive(m)} />
+        <AiModelTable
+          models={models}
+          onEdit={handleEdit}
+          onToggleActive={(m) => void handleToggleActive(m)}
+        />
       )}
     </main>
   )

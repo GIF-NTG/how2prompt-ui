@@ -245,7 +245,10 @@ export function createMockAuthClient(): AuthClient {
     async resendVerificationEmail(email) {
       const account = mockAccounts.get(email)
       const now = Date.now()
-      if (account?.lastVerificationSentAt && now - account.lastVerificationSentAt < MOCK_RESEND_COOLDOWN_MS) {
+      if (
+        account?.lastVerificationSentAt &&
+        now - account.lastVerificationSentAt < MOCK_RESEND_COOLDOWN_MS
+      ) {
         return {
           status: 'error',
           errorCode: 'RATE_LIMITED',
@@ -260,27 +263,48 @@ export function createMockAuthClient(): AuthClient {
       // verifyEmail) rather than the accessToken value itself, which the mock
       // never stores on the account record.
       const session = readStoredSession()
-      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      const account = session
+        ? [...mockAccounts.values()].find((entry) => entry.email === session.email)
+        : undefined
       if (!account) {
-        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+        return {
+          status: 'error',
+          errorCode: 'TOKEN_EXPIRED',
+          message: 'Phiên đăng nhập đã hết hạn.',
+        }
       }
       return {
         status: 'success',
-        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+        profile: {
+          fullName: account.displayName,
+          username: account.username,
+          bio: account.bio,
+          locale: account.locale,
+        },
       }
     },
     async updateProfile(_accessToken, input) {
       const session = readStoredSession()
-      const account = session ? [...mockAccounts.values()].find((entry) => entry.email === session.email) : undefined
+      const account = session
+        ? [...mockAccounts.values()].find((entry) => entry.email === session.email)
+        : undefined
       if (!account) {
-        return { status: 'error', errorCode: 'TOKEN_EXPIRED', message: 'Phiên đăng nhập đã hết hạn.' }
+        return {
+          status: 'error',
+          errorCode: 'TOKEN_EXPIRED',
+          message: 'Phiên đăng nhập đã hết hạn.',
+        }
       }
       if (input.username) {
         const collision = [...mockAccounts.values()].find(
           (entry) => entry !== account && entry.username === input.username,
         )
         if (collision) {
-          return { status: 'error', errorCode: 'USERNAME_TAKEN', message: 'Tên người dùng này đã được sử dụng.' }
+          return {
+            status: 'error',
+            errorCode: 'USERNAME_TAKEN',
+            message: 'Tên người dùng này đã được sử dụng.',
+          }
         }
       }
       account.displayName = input.fullName
@@ -289,7 +313,12 @@ export function createMockAuthClient(): AuthClient {
       account.locale = input.locale
       return {
         status: 'success',
-        profile: { fullName: account.displayName, username: account.username, bio: account.bio, locale: account.locale },
+        profile: {
+          fullName: account.displayName,
+          username: account.username,
+          bio: account.bio,
+          locale: account.locale,
+        },
       }
     },
     async logout() {

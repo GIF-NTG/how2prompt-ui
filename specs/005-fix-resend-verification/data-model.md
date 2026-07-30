@@ -35,7 +35,7 @@ interface AuthContextValue {
 ## No change: `ResendVerificationOutcome`, `Session`, `AuthErrorCode`
 
 - `AuthErrorCode` is already `'INVALID_CREDENTIALS' | 'EMAIL_ALREADY_EXISTS' |
-  'VALIDATION_ERROR' | (string & {})` — the open string union already admits
+'VALIDATION_ERROR' | (string & {})` — the open string union already admits
   `'EMAIL_NOT_VERIFIED'` as a value without a type edit.
 - `Session.email` already exists and is what the new login-screen logic and the
   updated `AuthContext.resendVerificationEmail()` both rely on.

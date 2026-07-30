@@ -49,6 +49,7 @@ functional/behavioral change permitted (FR-007); History and Auth screens are
 out of scope (FR-008)
 
 **Scale/Scope**: 3 screens / ~11 components:
+
 - Catalog: `CatalogPage.tsx`, `SearchBox`, `FilterBar`, `TemplateRail`,
   `TemplateGrid`, `TemplateCard`
 - Template Detail: `TemplateDetailPage.tsx`, `TemplateHero`, `ModelTags`,
@@ -71,7 +72,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 - **IV. Security Non-Negotiables** — N/A. No auth/credential/secret handling is
   touched. Pass.
 - **V. Verified Before Done** — Applies directly: `oxlint`, `tsc -b && vite
-  build`, and `vitest` must all pass, and the restyled screens must be exercised
+build`, and `vitest` must all pass, and the restyled screens must be exercised
   in a running browser (light + dark) before this feature is reported done, per
   spec SC-001–SC-004.
 - **Development Workflow guidance** ("reuse already-approved visual tokens

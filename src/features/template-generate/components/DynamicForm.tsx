@@ -9,12 +9,7 @@ interface DynamicFormProps {
   onValueChange: (varKey: string, value: string | number | boolean | string[]) => void
 }
 
-export function DynamicForm({
-  variables,
-  inputValues,
-  errors,
-  onValueChange,
-}: DynamicFormProps) {
+export function DynamicForm({ variables, inputValues, errors, onValueChange }: DynamicFormProps) {
   const sorted = useMemo(
     () => [...variables].sort((a, b) => a.sortOrder - b.sortOrder),
     [variables],

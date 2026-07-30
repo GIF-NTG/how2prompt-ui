@@ -1,6 +1,5 @@
 ---
-
-description: "Task list for Auth API Contract Migration (v1.1.0)"
+description: 'Task list for Auth API Contract Migration (v1.1.0)'
 ---
 
 # Tasks: Auth API Contract Migration (v1.1.0)
@@ -34,7 +33,7 @@ Single project — `src/features/auth/**`, `src/app/App.tsx`, `.specify/memory/c
 
 **Purpose**: Confirm a clean starting point before touching wire-level code.
 
-- [X] T001 Run `npm run lint`, `npm run test`, and `npm run build` from the repo root and confirm all three are green *before* any change in this feature, so any later failure is attributable to this migration.
+- [x] T001 Run `npm run lint`, `npm run test`, and `npm run build` from the repo root and confirm all three are green _before_ any change in this feature, so any later failure is attributable to this migration.
 
 ---
 
@@ -47,8 +46,8 @@ every endpoint call in every user story below — they must land first.
 is complete (field-rename-only edits like T004/T008/T009 don't functionally need T002/T003
 first, but running any real or mock request through `apiFetch` does).
 
-- [X] T002 Rename `ApiErrorBody.error.trace_id` to `traceId` in `src/features/auth/api/httpClient.ts` (data-model.md "ErrorResponse").
-- [X] T003 Update `apiFetch<T>` in `src/features/auth/api/httpClient.ts` to unwrap the `{ data, meta }` `ApiResponse<T>` envelope before returning `T` to callers (research.md Decision 2; depends on T002, same file).
+- [x] T002 Rename `ApiErrorBody.error.trace_id` to `traceId` in `src/features/auth/api/httpClient.ts` (data-model.md "ErrorResponse").
+- [x] T003 Update `apiFetch<T>` in `src/features/auth/api/httpClient.ts` to unwrap the `{ data, meta }` `ApiResponse<T>` envelope before returning `T` to callers (research.md Decision 2; depends on T002, same file).
 
 **Checkpoint**: `httpClient.ts` speaks the new envelope/error shape — user story work can begin.
 
@@ -65,13 +64,13 @@ pre-migration behavior.
 
 ### Implementation for User Story 1
 
-- [X] T004 [P] [US1] Rename `AuthResponseBody`/`BackendUser` fields in `src/features/auth/api/authClient.real.ts`: `access_token`→`accessToken`, `expires_in`→`expiresIn`, `full_name`→`fullName`, `email_verified`→`emailVerified`; remove `token_type` (no longer part of `AuthResponse` — research.md Decision 1/5).
-- [X] T005 [US1] In `src/features/auth/api/authClient.real.ts`, add a helper that fetches `GET /users/me` with a given `accessToken` and a two-argument `toSession(authResponse, userProfile)` that assembles `Session` from both pieces, replacing the old one-argument `toSession(body)` that read `body.user.*` directly (data-model.md "Assembly: Session"; depends on T004).
-- [X] T006 [US1] Update `login()` in `src/features/auth/api/authClient.real.ts` to call `POST /auth/login` then the new `GET /users/me` helper, assembling the session via T005's `toSession` (depends on T005).
-- [X] T007 [US1] Update `restoreSession()` in `src/features/auth/api/authClient.real.ts` to use the renamed fields and the new two-argument `toSession` helper in place of its current inline `{ ...refreshed, token_type: 'Bearer', user: profile }` construction (depends on T005).
-- [X] T008 [P] [US1] Rename `register()`'s request body field `full_name`→`fullName` in `src/features/auth/api/authClient.real.ts`.
-- [X] T009 [P] [US1] Rename `resetPassword()`'s request body field `new_password`→`newPassword` in `src/features/auth/api/authClient.real.ts`.
-- [X] T010 [US1] Run `npm run test` and confirm `AuthContext.test.tsx`, `LoginPage.test.tsx`, `RegisterPage.test.tsx`, `ForgotPasswordPage.test.tsx`, `ResetPasswordPage.test.tsx` (all mock-client-backed, so unaffected by T004–T009's real-client-only changes) still pass; investigate and fix any incidental breakage (depends on T004, T005, T006, T007, T008, T009).
+- [x] T004 [P] [US1] Rename `AuthResponseBody`/`BackendUser` fields in `src/features/auth/api/authClient.real.ts`: `access_token`→`accessToken`, `expires_in`→`expiresIn`, `full_name`→`fullName`, `email_verified`→`emailVerified`; remove `token_type` (no longer part of `AuthResponse` — research.md Decision 1/5).
+- [x] T005 [US1] In `src/features/auth/api/authClient.real.ts`, add a helper that fetches `GET /users/me` with a given `accessToken` and a two-argument `toSession(authResponse, userProfile)` that assembles `Session` from both pieces, replacing the old one-argument `toSession(body)` that read `body.user.*` directly (data-model.md "Assembly: Session"; depends on T004).
+- [x] T006 [US1] Update `login()` in `src/features/auth/api/authClient.real.ts` to call `POST /auth/login` then the new `GET /users/me` helper, assembling the session via T005's `toSession` (depends on T005).
+- [x] T007 [US1] Update `restoreSession()` in `src/features/auth/api/authClient.real.ts` to use the renamed fields and the new two-argument `toSession` helper in place of its current inline `{ ...refreshed, token_type: 'Bearer', user: profile }` construction (depends on T005).
+- [x] T008 [P] [US1] Rename `register()`'s request body field `full_name`→`fullName` in `src/features/auth/api/authClient.real.ts`.
+- [x] T009 [P] [US1] Rename `resetPassword()`'s request body field `new_password`→`newPassword` in `src/features/auth/api/authClient.real.ts`.
+- [x] T010 [US1] Run `npm run test` and confirm `AuthContext.test.tsx`, `LoginPage.test.tsx`, `RegisterPage.test.tsx`, `ForgotPasswordPage.test.tsx`, `ResetPasswordPage.test.tsx` (all mock-client-backed, so unaffected by T004–T009's real-client-only changes) still pass; investigate and fix any incidental breakage (depends on T004, T005, T006, T007, T008, T009).
 - [ ] T011 [US1] Manually validate quickstart.md Sections 2–4 (register→login→session, silent refresh, reset-password expired link) in a running browser (depends on T010). **Not run**: no browser-automation tool available in this environment — needs a human (or a session with browser tooling) to complete.
 
 **Checkpoint**: User Story 1 fully functional and testable independently.
@@ -86,20 +85,20 @@ authorization-code redirect, and a stale callback URL redirects to `/login`.
 **Independent Test**: Complete a Google sign-in end to end and confirm no callback page
 is involved; separately visit `/auth/google/callback` directly and confirm redirect to
 `/login` (quickstart.md Sections 5–6). **Build-order note**: this story is
-independently *testable*, but T013 reuses the `toSession` helper T005 introduces, so
+independently _testable_, but T013 reuses the `toSession` helper T005 introduces, so
 Phase 3 (US1) must be implemented before Phase 4 (US2) even though the two remain
 separately verifiable/demoable once both exist.
 
 ### Implementation for User Story 2
 
-- [X] T012 [P] [US2] Extend `src/features/auth/api/googleIdentity.ts` so the resolved Google credential (or a new sibling export) also exposes the raw, undecoded ID token string, not just the decoded `{ email, name }` (research.md Decision 3).
-- [X] T013 [US2] Rewrite `signInWithGoogle()` in `src/features/auth/api/authClient.real.ts` to obtain the raw ID token via `googleIdentity.ts` and call `POST /auth/oauth/google { idToken }`, assembling the session via T005's two-argument `toSession` helper (depends on T005, T012).
-- [X] T014 [US2] Remove `completeGoogleOAuth` and the `authorization_url`/`state` `sessionStorage` bookkeeping (`GOOGLE_OAUTH_STATE_KEY`) from `src/features/auth/api/authClient.real.ts` (depends on T013).
-- [X] T015 [P] [US2] Remove `completeGoogleOAuth` from the `AuthClient` interface in `src/features/auth/api/authClient.types.ts` and delete its stub implementation in `src/features/auth/api/authClient.mock.ts`.
-- [X] T016 [US2] Delete `src/features/auth/pages/GoogleCallbackPage.tsx` (depends on T014, T015).
-- [X] T017 [US2] In `src/app/App.tsx`, remove the `GoogleCallbackPage` import and its route, adding in its place `<Route path="auth/google/callback" element={<Navigate to="/login" replace />} />` (spec Clarifications Q1; depends on T016).
-- [X] T018 [P] [US2] Add a route test asserting a visit to `/auth/google/callback` redirects to `/login` in a new `src/app/App.test.tsx` (depends on T017).
-- [X] T019 [US2] Run `npm run test` and confirm `GoogleSignInButton.test.tsx` (mock-client-backed) still passes; fix any incidental breakage from the `AuthClient` interface change in T015 (depends on T015).
+- [x] T012 [P] [US2] Extend `src/features/auth/api/googleIdentity.ts` so the resolved Google credential (or a new sibling export) also exposes the raw, undecoded ID token string, not just the decoded `{ email, name }` (research.md Decision 3).
+- [x] T013 [US2] Rewrite `signInWithGoogle()` in `src/features/auth/api/authClient.real.ts` to obtain the raw ID token via `googleIdentity.ts` and call `POST /auth/oauth/google { idToken }`, assembling the session via T005's two-argument `toSession` helper (depends on T005, T012).
+- [x] T014 [US2] Remove `completeGoogleOAuth` and the `authorization_url`/`state` `sessionStorage` bookkeeping (`GOOGLE_OAUTH_STATE_KEY`) from `src/features/auth/api/authClient.real.ts` (depends on T013).
+- [x] T015 [P] [US2] Remove `completeGoogleOAuth` from the `AuthClient` interface in `src/features/auth/api/authClient.types.ts` and delete its stub implementation in `src/features/auth/api/authClient.mock.ts`.
+- [x] T016 [US2] Delete `src/features/auth/pages/GoogleCallbackPage.tsx` (depends on T014, T015).
+- [x] T017 [US2] In `src/app/App.tsx`, remove the `GoogleCallbackPage` import and its route, adding in its place `<Route path="auth/google/callback" element={<Navigate to="/login" replace />} />` (spec Clarifications Q1; depends on T016).
+- [x] T018 [P] [US2] Add a route test asserting a visit to `/auth/google/callback` redirects to `/login` in a new `src/app/App.test.tsx` (depends on T017).
+- [x] T019 [US2] Run `npm run test` and confirm `GoogleSignInButton.test.tsx` (mock-client-backed) still passes; fix any incidental breakage from the `AuthClient` interface change in T015 (depends on T015).
 - [ ] T020 [US2] Manually validate quickstart.md Sections 5–6 (Google sign-in single-step, dead callback route redirect) in a running browser (depends on T017, T019). **Not run**: same environment limitation as T011.
 
 **Checkpoint**: User Stories 1 AND 2 both work independently.
@@ -117,10 +116,10 @@ unchanged (quickstart.md Section 7).
 
 ### Implementation for User Story 3
 
-- [X] T021 [US3] Change `verifyEmail()` in `src/features/auth/api/authClient.real.ts` from `GET /auth/verify-email?token=<token>` to `POST /auth/verify-email` with body `{ token }` (depends on T003).
-- [X] T022 [US3] In `src/features/auth/api/authClient.real.ts`, confirm `resendVerificationEmail()` treats HTTP `202` as success (verify `apiFetch`'s `response.ok` check already covers it; add a short comment noting the contract's `202 Accepted` semantics) (depends on T003).
-- [X] T022a [US3] Update the success-message copy in `src/features/auth/components/EmailVerificationBanner.tsx` (line ~31) from "Đã gửi lại email xác minh, hãy kiểm tra hộp thư của bạn." (implies already sent) to wording that reflects the request was accepted/queued, not delivered — per FR-005/US3 Acceptance Scenario 3 (depends on T022).
-- [X] T023 [US3] Run `npm run test` and confirm `VerifyEmailPage.test.tsx` passes unmodified, and update `EmailVerificationBanner.test.tsx`'s assertion on the success message text to match T022a's new copy (depends on T021, T022, T022a).
+- [x] T021 [US3] Change `verifyEmail()` in `src/features/auth/api/authClient.real.ts` from `GET /auth/verify-email?token=<token>` to `POST /auth/verify-email` with body `{ token }` (depends on T003).
+- [x] T022 [US3] In `src/features/auth/api/authClient.real.ts`, confirm `resendVerificationEmail()` treats HTTP `202` as success (verify `apiFetch`'s `response.ok` check already covers it; add a short comment noting the contract's `202 Accepted` semantics) (depends on T003).
+- [x] T022a [US3] Update the success-message copy in `src/features/auth/components/EmailVerificationBanner.tsx` (line ~31) from "Đã gửi lại email xác minh, hãy kiểm tra hộp thư của bạn." (implies already sent) to wording that reflects the request was accepted/queued, not delivered — per FR-005/US3 Acceptance Scenario 3 (depends on T022).
+- [x] T023 [US3] Run `npm run test` and confirm `VerifyEmailPage.test.tsx` passes unmodified, and update `EmailVerificationBanner.test.tsx`'s assertion on the success message text to match T022a's new copy (depends on T021, T022, T022a).
 - [ ] T024 [US3] Manually validate quickstart.md Section 7 (verify email, resend, expired link) in a running browser (depends on T023). **Not run**: same environment limitation as T011.
 
 **Checkpoint**: All three user stories independently functional.
@@ -131,9 +130,9 @@ unchanged (quickstart.md Section 7).
 
 **Purpose**: Documentation upkeep and the final verification gate.
 
-- [X] T025 [P] Amend `.specify/memory/constitution.md` Principle III's error-envelope example from `` `{ error: { code, message, details?, trace_id? } }` `` to `` `{ error: { code, message, details?, traceId? } }` ``, with a new Sync Impact Report entry and version bump `3.0.1` → `3.0.2` (research.md Decision 7, spec Clarifications Q2).
-- [X] T026 [P] Update `CLAUDE.md`'s "API & error conventions" Google sign-in description to describe the single-request `idToken` flow (`POST /auth/oauth/google`), removing the authorization-code/redirect/callback description and the now-collapsed mock-vs-real flow distinction it draws.
-- [X] T027 Run `npm run lint`, `npm run test`, and `npm run build` as the final Constitution Principle V gate (depends on T010, T019, T023, T025, T026).
+- [x] T025 [P] Amend `.specify/memory/constitution.md` Principle III's error-envelope example from `` `{ error: { code, message, details?, trace_id? } }` `` to `` `{ error: { code, message, details?, traceId? } }` ``, with a new Sync Impact Report entry and version bump `3.0.1` → `3.0.2` (research.md Decision 7, spec Clarifications Q2).
+- [x] T026 [P] Update `CLAUDE.md`'s "API & error conventions" Google sign-in description to describe the single-request `idToken` flow (`POST /auth/oauth/google`), removing the authorization-code/redirect/callback description and the now-collapsed mock-vs-real flow distinction it draws.
+- [x] T027 Run `npm run lint`, `npm run test`, and `npm run build` as the final Constitution Principle V gate (depends on T010, T019, T023, T025, T026).
 - [ ] T028 If a live v1.1.0 backend is reachable, run quickstart.md Section 8 to confirm the `ApiResponse<T>` envelope and the `/users/me` follow-up assumption (research.md Decisions 1–2) against a real response; otherwise record in the PR/notes that this remains unverified against a live backend (depends on T027). **Not run**: no live v1.1.0 backend is reachable from this environment.
 
 ---

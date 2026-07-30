@@ -21,7 +21,12 @@ vi.mock('@/features/admin/api/aiModelsClient', () => ({
   aiModelsClient: { listAll: vi.fn(), create: vi.fn(), update: vi.fn() },
 }))
 vi.mock('@/features/admin/api/taxonomyClient', () => ({
-  taxonomyClient: { listCategories: vi.fn(), createCategory: vi.fn(), updateCategory: vi.fn(), listTags: vi.fn() },
+  taxonomyClient: {
+    listCategories: vi.fn(),
+    createCategory: vi.fn(),
+    updateCategory: vi.fn(),
+    listTags: vi.fn(),
+  },
 }))
 
 const mockedTemplatesClient = vi.mocked(templatesAdminClient)
@@ -96,7 +101,9 @@ describe('TemplatesAdminPage', () => {
     // fireEvent.change (not user.type) — user-event's type() treats "{" as the
     // start of a special-key sequence, so a literal "{{topic}}" placeholder can't
     // be typed with it without escaping every brace.
-    fireEvent.change(screen.getByLabelText(/nội dung prompt/i), { target: { value: 'Hello {{topic}}' } })
+    fireEvent.change(screen.getByLabelText(/nội dung prompt/i), {
+      target: { value: 'Hello {{topic}}' },
+    })
     await user.click(screen.getByRole('button', { name: /^publish$/i }))
 
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('topic'))
@@ -105,10 +112,12 @@ describe('TemplatesAdminPage', () => {
 
   it('publishes successfully once the placeholder has a matching variable', async () => {
     mockedTemplatesClient.create.mockResolvedValue(makeTemplate())
-    mockedTemplatesClient.publish.mockResolvedValue(makeTemplate({ status: 'published', isOfficial: true }))
-    mockedTemplatesClient.list.mockResolvedValueOnce([]).mockResolvedValueOnce([
+    mockedTemplatesClient.publish.mockResolvedValue(
       makeTemplate({ status: 'published', isOfficial: true }),
-    ])
+    )
+    mockedTemplatesClient.list
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([makeTemplate({ status: 'published', isOfficial: true })])
     const user = userEvent.setup()
     renderPage()
 
@@ -117,17 +126,23 @@ describe('TemplatesAdminPage', () => {
     // fireEvent.change (not user.type) — user-event's type() treats "{" as the
     // start of a special-key sequence, so a literal "{{topic}}" placeholder can't
     // be typed with it without escaping every brace.
-    fireEvent.change(screen.getByLabelText(/nội dung prompt/i), { target: { value: 'Hello {{topic}}' } })
+    fireEvent.change(screen.getByLabelText(/nội dung prompt/i), {
+      target: { value: 'Hello {{topic}}' },
+    })
     await user.click(screen.getByRole('button', { name: /thêm biến/i }))
     await user.type(screen.getByLabelText(/var key 1/i), 'topic')
     await user.click(screen.getByRole('button', { name: /^publish$/i }))
 
-    await waitFor(() => expect(mockedTemplatesClient.publish).toHaveBeenCalledWith('admin-token', 't1'))
+    await waitFor(() =>
+      expect(mockedTemplatesClient.publish).toHaveBeenCalledWith('admin-token', 't1'),
+    )
     await waitFor(() => expect(screen.getByText(/đã publish/i)).toBeInTheDocument())
   })
 
   it('creates a new version when editing an already-published template', async () => {
-    mockedTemplatesClient.list.mockResolvedValue([makeTemplate({ status: 'published', isOfficial: true })])
+    mockedTemplatesClient.list.mockResolvedValue([
+      makeTemplate({ status: 'published', isOfficial: true }),
+    ])
     mockedTemplatesClient.update.mockResolvedValue(
       makeTemplate({ status: 'draft', isOfficial: false, versionNumber: 2 }),
     )
@@ -139,7 +154,11 @@ describe('TemplatesAdminPage', () => {
     await user.click(screen.getByRole('button', { name: /lưu nháp/i }))
 
     await waitFor(() =>
-      expect(mockedTemplatesClient.update).toHaveBeenCalledWith('admin-token', 't1', expect.any(Object)),
+      expect(mockedTemplatesClient.update).toHaveBeenCalledWith(
+        'admin-token',
+        't1',
+        expect.any(Object),
+      ),
     )
   })
 })

@@ -1,5 +1,4 @@
-import { apiFetch } from '@/shared/utils/httpClient'
-import type { PageMeta } from '@/shared/types/api'
+import { apiFetch, apiFetchPage } from '@/shared/utils/httpClient'
 import type { TemplateListItem } from '@/features/home/types'
 import type { HistoryClient } from './historyClient.types'
 import type { HistoryDetail, HistoryListItem } from '../types'
@@ -14,10 +13,9 @@ export function createRealHistoryClient(accessToken?: string): HistoryClient {
       if (filters.to) searchParams.set('to', filters.to)
       searchParams.set('page', String(page))
       searchParams.set('size', String(size))
-      return apiFetch<{ data: HistoryListItem[]; meta: PageMeta }>(
-        `/generated-prompts?${searchParams.toString()}`,
-        { accessToken },
-      )
+      return apiFetchPage<HistoryListItem[]>(`/generated-prompts?${searchParams.toString()}`, {
+        accessToken,
+      })
     },
 
     async get(id) {
@@ -32,10 +30,9 @@ export function createRealHistoryClient(accessToken?: string): HistoryClient {
       const searchParams = new URLSearchParams()
       searchParams.set('page', String(page))
       searchParams.set('size', String(size))
-      return apiFetch<{ data: TemplateListItem[]; meta: PageMeta }>(
-        `/favorites?${searchParams.toString()}`,
-        { accessToken },
-      )
+      return apiFetchPage<TemplateListItem[]>(`/favorites?${searchParams.toString()}`, {
+        accessToken,
+      })
     },
   }
 }

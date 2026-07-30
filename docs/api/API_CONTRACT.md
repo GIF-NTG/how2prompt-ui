@@ -8,23 +8,28 @@
 ## 1. Cách FE sử dụng file này
 
 ### a) Xem & thử API bằng Swagger UI
+
 ```bash
 # Cách nhanh nhất - dùng Docker
 docker run -p 8081:8080 -e SWAGGER_JSON=/spec/openapi_phase1.yaml \
   -v $(pwd):/spec swaggerapi/swagger-ui
 # Mở http://localhost:8081
 ```
+
 Hoặc dán nội dung file vào **https://editor.swagger.io**.
 
 ### b) Chạy Mock Server (FE code trước khi BE xong)
+
 ```bash
 # Dùng Prism (Stoplight) - mock server tự sinh từ contract
 npx @stoplight/prism-cli mock openapi_phase1.yaml
 # Mock chạy tại http://localhost:4010, trả về data theo "example" trong spec
 ```
+
 → FE có thể gọi thật vào mock để build UI **ngay hôm nay**, không cần chờ BE.
 
 ### c) Sinh TypeScript types & API client tự động
+
 ```bash
 # Sinh type cho FE (khuyến nghị)
 npx openapi-typescript openapi_phase1.yaml -o src/types/api.ts
@@ -35,31 +40,33 @@ npx openapi-generator-cli generate -i openapi_phase1.yaml \
 ```
 
 ### d) Import vào Postman
+
 Postman → Import → chọn `openapi_phase1.yaml` → tự tạo collection đầy đủ.
 
 ---
 
 ## 2. Quy ước BẮT BUỘC hai bên tuân thủ
 
-| Chủ đề | Quy ước |
-|---|---|
-| **Base URL** | `/api/v1` |
-| **Field naming** | `camelCase` cho JSON request/response · `kebab-case` cho URL · `snake_case` chỉ ở tầng Database |
-| **Timestamp** | ISO 8601 UTC: `2026-07-22T01:29:13Z` |
-| **ID** | UUID v4 (string) |
-| **i18n** | Trường dịch được trả object `{ "en": "...", "vi": "..." }`. FE render theo `user.locale`, fallback `en`. |
-| **Response wrapper** | Mọi endpoint trả dữ liệu (trừ `204`) bọc trong `ApiResponse<T>`: `{ "data": {...}, "meta": {...} }` |
-| **Auth header** | `Authorization: Bearer <accessToken>` |
-| **Access token** | Sống 15 phút. Hết hạn → `401` code `TOKEN_EXPIRED` → gọi `/auth/refresh` |
-| **Refresh token** | BE set trong **httpOnly cookie** (`refresh_token`) — FE KHÔNG đọc/gửi thủ công. Được **rotate** (cấp cookie mới) mỗi lần refresh thành công. |
-| **Pagination** | Offset-based (Spring Data `Pageable`): `?page=0&size=20` (`page` bắt đầu từ 0). `meta` trả về `PageMeta` gồm `page`, `size`, `totalElements`, `totalPages`, `hasNext`, `hasPrevious`. |
-| **Lỗi** | Luôn dạng `{ "error": { code, message, details, traceId } }` |
+| Chủ đề               | Quy ước                                                                                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Base URL**         | `/api/v1`                                                                                                                                                                             |
+| **Field naming**     | `camelCase` cho JSON request/response · `kebab-case` cho URL · `snake_case` chỉ ở tầng Database                                                                                       |
+| **Timestamp**        | ISO 8601 UTC: `2026-07-22T01:29:13Z`                                                                                                                                                  |
+| **ID**               | UUID v4 (string)                                                                                                                                                                      |
+| **i18n**             | Trường dịch được trả object `{ "en": "...", "vi": "..." }`. FE render theo `user.locale`, fallback `en`.                                                                              |
+| **Response wrapper** | Mọi endpoint trả dữ liệu (trừ `204`) bọc trong `ApiResponse<T>`: `{ "data": {...}, "meta": {...} }`                                                                                   |
+| **Auth header**      | `Authorization: Bearer <accessToken>`                                                                                                                                                 |
+| **Access token**     | Sống 15 phút. Hết hạn → `401` code `TOKEN_EXPIRED` → gọi `/auth/refresh`                                                                                                              |
+| **Refresh token**    | BE set trong **httpOnly cookie** (`refresh_token`) — FE KHÔNG đọc/gửi thủ công. Được **rotate** (cấp cookie mới) mỗi lần refresh thành công.                                          |
+| **Pagination**       | Offset-based (Spring Data `Pageable`): `?page=0&size=20` (`page` bắt đầu từ 0). `meta` trả về `PageMeta` gồm `page`, `size`, `totalElements`, `totalPages`, `hasNext`, `hasPrevious`. |
+| **Lỗi**              | Luôn dạng `{ "error": { code, message, details, traceId } }`                                                                                                                          |
 
 ---
 
 ## 3. Luồng Auth (FE cần nắm)
 
 ### Đăng ký (email/password)
+
 ```
 POST /auth/register ──► 201 RegisterResponse { user, message }
        │
@@ -70,6 +77,7 @@ POST /auth/login ──► AuthResponse { accessToken, expiresIn } + Set-Cookie:
 ```
 
 ### Đăng nhập email/password hoặc Google
+
 ```
 POST /auth/login            ──► { accessToken, expiresIn } + Set-Cookie: refresh_token
 POST /auth/oauth/google      (body: { idToken })
@@ -95,12 +103,14 @@ POST /auth/refresh (cookie tự gửi) ──► accessToken mới + refresh_tok
 > Lưu ý: **không có** endpoint `/auth/oauth/google/callback` — Google OAuth chỉ dùng một request `POST /auth/oauth/google` với `idToken`, không phải Authorization Code flow.
 
 ### Verify email
+
 ```
 POST /auth/verify-email  (body: { token })  ──► 200 xác minh thành công / 410 token hết hạn
 POST /auth/resend-verification              ──► 202 Accepted (gửi lại email bất đồng bộ)
 ```
 
 ### Logout
+
 ```
 POST /auth/logout ──► 204, revoke refreshToken hiện tại,
                        Set-Cookie: refresh_token=""; Max-Age=0
@@ -122,36 +132,36 @@ Guest **được phép generate prompt** nhưng giới hạn **3 lần/ngày/IP*
 
 ## 5. Bảng mã lỗi (error codes) Phase 1
 
-| HTTP | code | Ý nghĩa |
-|---|---|---|
-| 401 | `TOKEN_EXPIRED` | Access token hết hạn → refresh |
-| 401 | `INVALID_CREDENTIALS` | Sai email/mật khẩu |
-| 403 | `FORBIDDEN` | Không đủ quyền (vd endpoint admin) |
-| 404 | `NOT_FOUND` | Không tìm thấy tài nguyên |
-| 409 | `EMAIL_ALREADY_EXISTS` | Email đã đăng ký |
-| 409 | `USERNAME_TAKEN` | Username đã tồn tại |
-| 410 | `TOKEN_CONSUMED` | Token reset/verify đã dùng hoặc hết hạn |
-| 413 | `PAYLOAD_TOO_LARGE` | File upload quá lớn (>2MB) |
-| 422 | `VALIDATION_ERROR` | Dữ liệu không hợp lệ (xem `details`) |
-| 429 | `RATE_LIMITED` | Vượt tần suất chung |
-| 429 | `GUEST_QUOTA_EXCEEDED` | Guest hết lượt generate/ngày |
+| HTTP | code                   | Ý nghĩa                                 |
+| ---- | ---------------------- | --------------------------------------- |
+| 401  | `TOKEN_EXPIRED`        | Access token hết hạn → refresh          |
+| 401  | `INVALID_CREDENTIALS`  | Sai email/mật khẩu                      |
+| 403  | `FORBIDDEN`            | Không đủ quyền (vd endpoint admin)      |
+| 404  | `NOT_FOUND`            | Không tìm thấy tài nguyên               |
+| 409  | `EMAIL_ALREADY_EXISTS` | Email đã đăng ký                        |
+| 409  | `USERNAME_TAKEN`       | Username đã tồn tại                     |
+| 410  | `TOKEN_CONSUMED`       | Token reset/verify đã dùng hoặc hết hạn |
+| 413  | `PAYLOAD_TOO_LARGE`    | File upload quá lớn (>2MB)              |
+| 422  | `VALIDATION_ERROR`     | Dữ liệu không hợp lệ (xem `details`)    |
+| 429  | `RATE_LIMITED`         | Vượt tần suất chung                     |
+| 429  | `GUEST_QUOTA_EXCEEDED` | Guest hết lượt generate/ngày            |
 
 ---
 
 ## 6. Nhóm endpoint theo màn hình FE
 
-| Màn hình FE | Endpoint dùng |
-|---|---|
-| **Đăng ký / Đăng nhập** | `/auth/register`, `/auth/login`, `/auth/oauth/google`, `/auth/refresh` |
-| **Verify email** | `/auth/verify-email`, `/auth/resend-verification` |
-| **Quên mật khẩu** | `/auth/forgot-password`, `/auth/reset-password` |
+| Màn hình FE             | Endpoint dùng                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| **Đăng ký / Đăng nhập** | `/auth/register`, `/auth/login`, `/auth/oauth/google`, `/auth/refresh`                           |
+| **Verify email**        | `/auth/verify-email`, `/auth/resend-verification`                                                |
+| **Quên mật khẩu**       | `/auth/forgot-password`, `/auth/reset-password`                                                  |
 | **Trang chủ / Explore** | `/templates`, `/templates/featured`, `/templates/trending`, `/categories`, `/tags`, `/ai-models` |
-| **Chi tiết template** | `/templates/{id}`, `/templates/{id}/favorite` |
-| **Màn Generate prompt** | `/templates/{id}/generate` |
-| **Lịch sử** | `/generated-prompts`, `/generated-prompts/{id}` |
-| **Yêu thích** | `/favorites`, `/templates/{id}/favorite` |
-| **Cài đặt hồ sơ** | `/users/me`, `/users/me/avatar` |
-| **Admin panel** | `/admin/*` |
+| **Chi tiết template**   | `/templates/{id}`, `/templates/{id}/favorite`                                                    |
+| **Màn Generate prompt** | `/templates/{id}/generate`                                                                       |
+| **Lịch sử**             | `/generated-prompts`, `/generated-prompts/{id}`                                                  |
+| **Yêu thích**           | `/favorites`, `/templates/{id}/favorite`                                                         |
+| **Cài đặt hồ sơ**       | `/users/me`, `/users/me/avatar`                                                                  |
+| **Admin panel**         | `/admin/*`                                                                                       |
 
 ---
 

@@ -55,10 +55,12 @@ describe('GoogleSignInButton', () => {
     })
 
     const first = await authClient.signInWithGoogle()
-    if (first.status !== 'success' || !first.session) throw new Error('expected a successful session')
+    if (first.status !== 'success' || !first.session)
+      throw new Error('expected a successful session')
 
     const second = await authClient.signInWithGoogle()
-    if (second.status !== 'success' || !second.session) throw new Error('expected a successful session')
+    if (second.status !== 'success' || !second.session)
+      throw new Error('expected a successful session')
 
     expect(second.accountCreated).toBe(false)
     expect(second.session.accountId).toBe(first.session.accountId)

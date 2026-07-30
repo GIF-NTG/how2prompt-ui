@@ -93,7 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(async (input: UpdateProfileInput) => {
     const outcome = await authClient.updateProfile(sessionRef.current!.token, input)
     if (outcome.status === 'success') {
-      setSession((current) => (current ? { ...current, displayName: outcome.profile.fullName } : current))
+      setSession((current) =>
+        current ? { ...current, displayName: outcome.profile.fullName } : current,
+      )
     }
     return outcome
   }, [])
@@ -109,7 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       getProfile,
       updateProfile,
     }),
-    [session, isRestoring, signIn, signOut, resendVerificationEmail, verifyEmail, getProfile, updateProfile],
+    [
+      session,
+      isRestoring,
+      signIn,
+      signOut,
+      resendVerificationEmail,
+      verifyEmail,
+      getProfile,
+      updateProfile,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

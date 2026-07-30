@@ -8,7 +8,8 @@ const USERNAME_MAX_LENGTH = 50
 
 const FIELD_CLASSES =
   'rounded-lg border bg-transparent px-3 py-2 text-base text-[#1B1D1B] focus:outline-none dark:text-[#ECEEE8]'
-const FIELD_BORDER = 'border-[#DBDFD3] focus:border-[#3652E0] dark:border-[#2C3130] dark:focus:border-[#8493FF]'
+const FIELD_BORDER =
+  'border-[#DBDFD3] focus:border-[#3652E0] dark:border-[#2C3130] dark:focus:border-[#8493FF]'
 const FIELD_BORDER_INVALID = 'border-[#C23A2E] dark:border-[#FF7A6B]'
 
 /**
@@ -116,7 +117,9 @@ export function ProfileSettingsPage() {
   return (
     <AuthLayout>
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">Hồ sơ cá nhân</h2>
+        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+          Hồ sơ cá nhân
+        </h2>
       </div>
 
       {loadingProfile ? (

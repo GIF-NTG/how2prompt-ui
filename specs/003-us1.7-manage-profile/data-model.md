@@ -83,7 +83,7 @@ interface AuthContextValue {
   under that token (same lookup pattern `resendVerificationEmail`/`verifyEmail`
   already use via `readStoredSession()`), mapped to `UserProfile`.
 - `updateProfile(accessToken, input)`: if `input.username` is non-null and already
-  used by a *different* mock account, resolves
+  used by a _different_ mock account, resolves
   `{ status: 'error', errorCode: 'USERNAME_TAKEN', message: 'Tên người dùng này đã được sử dụng.' }`
   without mutating the record; otherwise updates the record's four fields in place
   and resolves `{ status: 'success', profile }`.

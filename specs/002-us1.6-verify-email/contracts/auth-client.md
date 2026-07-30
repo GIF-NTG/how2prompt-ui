@@ -36,8 +36,8 @@ interface AuthContextValue {
 
 - **Given** a valid, unexpired `token` → resolves `{ status: 'success' }`.
 - **Given** an expired or already-used `token` → resolves `{ status: 'error',
-  errorCode: 'VERIFY_TOKEN_EXPIRED', message }` (derived from `ApiError.status ===
-  410`, same mechanism as `resetPassword`'s `RESET_TOKEN_EXPIRED`).
+errorCode: 'VERIFY_TOKEN_EXPIRED', message }` (derived from `ApiError.status ===
+410`, same mechanism as `resetPassword`'s `RESET_TOKEN_EXPIRED`).
 - **Given** any other failure → resolves `{ status: 'error', errorCode, message }`
   using the backend's actual `error.code`.
 - **Real implementation**: `GET /auth/verify-email?token=<token>`, per
@@ -50,7 +50,7 @@ interface AuthContextValue {
   resolves `{ status: 'success' }`.
 - **Given** the account was already sent a verification email within the backend's
   rate-limit window → resolves `{ status: 'error', errorCode: 'RATE_LIMITED', message
-  }` (derived from `ApiError.status === 429`) — the UI (FR-003) shows this as a
+}` (derived from `ApiError.status === 429`) — the UI (FR-003) shows this as a
   friendly "please wait" message, never the raw error text.
 - **Real implementation**: `POST /auth/resend-verification` with
   `Authorization: Bearer <accessToken>`, no request body (contract has none).

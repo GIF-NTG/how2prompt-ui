@@ -30,11 +30,7 @@ describe('ModelVariantSelect', () => {
 
   it('hides when no models are supported', () => {
     const { container } = render(
-      <ModelVariantSelect
-        supportedModels={[]}
-        selectedModelCode=""
-        onChange={vi.fn()}
-      />,
+      <ModelVariantSelect supportedModels={[]} selectedModelCode="" onChange={vi.fn()} />,
     )
     expect(container.firstChild).toBeNull()
   })

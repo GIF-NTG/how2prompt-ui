@@ -1,10 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { TemplateDetail } from '@/features/template-detail/types'
-import type {
-  GenerateFormOverride,
-  TemplateVariable,
-  UseGenerateFormResult,
-} from '../types'
+import type { GenerateFormOverride, TemplateVariable, UseGenerateFormResult } from '../types'
 
 function getInitialModelCode(template: TemplateDetail, override?: GenerateFormOverride): string {
   if (override?.modelCode) {
@@ -16,13 +12,8 @@ function getInitialModelCode(template: TemplateDetail, override?: GenerateFormOv
   return ''
 }
 
-function getActiveVariables(
-  template: TemplateDetail,
-  modelCode: string,
-): TemplateVariable[] {
-  const variant = template.currentVersion.variants.find(
-    (v) => v.aiModelCode === modelCode,
-  )
+function getActiveVariables(template: TemplateDetail, modelCode: string): TemplateVariable[] {
+  const variant = template.currentVersion.variants.find((v) => v.aiModelCode === modelCode)
   if (variant?.promptBodyOverride) {
     return template.currentVersion.variables
   }
@@ -61,10 +52,7 @@ function validateVariable(
     }
   }
 
-  if (
-    (variable.inputType === 'text' || variable.inputType === 'textarea') &&
-    validation.regex
-  ) {
+  if ((variable.inputType === 'text' || variable.inputType === 'textarea') && validation.regex) {
     try {
       const re = new RegExp(validation.regex)
       if (!re.test(String(value))) {
@@ -122,7 +110,9 @@ export function useGenerateForm(
 
   const [selectedModelCode, setSelectedModelCode] = useState(initialModelCode)
   const [inputValues, setInputValues] = useState(() =>
-    override ? { ...getInitialValues(initialVariables), ...override.inputValues } : getInitialValues(initialVariables),
+    override
+      ? { ...getInitialValues(initialVariables), ...override.inputValues }
+      : getInitialValues(initialVariables),
   )
   const [extraInstructions, setExtraInstructions] = useState(override?.extraInstructions ?? '')
 
@@ -154,12 +144,9 @@ export function useGenerateForm(
     [template],
   )
 
-  const setValue = useCallback(
-    (varKey: string, value: string | number | boolean | string[]) => {
-      setInputValues((prev) => ({ ...prev, [varKey]: value }))
-    },
-    [],
-  )
+  const setValue = useCallback((varKey: string, value: string | number | boolean | string[]) => {
+    setInputValues((prev) => ({ ...prev, [varKey]: value }))
+  }, [])
 
   const setExtraInstructionsText = useCallback((text: string) => {
     setExtraInstructions(text)

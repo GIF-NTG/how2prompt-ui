@@ -1,5 +1,4 @@
 import type { TemplateListItem, AiModel, Category, Tag } from '../types'
-import type { PageMeta } from '@/shared/types/api'
 
 export interface TemplateClient {
   getTemplates(params: {
@@ -8,9 +7,9 @@ export interface TemplateClient {
     tags?: string
     model?: string
     sort?: 'popular' | 'newest' | 'most_used' | 'official'
-    page?: number
+    cursor?: string
     size?: number
-  }): Promise<{ data: TemplateListItem[]; meta: PageMeta }>
+  }): Promise<{ items: TemplateListItem[]; nextCursor: string | null; hasMore: boolean }>
 
   getFeatured(): Promise<TemplateListItem[]>
 

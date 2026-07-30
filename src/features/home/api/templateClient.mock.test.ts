@@ -4,42 +4,41 @@ import { createMockTemplateClient } from './templateClient.mock'
 describe('createMockTemplateClient().getTemplates', () => {
   it('lists official templates ahead of non-official ones', async () => {
     const client = createMockTemplateClient()
-    const { data } = await client.getTemplates({ size: 50 })
+    const { items } = await client.getTemplates({ size: 50 })
 
-    const firstNonOfficialIndex = data.findIndex((t) => !t.isOfficial)
-    const lastOfficialIndex = data.map((t) => t.isOfficial).lastIndexOf(true)
+    const firstNonOfficialIndex = items.findIndex((t) => !t.isOfficial)
+    const lastOfficialIndex = items.map((t) => t.isOfficial).lastIndexOf(true)
 
     expect(firstNonOfficialIndex).toBeGreaterThan(-1)
     expect(lastOfficialIndex).toBeGreaterThan(-1)
     expect(lastOfficialIndex).toBeLessThan(firstNonOfficialIndex)
   })
 
-  it('paginates by page/size and reports hasNext correctly, with no duplicates across pages', async () => {
+  it('paginates by cursor/size and reports hasMore correctly, with no duplicates across pages', async () => {
     const client = createMockTemplateClient()
-    const page0 = await client.getTemplates({ page: 0, size: 2 })
-    expect(page0.data).toHaveLength(2)
-    expect(page0.meta).toMatchObject({ page: 0, size: 2, hasPrevious: false })
-    expect(page0.meta.hasNext).toBe(true)
+    const page0 = await client.getTemplates({ size: 2 })
+    expect(page0.items).toHaveLength(2)
+    expect(page0.hasMore).toBe(true)
+    expect(page0.nextCursor).not.toBeNull()
 
-    const page1 = await client.getTemplates({ page: 1, size: 2 })
-    expect(page1.meta).toMatchObject({ page: 1, size: 2, hasPrevious: true })
+    const page1 = await client.getTemplates({ cursor: page0.nextCursor!, size: 2 })
 
-    const page0Ids = page0.data.map((t) => t.id)
-    const page1Ids = page1.data.map((t) => t.id)
+    const page0Ids = page0.items.map((t) => t.id)
+    const page1Ids = page1.items.map((t) => t.id)
     expect(page0Ids.some((id) => page1Ids.includes(id))).toBe(false)
   })
 
-  it('reports hasNext: false once every template has been paged through', async () => {
+  it('reports hasMore: false and nextCursor: null once every template has been paged through', async () => {
     const client = createMockTemplateClient()
-    const { meta } = await client.getTemplates({ size: 50 })
-    const lastPage = await client.getTemplates({ page: meta.totalPages - 1, size: 50 })
-    expect(lastPage.meta.hasNext).toBe(false)
+    const lastPage = await client.getTemplates({ size: 50 })
+    expect(lastPage.hasMore).toBe(false)
+    expect(lastPage.nextCursor).toBeNull()
   })
 
   it('toggleFavorite flips both directions (US4 — fixes the old POST-only bug)', async () => {
     const client = createMockTemplateClient()
-    const { data } = await client.getTemplates({ size: 1 })
-    const templateId = data[0].id
+    const { items } = await client.getTemplates({ size: 1 })
+    const templateId = items[0].id
 
     const favorited = await client.toggleFavorite(templateId, false)
     expect(favorited.isFavorited).toBe(true)
@@ -53,11 +52,11 @@ describe('createMockTemplateClient().getTemplates', () => {
     const popular = await client.getTemplates({ sort: 'popular', size: 50 })
     const newest = await client.getTemplates({ sort: 'newest', size: 50 })
 
-    expect(popular.data.map((t) => t.id)).not.toEqual(newest.data.map((t) => t.id))
+    expect(popular.items.map((t) => t.id)).not.toEqual(newest.items.map((t) => t.id))
 
-    for (const { data } of [popular, newest]) {
-      const firstNonOfficialIndex = data.findIndex((t) => !t.isOfficial)
-      const lastOfficialIndex = data.map((t) => t.isOfficial).lastIndexOf(true)
+    for (const { items } of [popular, newest]) {
+      const firstNonOfficialIndex = items.findIndex((t) => !t.isOfficial)
+      const lastOfficialIndex = items.map((t) => t.isOfficial).lastIndexOf(true)
       expect(lastOfficialIndex).toBeLessThan(firstNonOfficialIndex)
     }
   })

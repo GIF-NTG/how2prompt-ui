@@ -1,3 +1,5 @@
+import type { PageMeta } from '@/shared/types/api'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 /** True once a real backend URL is configured — see authClient.ts's mock/real switch. */
@@ -17,7 +19,7 @@ interface ApiErrorBody {
 /** Wraps every non-204 response body, per docs/api/openapi.yaml's "Response Wrapper chuẩn". */
 interface ApiEnvelope<T> {
   data: T
-  meta: unknown
+  meta: PageMeta | null
 }
 
 /** Mirrors docs/api/openapi.yaml's error envelope: `{ error: { code, message, ... } }`. */
@@ -50,7 +52,7 @@ interface ApiFetchOptions {
  * is sent/received automatically — this file is the only place that ever touches
  * that cookie's transport; the value itself is never readable from JS.
  */
-export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+async function rawFetch(path: string, options: ApiFetchOptions): Promise<unknown> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (options.accessToken) {
     headers.Authorization = `Bearer ${options.accessToken}`
@@ -64,7 +66,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   })
 
   if (response.status === 204) {
-    return undefined as T
+    return SENTINEL_NO_CONTENT
   }
 
   // Some endpoints (e.g. /auth/resend-verification's 202) document no response
@@ -92,7 +94,15 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     )
   }
 
-  if (data === null) {
+  return data
+}
+
+const SENTINEL_NO_CONTENT = Symbol('no-content')
+
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+  const data = await rawFetch(path, options)
+
+  if (data === SENTINEL_NO_CONTENT || data === null) {
     return undefined as T
   }
 
@@ -108,4 +118,20 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   }
 
   return (data as ApiEnvelope<T>).data
+}
+
+/**
+ * Like `apiFetch`, but for paginated list endpoints (`/templates`,
+ * `/generated-prompts`, `/favorites`, ...) whose `{ data, meta }` envelope IS
+ * the payload the caller wants — `meta` here is real `PageMeta` (hasNext,
+ * totalElements), not disposable envelope metadata. `apiFetch` unwraps `.data`
+ * and discards `meta` unconditionally, which silently dropped pagination info
+ * and made callers throw trying to read `.meta` off the unwrapped array.
+ */
+export async function apiFetchPage<T>(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<{ data: T; meta: PageMeta }> {
+  const data = await rawFetch(path, options)
+  return data as { data: T; meta: PageMeta }
 }

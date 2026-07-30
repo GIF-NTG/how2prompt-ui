@@ -19,7 +19,10 @@ function extractPlaceholders(promptBody: string): string[] {
  *  (FR-011) — mirrors the backend's authoritative publish-time check
  *  (contracts/admin-api.md's 422 response); this is a client-side pre-check for
  *  immediate feedback, not a replacement for it. */
-export function findMissingPlaceholders(promptBody: string, variables: TemplateVariable[]): string[] {
+export function findMissingPlaceholders(
+  promptBody: string,
+  variables: TemplateVariable[],
+): string[] {
   const declaredKeys = new Set(variables.map((v) => v.varKey))
   return extractPlaceholders(promptBody).filter((key) => !declaredKeys.has(key))
 }

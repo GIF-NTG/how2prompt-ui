@@ -10,16 +10,16 @@ the actual code (`src/features/home`) and the actual wire contract
 `cursor?: string` → `{ data, page_info: { next_cursor, has_next }, total_count }`,
 and `PageInfo` (`src/shared/types/api.ts`) mirrors that cursor shape. But
 `docs/api/openapi.yaml`'s `GET /templates` (lines 499–544) documents:
-- Request: `page` (integer, default 0) and `size` (integer, default 20, max
-  50) — **not** `cursor`/`limit`.
+
+- Request: `page` (integer, default 0) and `size` (integer, default 20, max 50) — **not** `cursor`/`limit`.
 - Response: `{ data: TemplateListItem[], meta: PageMeta }` where `PageMeta`
   (lines 959–968) is `{ page, size, totalElements, totalPages, hasNext,
-  hasPrevious }` — Spring Data's offset-based `Page`, not a cursor.
+hasPrevious }` — Spring Data's offset-based `Page`, not a cursor.
 
 Additionally, `httpClient.ts`'s `apiFetch` already unwraps the envelope's
 `data` field and returns only that (`return (data as ApiEnvelope<T>).data`),
 discarding `meta` entirely — so `templateClient.real.ts`'s current
-`apiFetch<TemplatesResponse>(...)` call, which expects the *raw* endpoint
+`apiFetch<TemplatesResponse>(...)` call, which expects the _raw_ endpoint
 body to already be `{ data, page_info, total_count }`, would in practice
 receive just the bare `TemplateListItem[]` array and mis-type it. This is a
 second, related defect: `getTemplates` needs its own two-step fetch (or a
@@ -27,6 +27,7 @@ second, related defect: `getTemplates` needs its own two-step fetch (or a
 pagination metadata.
 
 **Decision**: Realign to the documented contract:
+
 - `getTemplates` params: replace `cursor?: string` with `page?: number`, keep
   `limit` but rename semantics to `size` to match the contract (or keep the
   param named `limit` on the FE side for readability and map it to `size` in
@@ -36,11 +37,11 @@ pagination metadata.
 - `getTemplates` response: `{ data: TemplateListItem[], meta: PageMeta }`.
 - `PageInfo` (renamed usage to `PageMeta` where it represents this shape) is
   redefined to `{ page: number; size: number; totalElements: number;
-  totalPages: number; hasNext: boolean; hasPrevious: boolean }`.
+totalPages: number; hasNext: boolean; hasPrevious: boolean }`.
 - `templateClient.real.ts` MUST read the raw response body itself (bypassing
   `apiFetch`'s auto-unwrap, or fetching via `apiFetch<{ data, meta }>` on an
-  endpoint where the envelope's `data` field genuinely *is* `{ data, meta
-  }`) — concretely: since `apiFetch` already strips the outer
+  endpoint where the envelope's `data` field genuinely _is_ `{ data, meta
+}`) — concretely: since `apiFetch` already strips the outer
   `ApiResponse<T>` envelope, `getTemplates` should call
   `apiFetch<{ data: TemplateListItem[]; meta: PageMeta }>(...)`, i.e. treat
   the endpoint's inner body (post-outer-unwrap) as `{ data, meta }` per the
@@ -86,7 +87,7 @@ existing `TemplateClient` sort enum: "Phổ biến nhất" → `popular`, "Mới
 `getTemplates({ sort, ... })`; sorting itself happens server-side for the
 real client (already contractually true per `sort` enum in openapi.yaml) and
 client-side in the mock (`Array.prototype.sort` by `usage_count` desc for
-`popular`, by `created_at` desc for `newest`) applied *before* pagination
+`popular`, by `created_at` desc for `newest`) applied _before_ pagination
 slicing.
 
 **Rationale**: Reuses the exact enum already declared in
@@ -118,9 +119,10 @@ inventing a new query parameter the documented contract doesn't have.
 string` separately from `tags?: string` (`templateClient.types.ts`), and
 `templateClient.real.ts` **already** forwards both independently to the
 querystring. The bug is entirely in the Catalog feature's own wiring:
+
 - `useCatalogFilters.ts` only tracks one `tag` field in its state/URL param.
 - `TagFilterChips.tsx` calls `templateClient.getCategories()` (not
-  `getTags()`) and writes the selected *category* slug into that one `tag`
+  `getTags()`) and writes the selected _category_ slug into that one `tag`
   state.
 - `CatalogPage.tsx` sends that category-flavored value into
   `getTemplates({ tags: queryKey.tag })` — the wrong parameter for what it
@@ -130,6 +132,7 @@ querystring. The bug is entirely in the Catalog feature's own wiring:
   mock tag data to filter by yet.
 
 **Decision**:
+
 - `useCatalogFilters.ts` gains three independent URL-synced fields:
   `category` (`?category=`), `tag` (`?tag=`), and `sort` (`?sort=`), replacing
   the old single `tag` field's category-filtering role.

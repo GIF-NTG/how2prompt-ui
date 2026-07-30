@@ -57,7 +57,7 @@ funnel).
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **I. Dynamic Form Rendering Integrity** — N/A to admin screens themselves (they are
-  authoring UIs, not the Epic 3 template-*usage* form), **except** that the template
+  authoring UIs, not the Epic 3 template-_usage_ form), **except** that the template
   authoring screen's variable-declaration UI produces the same `template_variables`
   JSONB shape Epic 3 already consumes — this plan's `data-model.md` Template Variable
   section reuses that exact schema rather than inventing a parallel one. PASS.
@@ -72,7 +72,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
   auth reuses the existing `Authorization: Bearer` + silent-refresh session model.
   PASS.
 - **V. Verified Before Done** — `quickstart.md` requires `oxlint`, `tsc -b && vite
-  build`, `vitest`, and a manual browser walkthrough of all four stories before this
+build`, `vitest`, and a manual browser walkthrough of all four stories before this
   feature is reported complete. PASS.
 
 No violations requiring justification — Complexity Tracking section left empty.

@@ -8,7 +8,13 @@ interface ChipFilterGroupProps {
   loading?: boolean
 }
 
-export function ChipFilterGroup({ items, value, onChange, ariaLabel, loading }: ChipFilterGroupProps) {
+export function ChipFilterGroup({
+  items,
+  value,
+  onChange,
+  ariaLabel,
+  loading,
+}: ChipFilterGroupProps) {
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label={ariaLabel}>
       <button

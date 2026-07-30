@@ -1,8 +1,4 @@
-import type {
-  Template,
-  TemplateUpsert,
-  TemplatesAdminClient,
-} from './templatesAdminClient.types'
+import type { Template, TemplateUpsert, TemplatesAdminClient } from './templatesAdminClient.types'
 import { PublishValidationError } from './templatesAdminClient.types'
 import { findMissingPlaceholders } from '@/features/admin/utils/validatePlaceholders'
 

@@ -38,7 +38,7 @@ mount point only).
 
 ## Phase 1: Setup
 
-- [X] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
+- [x] T001 Run `npm run lint`, `npm run build`, and `npm run test -- --run`
       at the repo root and confirm all three currently pass, establishing
       the pre-feature baseline
 
@@ -56,42 +56,42 @@ their halves.
 **⚠️ CRITICAL**: Whoever does this (one person, or both together) must land
 it first. Do not start US1–US4 work before this phase is merged.
 
-- [X] T002 [P] Create `src/features/template-generate/types.ts` with
+- [x] T002 [P] Create `src/features/template-generate/types.ts` with
       `TemplateVariable`, `TemplateVariableOption`, and `TemplateVariant`
       (camelCase, matching `docs/api/openapi.yaml` exactly per
       research.md's contract-mismatch decision — data-model.md)
-- [X] T003 [P] Create `src/features/template-generate/api/generateClient.types.ts`
+- [x] T003 [P] Create `src/features/template-generate/api/generateClient.types.ts`
       with `GenerateRequest`/`GenerateResponse` (data-model.md,
       contracts/generate-endpoint.md)
-- [X] T004 Extend `TemplateVersion` in
+- [x] T004 Extend `TemplateVersion` in
       `src/features/template-detail/types.ts` with `variables:
-      TemplateVariable[]` and `variants: TemplateVariant[]` (depends on T002;
+    TemplateVariable[]` and `variants: TemplateVariant[]` (depends on T002;
       data-model.md)
-- [X] T005 Add `variables`/`variants` values to
+- [x] T005 Add `variables`/`variants` values to
       `MOCK_TEMPLATE.current_version` in
       `src/features/template-detail/api/templateDetailClient.mock.ts` — at
       least 3 variables spanning text/select/number/boolean per
       quickstart.md's prerequisites (depends on T004)
-- [X] T006 [P] Create `src/features/template-generate/utils/guestFingerprint.ts`
+- [x] T006 [P] Create `src/features/template-generate/utils/guestFingerprint.ts`
       — generates and persists a random UUID in `localStorage`, returns the
       same value on every call (research.md's guest-fingerprint decision)
-- [X] T007 Create `src/features/template-generate/api/generateClient.mock.ts`
+- [x] T007 Create `src/features/template-generate/api/generateClient.mock.ts`
       with a working success path only (echo `inputValues` substituted into
       the mock template's `prompt_body`) — quota/failure simulation is added
       later in US3 (T023) (depends on T002, T003)
-- [X] T008 Create `src/features/template-generate/api/generateClient.real.ts`
+- [x] T008 Create `src/features/template-generate/api/generateClient.real.ts`
       — `POST /templates/{id}/generate` via `apiFetch`, attaching
       `X-Guest-Fingerprint` from T006 when no session token is present
       (depends on T003, T006; contracts/generate-endpoint.md)
-- [X] T009 Create `src/features/template-generate/api/generateClient.ts`
+- [x] T009 Create `src/features/template-generate/api/generateClient.ts`
       (mock/real switch, mirroring `templateClient.ts`'s existing pattern)
       (depends on T007, T008)
-- [X] T010 Create `src/features/template-generate/hooks/useGenerateForm.ts`
+- [x] T010 Create `src/features/template-generate/hooks/useGenerateForm.ts`
       implementing `GenerateFormState` + per-field validation +
       variant-aware `activeVariables` recomputation on model change,
       preserving still-applicable `inputValues` (depends on T002, T004;
       data-model.md's state-transition rules)
-- [X] T011 Create `src/features/template-generate/components/TemplateGenerateSection.tsx`
+- [x] T011 Create `src/features/template-generate/components/TemplateGenerateSection.tsx`
       (owns `useGenerateForm`, renders placeholder slots for the A/B pieces
       below) and mount `<TemplateGenerateSection templateSlug={slug} />`
       below the existing read-only content in
@@ -114,23 +114,23 @@ is valid (quickstart.md step 2).
 
 ### Implementation for User Story 1
 
-- [X] T012 [P] [US1] Create `src/features/template-generate/components/ModelVariantSelect.tsx`
+- [x] T012 [P] [US1] Create `src/features/template-generate/components/ModelVariantSelect.tsx`
       — dropdown over the template's `supported_models`, hidden and
       auto-selected when only one model is supported (spec.md Acceptance
       Scenario 1.2/1.3)
-- [X] T013 [P] [US1] Create `src/features/template-generate/components/FormField.tsx`
+- [x] T013 [P] [US1] Create `src/features/template-generate/components/FormField.tsx`
       — one control per `inputType` (text, textarea, select, multiselect,
       number, boolean, slider), plain-text-input fallback for any other enum
       value (date/file/url/color), i18n label/placeholder/help text, inline
       validation message from `useGenerateForm`'s `errors`
-- [X] T014 [US1] Create `src/features/template-generate/components/DynamicForm.tsx`
+- [x] T014 [US1] Create `src/features/template-generate/components/DynamicForm.tsx`
       — maps `activeVariables` to `FormField` instances, sorted by
       `sortOrder` (depends on T012, T013)
-- [X] T015 [US1] Wire `ModelVariantSelect` and `DynamicForm` into the
+- [x] T015 [US1] Wire `ModelVariantSelect` and `DynamicForm` into the
       designated slots of `TemplateGenerateSection.tsx` (depends on T014;
       touches the shared container file — keep this a small, additive
       change to avoid conflicting with Developer B's own wiring task)
-- [X] T016 [US1] Add test cases in
+- [x] T016 [US1] Add test cases in
       `src/features/template-generate/components/DynamicForm.test.tsx`
       covering: one control per variable type renders; a required-but-empty
       field keeps Generate disabled; a regex/min/max violation keeps
@@ -139,7 +139,7 @@ is valid (quickstart.md step 2).
       `varKey` preserves that field's already-entered value, and clears/
       resets only the fields that don't exist in the new model's variant
       (FR-012)
-- [X] T017 [US1] Manually verify against `quickstart.md` step 2 (form
+- [x] T017 [US1] Manually verify against `quickstart.md` step 2 (form
       rendering, validation gating, model-switch variable preservation),
       confirming the relevant parts of spec.md's Acceptance Scenarios
 
@@ -158,22 +158,22 @@ updates immediately with unfilled required spots visually distinguished
 
 ### Implementation for User Story 2
 
-- [X] T018 [P] [US2] Create `src/features/template-generate/utils/renderTemplate.ts`
+- [x] T018 [P] [US2] Create `src/features/template-generate/utils/renderTemplate.ts`
       — substitutes `{{varKey}}` in the active `prompt_body` with current
       `inputValues`, returns unfilled placeholders as a distinct marker the
       UI can style separately (pure function, no React)
-- [X] T019 [US2] Create `src/features/template-generate/components/PreviewPanel.tsx`
+- [x] T019 [US2] Create `src/features/template-generate/components/PreviewPanel.tsx`
       — monospace rendering of `renderTemplate`'s output, unfilled spots
       visually distinct, character count + token estimate shown alongside
       (depends on T018)
-- [X] T020 [US2] Wire `PreviewPanel` into `TemplateGenerateSection.tsx`'s
+- [x] T020 [US2] Wire `PreviewPanel` into `TemplateGenerateSection.tsx`'s
       designated slot (depends on T019; small additive change, same
       conflict-avoidance note as T015)
-- [X] T021 [US2] Add test cases in
+- [x] T021 [US2] Add test cases in
       `src/features/template-generate/utils/renderTemplate.test.ts`
       covering: filled placeholder substitution, unfilled placeholder
       marking, and multiselect/boolean value formatting
-- [X] T022 [US2] Manually verify against `quickstart.md` step 3 (live
+- [x] T022 [US2] Manually verify against `quickstart.md` step 3 (live
       update with no network activity, unfilled-spot styling, size
       indicator), confirming SC-003
 
@@ -193,22 +193,22 @@ confirm quota/error paths render clearly (quickstart.md step 5).
 
 ### Implementation for User Story 3
 
-- [X] T023 [US3] Extend `src/features/template-generate/api/generateClient.mock.ts`
+- [x] T023 [US3] Extend `src/features/template-generate/api/generateClient.mock.ts`
       (from T007) with a simulated guest-quota-exceeded path and a simulated
       generic-failure path, both toggleable for dev/testing (contracts/generate-endpoint.md)
-- [X] T024 [P] [US3] Create `src/features/template-generate/components/GenerateActions.tsx`
+- [x] T024 [P] [US3] Create `src/features/template-generate/components/GenerateActions.tsx`
       — Generate button (disabled per `useGenerateForm.state.isValid`),
       Copy button with confirmation toast, and an error banner branching on
       `ApiError.code`/`status` (`GUEST_QUOTA_EXCEEDED` message vs. generic
       retry message) (depends on T023)
-- [X] T025 [P] [US3] Create `src/features/template-generate/components/OutputBox.tsx`
+- [x] T025 [P] [US3] Create `src/features/template-generate/components/OutputBox.tsx`
       — displays `GenerateResponse.finalPrompt` once generation succeeds
-- [X] T026 [US3] Wire `GenerateActions` and `OutputBox` into
+- [x] T026 [US3] Wire `GenerateActions` and `OutputBox` into
       `TemplateGenerateSection.tsx`'s designated slot, calling
       `generateClient.generate(...)` and holding the `GenerateResponse`
       result in local state (depends on T024, T025; same
       conflict-avoidance note as T015/T020)
-- [X] T027 [US3] Add test cases in
+- [x] T027 [US3] Add test cases in
       `src/features/template-generate/components/GenerateActions.test.tsx`
       covering: success shows `finalPrompt` and a working Copy button;
       `GUEST_QUOTA_EXCEEDED` shows the quota message; a generic failure
@@ -217,7 +217,7 @@ confirm quota/error paths render clearly (quickstart.md step 5).
       call, the mock response's `generatedPromptId` is non-null, and for an
       unauthenticated (guest) call it is `null` — asserting the FE surfaces
       whatever the mock returns rather than assuming either case (FR-009)
-- [X] T028 [US3] Manually verify against `quickstart.md` step 5 (generate
+- [x] T028 [US3] Manually verify against `quickstart.md` step 5 (generate
       uses the authoritative response, not the preview; copy confirmation;
       guest quota message; generic-failure handling), confirming FR-006,
       FR-009–FR-011, SC-001, SC-004, SC-005
@@ -236,12 +236,12 @@ with text (text appears appended) (quickstart.md step 4).
 
 ### Implementation for User Story 4
 
-- [X] T029 [US4] Create `src/features/template-generate/components/ExtraInstructionsField.tsx`
+- [x] T029 [US4] Create `src/features/template-generate/components/ExtraInstructionsField.tsx`
       — optional textarea bound to `useGenerateForm.state.extraInstructions`
-- [X] T030 [US4] Wire `ExtraInstructionsField` into `TemplateGenerateSection.tsx`'s
+- [x] T030 [US4] Wire `ExtraInstructionsField` into `TemplateGenerateSection.tsx`'s
       designated slot, below the dynamic form (depends on T029; same
       conflict-avoidance note as T015)
-- [X] T031 [US4] Manually verify against `quickstart.md` step 4 (empty vs.
+- [x] T031 [US4] Manually verify against `quickstart.md` step 4 (empty vs.
       filled field effect on the generated result), confirming FR-005
 
 **Checkpoint**: All four user stories complete and demonstrable together.
@@ -250,13 +250,13 @@ with text (text appears appended) (quickstart.md step 4).
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [X] T032 [P] Run `npm run lint` at the repo root and fix any issues
+- [x] T032 [P] Run `npm run lint` at the repo root and fix any issues
       introduced above
-- [X] T033 [P] Run `npm run build` at the repo root and fix any type/build
+- [x] T033 [P] Run `npm run build` at the repo root and fix any type/build
       errors introduced above
-- [X] T034 [P] Run `npm run test -- --run` at the repo root and confirm
+- [x] T034 [P] Run `npm run test -- --run` at the repo root and confirm
       100% pass, including every new test file from T016/T021/T027
-- [X] T035 Run the full `quickstart.md` validation end-to-end (all of
+- [x] T035 Run the full `quickstart.md` validation end-to-end (all of
       spec.md's Acceptance Scenarios, SC-001–SC-005) in a running browser
       against the mock client, exercising the complete form → preview →
       generate → copy flow together (depends on T017, T022, T028, T031,
@@ -272,7 +272,7 @@ with text (text appears appended) (quickstart.md step 4).
 - **Foundational (Phase 2)**: Depends on Setup. **Blocks every user story**
   — lands on the shared feature branch before either developer forks off.
 - **User Stories (Phase 3-6)**: All depend on Foundational. US1/US4
-  (Developer A) and US2/US3 (Developer B) touch disjoint *new* files and can
+  (Developer A) and US2/US3 (Developer B) touch disjoint _new_ files and can
   proceed fully in parallel on separate branches; each phase's final "wire
   into `TemplateGenerateSection.tsx`" task is the only place both
   developers touch the same file (see the note below).
@@ -287,7 +287,7 @@ with text (text appears appended) (quickstart.md step 4).
   US1's components to exist to build/test `renderTemplate.ts` and
   `PreviewPanel.tsx` in isolation (feed them synthetic state in tests).
 - **US3 (P1, Developer B)**: Depends only on Foundational for its own
-  implementation; T028's *manual* verification benefits from US1 existing
+  implementation; T028's _manual_ verification benefits from US1 existing
   (need a real form to fill in) but that's a verification-time convenience,
   not a build dependency.
 - **US4 (P2, Developer A)**: Depends only on Foundational.
@@ -348,8 +348,7 @@ Task: "PreviewPanel.tsx"
 1. One person (or both together) completes Setup + Foundational → merge to
    the shared feature branch.
 2. Developer A branches off and works US1 → US4 (Phases 3, 6).
-3. Developer B branches off the same commit and works US2 → US3 (Phases 4,
-   5) — starts at the same time as Developer A, not after.
+3. Developer B branches off the same commit and works US2 → US3 (Phases 4, 5) — starts at the same time as Developer A, not after.
 4. Both merge back into the feature branch; whoever merges second resolves
    the small `TemplateGenerateSection.tsx` diff (see the shared-file note
    above).

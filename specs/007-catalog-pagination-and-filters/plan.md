@@ -54,6 +54,7 @@ exactly (Constitution Principle III); no change to Featured/Trending rails,
 search, model filter, or the template detail page (FR-009)
 
 **Scale/Scope**: 1 screen, ~9 files:
+
 - `src/shared/types/api.ts` (`PageInfo` → align with `PageMeta`)
 - `src/features/home/types.ts` (`TemplateListItem.tags`, drop unused
   `CatalogPageData`)
@@ -84,7 +85,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
   `TemplateClient.getTemplates` pagination shape (`cursor`/`next_cursor`)
   conflicts with `docs/api/openapi.yaml`'s documented `GET /templates`
   contract (`page`/`size` query params, `PageMeta { page, size,
-  totalElements, totalPages, hasNext, hasPrevious }` in the response `meta`).
+totalElements, totalPages, hasNext, hasPrevious }` in the response `meta`).
   Per the Constitution, the OpenAPI doc supersedes the pre-existing client
   shape — this plan corrects `templateClient.real.ts`/`.types.ts` to the
   documented contract rather than building pagination against a shape the
@@ -93,7 +94,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 - **IV. Security Non-Negotiables** — N/A. No auth/credential handling
   touched. Pass.
 - **V. Verified Before Done** — Applies directly: `oxlint`, `tsc -b && vite
-  build`, and `vitest` must all pass, and the new sort/pagination/filter
+build`, and `vitest` must all pass, and the new sort/pagination/filter
   interactions must be exercised in a running browser before this feature is
   reported done, per spec SC-001–SC-005.
 

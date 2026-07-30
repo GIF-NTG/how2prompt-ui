@@ -57,7 +57,9 @@ describe('EmailVerificationBanner', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Gửi lại email' }))
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Yêu cầu gửi lại email xác minh đã được tiếp nhận')
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Yêu cầu gửi lại email xác minh đã được tiếp nhận',
+    )
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()
     expect(button).toHaveTextContent('5:00')

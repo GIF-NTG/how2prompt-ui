@@ -19,7 +19,11 @@ export function createRealTemplatesAdminClient(): TemplatesAdminClient {
       return apiFetch<Template>('/admin/templates', { method: 'POST', accessToken, body: input })
     },
     async update(accessToken: string, id: string, input: TemplateUpsert) {
-      return apiFetch<Template>(`/admin/templates/${id}`, { method: 'PATCH', accessToken, body: input })
+      return apiFetch<Template>(`/admin/templates/${id}`, {
+        method: 'PATCH',
+        accessToken,
+        body: input,
+      })
     },
     async publish(accessToken: string, id: string) {
       try {

@@ -9,7 +9,7 @@ assemble into the unchanged client-side `Session`.
 ## Wire entity: `ApiResponse<T>` envelope (new)
 
 ```json
-{ "data": { /* T */ }, "meta": { /* PageMeta | null */ } }
+{ "data": {/* T */}, "meta": {/* PageMeta | null */} }
 ```
 
 - Wraps every non-`204` response body (research.md Decision 2).
@@ -58,7 +58,7 @@ assemble into the unchanged client-side `Session`.
 ## Wire entity: `RegisterResponse` (unchanged shape, still embeds `user`)
 
 ```json
-{ "user": { /* UserProfile */ }, "message": "string" }
+{ "user": {/* UserProfile */}, "message": "string" }
 ```
 
 - `register()` never turns this into a `Session` (registering never signs the visitor

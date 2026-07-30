@@ -21,7 +21,12 @@ export function DateRangeFilter({ from, to, onChange }: DateRangeFilterProps) {
       </label>
       <label className="flex items-center gap-2 text-[0.82rem] text-[#4A4F4A] dark:text-[#A8ADA7]">
         Đến
-        <input type="date" className={inputBase} value={to} onChange={(e) => onChange({ from, to: e.target.value })} />
+        <input
+          type="date"
+          className={inputBase}
+          value={to}
+          onChange={(e) => onChange({ from, to: e.target.value })}
+        />
       </label>
     </div>
   )

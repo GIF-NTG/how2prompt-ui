@@ -95,8 +95,8 @@ export function TemplatesAdminPage() {
           Tạo &amp; publish template chính chủ
         </h1>
         <p className="m-0 max-w-[62ch] text-[0.94rem] leading-[1.6] text-[#5B5F58] dark:text-[#A2A79C]">
-          Soạn template, khai báo biến cho từng placeholder, lưu nháp hoặc publish để
-          hiển thị cho toàn bộ người dùng.
+          Soạn template, khai báo biến cho từng placeholder, lưu nháp hoặc publish để hiển thị cho
+          toàn bộ người dùng.
         </p>
       </div>
 
@@ -146,7 +146,9 @@ export function TemplatesAdminPage() {
               className="flex items-center justify-between gap-3 rounded-xl border border-[#DBDFD3] px-4 py-3 dark:border-[#2C3130]"
             >
               <div className="flex flex-col gap-0.5">
-                <span className="text-[0.9rem] font-medium">{template.title.vi || template.title.en}</span>
+                <span className="text-[0.9rem] font-medium">
+                  {template.title.vi || template.title.en}
+                </span>
                 <span className="text-[0.76rem] text-[#8A8F8A] dark:text-[#6B706B]">
                   v{template.versionNumber} ·{' '}
                   {template.status === 'published' ? 'Đã publish' : 'Nháp'}

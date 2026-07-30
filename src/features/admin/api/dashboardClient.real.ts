@@ -1,4 +1,8 @@
-import type { DashboardClient, DashboardDateRange, DashboardMetricSnapshot } from './dashboardClient.types'
+import type {
+  DashboardClient,
+  DashboardDateRange,
+  DashboardMetricSnapshot,
+} from './dashboardClient.types'
 import { apiFetch } from '@/shared/utils/httpClient'
 
 /**

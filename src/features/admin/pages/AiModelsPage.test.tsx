@@ -62,7 +62,10 @@ describe('AiModelsPage', () => {
   })
 
   it('lists existing models and renders no delete action', async () => {
-    mockedClient.listAll.mockResolvedValue([makeModel(), makeModel({ id: 'm2', code: 'claude', name: 'Claude' })])
+    mockedClient.listAll.mockResolvedValue([
+      makeModel(),
+      makeModel({ id: 'm2', code: 'claude', name: 'Claude' }),
+    ])
     renderPage()
 
     await waitFor(() => expect(screen.getByText('GPT-4o')).toBeInTheDocument())
@@ -98,7 +101,9 @@ describe('AiModelsPage', () => {
     await user.click(screen.getByRole('button', { name: /^sửa$/i }))
     await user.click(screen.getByRole('button', { name: /lưu thay đổi/i }))
 
-    await waitFor(() => expect(mockedClient.update).toHaveBeenCalledWith('admin-token', 'm1', expect.any(Object)))
+    await waitFor(() =>
+      expect(mockedClient.update).toHaveBeenCalledWith('admin-token', 'm1', expect.any(Object)),
+    )
   })
 
   it('deactivates a model via the toggle action, without a delete button', async () => {

@@ -103,9 +103,14 @@ const store: HistoryDetail[] = [
     promptSnippet: 'Viết mô tả sản phẩm cho SmartWatch X1...',
     createdAt: daysAgo(4),
     templateVersionId: 'ver-t3-1',
-    inputValues: { productName: 'SmartWatch X1', features: 'GPS, đo nhịp tim', audience: 'Người đi làm trẻ' },
+    inputValues: {
+      productName: 'SmartWatch X1',
+      features: 'GPS, đo nhịp tim',
+      audience: 'Người đi làm trẻ',
+    },
     extraInstructions: null,
-    finalPrompt: 'Viết mô tả sản phẩm cho SmartWatch X1, nhấn mạnh các tính năng: GPS, đo nhịp tim...',
+    finalPrompt:
+      'Viết mô tả sản phẩm cho SmartWatch X1, nhấn mạnh các tính năng: GPS, đo nhịp tim...',
   },
   {
     id: 'h6',
@@ -118,7 +123,8 @@ const store: HistoryDetail[] = [
     templateVersionId: 'ver-t4-1',
     inputValues: { diff: '+ const user = req.user;', strictness: 'strict' },
     extraInstructions: null,
-    finalPrompt: 'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n+ const user = req.user;',
+    finalPrompt:
+      'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n+ const user = req.user;',
   },
   {
     id: 'h7',
@@ -147,7 +153,10 @@ const CYCLE_TEMPLATES = [
 const CYCLE_TITLES: Record<string, HistoryDetail['templateTitle']> = {
   [TEMPLATE_SLUGS.debug]: { en: 'Debug effectively', vi: 'Debug lỗi hiệu quả' },
   [TEMPLATE_SLUGS.rewrite]: { en: 'Rewrite content style', vi: 'Sửa văn phong nội dung' },
-  [TEMPLATE_SLUGS.marketing]: { en: 'Marketing product description', vi: 'Mô tả sản phẩm marketing' },
+  [TEMPLATE_SLUGS.marketing]: {
+    en: 'Marketing product description',
+    vi: 'Mô tả sản phẩm marketing',
+  },
   [TEMPLATE_SLUGS.codeReview]: { en: 'Code review checklist', vi: 'Kiểm tra code review' },
   [TEMPLATE_SLUGS.meeting]: { en: 'Summarize meeting notes', vi: 'Tóm tắt cuộc họp' },
 }

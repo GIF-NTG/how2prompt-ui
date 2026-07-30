@@ -8,6 +8,7 @@ filter.
 ## `PageMeta` (replaces `PageInfo`) — `src/shared/types/api.ts`
 
 **Before**:
+
 ```ts
 export interface PageInfo {
   next_cursor: string | null
@@ -16,6 +17,7 @@ export interface PageInfo {
 ```
 
 **After**:
+
 ```ts
 export interface PageMeta {
   page: number
@@ -39,10 +41,11 @@ reference `PageInfo` today).
 ## `TemplateListItem` — `src/features/home/types.ts`
 
 **Added field**:
+
 ```ts
 export interface TemplateListItem {
   // ...existing fields unchanged...
-  tags: Tag[]   // new — mirrors the existing `categories: Category[]` field
+  tags: Tag[] // new — mirrors the existing `categories: Category[]` field
 }
 ```
 
@@ -59,6 +62,7 @@ anywhere in `src/`).
 ## `TemplateClient.getTemplates` — `src/features/home/api/templateClient.types.ts`
 
 **Before**:
+
 ```ts
 getTemplates(params: {
   q?: string
@@ -72,6 +76,7 @@ getTemplates(params: {
 ```
 
 **After**:
+
 ```ts
 getTemplates(params: {
   q?: string

@@ -114,7 +114,7 @@ to accept the current `isFavorited` flag and call `POST` (add) or `DELETE`
 **Rationale**: FR-012 (toggle must both favorite and unfavorite) and FR-013
 (unfavoriting from the `/favorites` list must work) are unimplementable
 without this fix — the feature description says the favorite/unfavorite
-*capability* already exists and should be reused, not reimplemented from
+_capability_ already exists and should be reused, not reimplemented from
 scratch, but "reuse" here means fixing an incomplete existing
 implementation to match its own documented contract (`docs/api/openapi.yaml`
 already defines both the `POST` and `DELETE` endpoints), not introducing a

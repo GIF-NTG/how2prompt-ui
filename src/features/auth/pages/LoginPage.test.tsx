@@ -77,7 +77,9 @@ describe('LoginPage', () => {
     await user.type(screen.getByPlaceholderText('••••••••'), 'password123')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Vui lòng xác minh email trước khi đăng nhập')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Vui lòng xác minh email trước khi đăng nhập',
+    )
     expect(screen.getByRole('button', { name: 'Gửi lại email xác minh' })).toBeInTheDocument()
   })
 
@@ -93,7 +95,9 @@ describe('LoginPage', () => {
 
     const resendButton = await screen.findByRole('button', { name: 'Gửi lại email xác minh' })
     await user.click(resendButton)
-    expect(await screen.findByRole('status')).toHaveTextContent('Yêu cầu gửi lại email xác minh đã được tiếp nhận')
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Yêu cầu gửi lại email xác minh đã được tiếp nhận',
+    )
 
     await user.click(screen.getByRole('button', { name: 'Gửi lại email xác minh' }))
     expect(
@@ -109,7 +113,9 @@ describe('LoginPage', () => {
     await user.type(screen.getByPlaceholderText('••••••••'), 'wrongpass')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Email hoặc mật khẩu không chính xác')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Email hoặc mật khẩu không chính xác',
+    )
     expect(screen.queryByRole('button', { name: 'Gửi lại email xác minh' })).not.toBeInTheDocument()
   })
 })

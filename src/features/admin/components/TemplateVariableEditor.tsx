@@ -74,7 +74,9 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
             <input
               className={inputBase}
               value={variable.label.en}
-              onChange={(e) => updateVariable(index, { label: { ...variable.label, en: e.target.value } })}
+              onChange={(e) =>
+                updateVariable(index, { label: { ...variable.label, en: e.target.value } })
+              }
               placeholder="Nhãn (EN)"
               aria-label={`Nhãn ${index + 1}`}
             />
@@ -82,7 +84,9 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
               className={`${inputBase} cursor-pointer`}
               value={variable.inputType}
               onChange={(e) =>
-                updateVariable(index, { inputType: e.target.value as TemplateVariable['inputType'] })
+                updateVariable(index, {
+                  inputType: e.target.value as TemplateVariable['inputType'],
+                })
               }
               aria-label={`Loại trường ${index + 1}`}
             >

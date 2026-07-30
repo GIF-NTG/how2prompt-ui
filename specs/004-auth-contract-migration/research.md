@@ -113,16 +113,16 @@ for the same underlying HTTP condition.
 **Decision**: Apply the following 1:1 renames inside `authClient.real.ts` and
 `httpClient.ts`'s `ApiErrorBody`/request bodies (no behavior change, no new types):
 
-| Old (snake_case) | New (camelCase) | Where |
-|---|---|---|
-| `access_token` | `accessToken` | `AuthResponseBody`, `apiFetch` request options |
-| `expires_in` | `expiresIn` | `AuthResponseBody` |
-| `full_name` | `fullName` | `BackendUser`, register request body |
-| `email_verified` | `emailVerified` | `BackendUser` |
-| `new_password` | `newPassword` | reset-password request body |
-| `trace_id` | `traceId` | `ApiErrorBody.error` |
-| `token_type` | *(removed)* | `AuthResponseBody` no longer has this field at all |
-| `authorization_url`, `state` (Google) | *(removed)* | replaced by the single `idToken` flow (Decision 3) |
+| Old (snake_case)                      | New (camelCase) | Where                                              |
+| ------------------------------------- | --------------- | -------------------------------------------------- |
+| `access_token`                        | `accessToken`   | `AuthResponseBody`, `apiFetch` request options     |
+| `expires_in`                          | `expiresIn`     | `AuthResponseBody`                                 |
+| `full_name`                           | `fullName`      | `BackendUser`, register request body               |
+| `email_verified`                      | `emailVerified` | `BackendUser`                                      |
+| `new_password`                        | `newPassword`   | reset-password request body                        |
+| `trace_id`                            | `traceId`       | `ApiErrorBody.error`                               |
+| `token_type`                          | _(removed)_     | `AuthResponseBody` no longer has this field at all |
+| `authorization_url`, `state` (Google) | _(removed)_     | replaced by the single `idToken` flow (Decision 3) |
 
 **Rationale**: Direct 1:1 mapping from `docs/api/openapi.yaml`'s updated schemas
 (`AuthResponse`, `UserProfile`, `RegisterRequest`, `ErrorResponse`, `/auth/reset-password`'s
