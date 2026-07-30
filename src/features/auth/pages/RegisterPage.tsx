@@ -1,15 +1,17 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { InlineBlank } from '../components/InlineBlankForm'
 import { AuthLayout } from '../components/AuthLayout'
 import { GoogleSignInButton } from '../components/GoogleSignInButton'
 import { authClient } from '../api/authClient'
+import { useAuth } from '../context/useAuth'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MIN_PASSWORD_LENGTH = 8
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const { session, isRestoring } = useAuth()
 
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
@@ -26,6 +28,12 @@ export function RegisterPage() {
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const submittingRef = useRef(false)
+
+  // Wait for the initial session restore before deciding anything (mirrors
+  // LoginPage's isRestoring gate) — otherwise a signed-in visitor who
+  // navigates back to /register would see the form instead of being sent home.
+  if (isRestoring) return null
+  if (session) return <Navigate to="/" replace />
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

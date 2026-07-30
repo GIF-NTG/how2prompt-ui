@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { InlineBlank } from '../components/InlineBlankForm'
 import { AuthLayout } from '../components/AuthLayout'
 import { GoogleSignInButton } from '../components/GoogleSignInButton'
@@ -16,7 +16,7 @@ interface LoginLocationState {
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { signIn } = useAuth()
+  const { signIn, session, isRestoring } = useAuth()
   const locationState = location.state as LoginLocationState | null
   const justRegistered = Boolean(locationState?.justRegistered)
   const passwordWasReset = Boolean(locationState?.passwordWasReset)
@@ -37,6 +37,13 @@ export function LoginPage() {
   const passwordRef = useRef<HTMLInputElement>(null)
   const submittingRef = useRef(false)
   const resendingRef = useRef(false)
+
+  // Wait for the initial session restore before deciding anything (mirrors
+  // ProfileSettingsPage's isRestoring gate) — otherwise a signed-in visitor who
+  // navigates back to /login (or hits it via browser back) would see the form
+  // instead of being sent home.
+  if (isRestoring) return null
+  if (session) return <Navigate to="/" replace />
 
   function resetResendState() {
     setEmailNotVerified(false)

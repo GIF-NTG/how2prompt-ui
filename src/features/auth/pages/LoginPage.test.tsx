@@ -28,7 +28,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
+    await user.type(await screen.findByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
     await user.type(screen.getByPlaceholderText('••••••••'), 'demo1234')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
@@ -40,7 +40,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    const emailInput = screen.getByPlaceholderText('ban@vidu.com')
+    const emailInput = await screen.findByPlaceholderText('ban@vidu.com')
     const passwordInput = screen.getByPlaceholderText('••••••••')
 
     await user.type(emailInput, 'wrong@example.com')
@@ -58,7 +58,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
+    await user.type(await screen.findByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
     const passwordInput = screen.getByPlaceholderText('••••••••')
@@ -73,7 +73,7 @@ describe('LoginPage', () => {
     await authClient.register('Người chưa xác minh', email, 'password123')
 
     renderLoginPage()
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), email)
+    await user.type(await screen.findByPlaceholderText('ban@vidu.com'), email)
     await user.type(screen.getByPlaceholderText('••••••••'), 'password123')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
@@ -89,7 +89,7 @@ describe('LoginPage', () => {
     await authClient.register('Người chưa xác minh', email, 'password123')
 
     renderLoginPage()
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), email)
+    await user.type(await screen.findByPlaceholderText('ban@vidu.com'), email)
     await user.type(screen.getByPlaceholderText('••••••••'), 'password123')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 
@@ -109,7 +109,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
+    await user.type(await screen.findByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
     await user.type(screen.getByPlaceholderText('••••••••'), 'wrongpass')
     await user.click(screen.getByRole('button', { name: 'Đăng nhập →' }))
 

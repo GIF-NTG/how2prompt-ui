@@ -28,7 +28,7 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    await user.type(screen.getByPlaceholderText('tên hiển thị'), 'Nguyễn Văn A')
+    await user.type(await screen.findByPlaceholderText('tên hiển thị'), 'Nguyễn Văn A')
     await user.type(screen.getByPlaceholderText('ban@vidu.com'), `new-${Date.now()}@example.com`)
     await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhau123')
     await user.click(screen.getByRole('button', { name: 'Đăng ký →' }))
@@ -40,7 +40,7 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    await user.type(screen.getByPlaceholderText('tên hiển thị'), 'Người dùng Demo 2')
+    await user.type(await screen.findByPlaceholderText('tên hiển thị'), 'Người dùng Demo 2')
     await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
     await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhau123')
     await user.click(screen.getByRole('button', { name: 'Đăng ký →' }))
@@ -54,7 +54,7 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    const nameInput = screen.getByPlaceholderText('tên hiển thị')
+    const nameInput = await screen.findByPlaceholderText('tên hiển thị')
     const emailInput = screen.getByPlaceholderText('ban@vidu.com')
     const passwordInput = screen.getByPlaceholderText('tối thiểu 8 ký tự')
     const submit = screen.getByRole('button', { name: 'Đăng ký →' })
