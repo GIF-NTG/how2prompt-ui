@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
-import { AuthLayout } from '../components/AuthLayout'
 import { useAuth } from '../context/useAuth'
 
 const FULL_NAME_MAX_LENGTH = 150
@@ -115,97 +114,105 @@ export function ProfileSettingsPage() {
   }
 
   return (
-    <AuthLayout>
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
+    <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
+      <div className="flex animate-[fade-slide-up_450ms_ease] flex-col gap-2">
+        <span className="before:mr-1.5 before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3652E0] font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF] dark:before:bg-[#8493FF]">
+          hồ sơ
+        </span>
+        <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
           Hồ sơ cá nhân
-        </h2>
+        </h1>
+        <p className="m-0 text-sm text-[#5B5F58] dark:text-[#A2A79C]">{session.email}</p>
       </div>
 
-      {loadingProfile ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải hồ sơ...</p>
-      ) : (
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên hiển thị</span>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(event) => setFullName(event.target.value)}
-              className={`${FIELD_CLASSES} ${fullNameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
-            />
-            {fullNameError && (
-              <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
-                {fullNameError}
+      <div className="rounded-card border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]">
+        {loadingProfile ? (
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải hồ sơ...</p>
+        ) : (
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên hiển thị</span>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                className={`${FIELD_CLASSES} ${fullNameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
+              />
+              {fullNameError && (
+                <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
+                  {fullNameError}
+                </span>
+              )}
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">
+                Tên người dùng (tuỳ chọn)
               </span>
+              <input
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                className={`${FIELD_CLASSES} ${usernameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
+              />
+              {usernameError && (
+                <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
+                  {usernameError}
+                </span>
+              )}
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Giới thiệu (tuỳ chọn)</span>
+              <textarea
+                value={bio}
+                onChange={(event) => setBio(event.target.value)}
+                rows={3}
+                className={`${FIELD_CLASSES} ${FIELD_BORDER}`}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Ngôn ngữ</span>
+              <select
+                value={locale}
+                onChange={(event) => setLocale(event.target.value as 'en' | 'vi')}
+                className={`${FIELD_CLASSES} ${FIELD_BORDER}`}
+              >
+                <option value="vi">Tiếng Việt</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+
+            {errorMessage && (
+              <p
+                role="alert"
+                className="rounded-lg border border-[#C23A2E]/40 bg-[#FBE7E4] px-4 py-2 text-sm text-[#C23A2E] dark:border-[#FF7A6B]/40 dark:bg-[#3A2224] dark:text-[#FF7A6B]"
+              >
+                {errorMessage}
+              </p>
             )}
-          </label>
-
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên người dùng (tuỳ chọn)</span>
-            <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              className={`${FIELD_CLASSES} ${usernameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
-            />
-            {usernameError && (
-              <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
-                {usernameError}
-              </span>
+            {successMessage && (
+              <p
+                role="status"
+                className="rounded-lg border border-[#2E7D4F]/30 bg-[#E4F3EA] px-4 py-2 text-sm text-[#2E7D4F] dark:border-[#6FCF9A]/30 dark:bg-[#1E3327] dark:text-[#6FCF9A]"
+              >
+                {successMessage}
+              </p>
             )}
-          </label>
 
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[#5B5F58] dark:text-[#A2A79C]">Giới thiệu (tuỳ chọn)</span>
-            <textarea
-              value={bio}
-              onChange={(event) => setBio(event.target.value)}
-              rows={3}
-              className={`${FIELD_CLASSES} ${FIELD_BORDER}`}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1 text-sm">
-            <span className="text-[#5B5F58] dark:text-[#A2A79C]">Ngôn ngữ</span>
-            <select
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as 'en' | 'vi')}
-              className={`${FIELD_CLASSES} ${FIELD_BORDER}`}
-            >
-              <option value="vi">Tiếng Việt</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-
-          {errorMessage && (
-            <p
-              role="alert"
-              className="rounded-lg border border-[#C23A2E]/40 bg-[#FBE7E4] px-4 py-2 text-sm text-[#C23A2E] dark:border-[#FF7A6B]/40 dark:bg-[#3A2224] dark:text-[#FF7A6B]"
-            >
-              {errorMessage}
-            </p>
-          )}
-          {successMessage && (
-            <p
-              role="status"
-              className="rounded-lg border border-[#2E7D4F]/30 bg-[#E4F3EA] px-4 py-2 text-sm text-[#2E7D4F] dark:border-[#6FCF9A]/30 dark:bg-[#1E3327] dark:text-[#6FCF9A]"
-            >
-              {successMessage}
-            </p>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
-            >
-              Lưu thay đổi
-            </button>
-          </div>
-        </form>
-      )}
-    </AuthLayout>
+            <div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+              >
+                Lưu thay đổi
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </main>
   )
 }

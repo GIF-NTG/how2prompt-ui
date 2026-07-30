@@ -26,7 +26,6 @@ export function App() {
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route path="verify-email" element={<VerifyEmailPage />} />
-            <Route path="profile" element={<ProfileSettingsPage />} />
             {/* Pre-v1.1.0 Google authorization-code callback URL — the backend no
                 longer exposes that flow at all, so a stale bookmark/in-flight link
                 redirects straight to login instead of rendering a dead page. */}
@@ -37,6 +36,7 @@ export function App() {
               <Route path="templates/:slug" element={<TemplateDetailPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="profile" element={<ProfileSettingsPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
