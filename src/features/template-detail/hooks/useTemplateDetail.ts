@@ -3,7 +3,7 @@ import { templateDetailClient } from '../api/templateDetailClient'
 import type { TemplateDetail } from '../types'
 import { ApiError } from '@/shared/utils/httpClient'
 
-export function useTemplateDetail(slug: string) {
+export function useTemplateDetail(id: string) {
   const [template, setTemplate] = useState<TemplateDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -18,11 +18,11 @@ export function useTemplateDetail(slug: string) {
       setNotFound(false)
 
       try {
-        const data = await templateDetailClient.getDetail(slug)
+        const data = await templateDetailClient.getDetail(id)
         if (!cancelled) {
           setTemplate(data)
           // fire-and-forget view count increment
-          templateDetailClient.incrementViewCount(slug).catch(() => {})
+          templateDetailClient.incrementViewCount(id).catch(() => {})
         }
       } catch (err) {
         if (!cancelled) {
@@ -43,7 +43,7 @@ export function useTemplateDetail(slug: string) {
     return () => {
       cancelled = true
     }
-  }, [slug])
+  }, [id])
 
   return { template, isLoading, error, notFound }
 }

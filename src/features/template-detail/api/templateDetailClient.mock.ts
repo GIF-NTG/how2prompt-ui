@@ -535,22 +535,22 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
   },
 }
 
-const MOCK_TEMPLATES_BY_SLUG = new Map<string, TemplateDetail>(
+const MOCK_TEMPLATES_BY_ID = new Map<string, TemplateDetail>(
   [
     DEBUG_TEMPLATE,
     REWRITE_TEMPLATE,
     MARKETING_TEMPLATE,
     CODE_REVIEW_TEMPLATE,
     MEETING_SUMMARY_TEMPLATE,
-  ].map((template) => [template.slug, template]),
+  ].map((template) => [template.id, template]),
 )
 
 const favorites = new Set<string>()
 
 export function createMockTemplateDetailClient(): TemplateDetailClient {
   return {
-    async getDetail(slug) {
-      const template = MOCK_TEMPLATES_BY_SLUG.get(slug)
+    async getDetail(id) {
+      const template = MOCK_TEMPLATES_BY_ID.get(id)
       if (!template) {
         throw new ApiError('TEMPLATE_NOT_FOUND', 'Không tìm thấy mẫu.', 404)
       }
@@ -566,10 +566,10 @@ export function createMockTemplateDetailClient(): TemplateDetailClient {
       return { isFavorited: favorites.has(templateId) }
     },
 
-    async incrementViewCount(slug) {
-      const template = MOCK_TEMPLATES_BY_SLUG.get(slug)
+    async incrementViewCount(id) {
+      const template = MOCK_TEMPLATES_BY_ID.get(id)
       if (template) {
-        MOCK_TEMPLATES_BY_SLUG.set(slug, { ...template, viewCount: template.viewCount + 1 })
+        MOCK_TEMPLATES_BY_ID.set(id, { ...template, viewCount: template.viewCount + 1 })
       }
     },
   }

@@ -206,25 +206,20 @@ function matchesFilters(
 
 export function createMockHistoryClient(): HistoryClient {
   return {
-    async list(filters, page, size) {
+    async list(filters, cursor, size) {
       const filtered = store
         .filter((entry) => matchesFilters(entry, filters))
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
-      const totalElements = filtered.length
-      const totalPages = Math.max(1, Math.ceil(totalElements / size))
-      const pageData = filtered.slice(page * size, page * size + size)
+      const offset = cursor ? Number(cursor) : 0
+      const pageData = filtered.slice(offset, offset + size)
+      const nextOffset = offset + pageData.length
+      const hasMore = nextOffset < filtered.length
 
       return {
-        data: pageData.map(toListItem),
-        meta: {
-          page,
-          size,
-          totalElements,
-          totalPages,
-          hasNext: (page + 1) * size < totalElements,
-          hasPrevious: page > 0,
-        },
+        items: pageData.map(toListItem),
+        nextCursor: hasMore ? String(nextOffset) : null,
+        hasMore,
       }
     },
 
@@ -243,25 +238,20 @@ export function createMockHistoryClient(): HistoryClient {
       }
     },
 
-    async listFavorites(page, size) {
+    async listFavorites(cursor, size) {
       const favorited = MOCK_TEMPLATES.filter((t) => favorites.has(t.id)).map((t) => ({
         ...t,
         isFavorited: true,
       }))
-      const totalElements = favorited.length
-      const totalPages = Math.max(1, Math.ceil(totalElements / size))
-      const pageData = favorited.slice(page * size, page * size + size)
+      const offset = cursor ? Number(cursor) : 0
+      const pageData = favorited.slice(offset, offset + size)
+      const nextOffset = offset + pageData.length
+      const hasMore = nextOffset < favorited.length
 
       return {
-        data: pageData,
-        meta: {
-          page,
-          size,
-          totalElements,
-          totalPages,
-          hasNext: (page + 1) * size < totalElements,
-          hasPrevious: page > 0,
-        },
+        items: pageData,
+        nextCursor: hasMore ? String(nextOffset) : null,
+        hasMore,
       }
     },
   }

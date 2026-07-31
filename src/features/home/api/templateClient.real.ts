@@ -8,7 +8,7 @@ import type { TemplateListItem, AiModel, Category, Tag, I18nString } from '../ty
  *  createdAt, no `author`/`isFavorited`) — see project memory
  *  `project_templates_pagination_contract_drift`. Mapped to the FE's
  *  `TemplateListItem` shape below rather than propagating the raw fields. */
-interface RawTemplateListItem {
+export interface RawTemplateListItem {
   id: string
   slug: string
   titleI18n: I18nString
@@ -24,7 +24,7 @@ interface RawTemplateListItem {
   publishedAt: string
 }
 
-function mapTemplateListItem(raw: RawTemplateListItem): TemplateListItem {
+export function mapTemplateListItem(raw: RawTemplateListItem): TemplateListItem {
   return {
     id: raw.id,
     slug: raw.slug,

@@ -35,7 +35,7 @@ export function FavoriteTemplateGrid({
                 template={t}
                 isSignedIn
                 index={index}
-                onClick={(slug) => navigate(`/templates/${slug}`)}
+                onClick={(id) => navigate(`/templates/${id}`)}
                 onFavoriteChange={(templateId, isFavorited) => {
                   if (!isFavorited) onUnfavorited(templateId)
                 }}

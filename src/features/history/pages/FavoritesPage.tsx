@@ -14,8 +14,8 @@ export function FavoritesPage() {
   const historyClient = useMemo(() => createHistoryClient(session?.token), [session?.token])
 
   const [templates, setTemplates] = useState<TemplateListItem[]>([])
-  const [page, setPage] = useState(0)
-  const [hasNext, setHasNext] = useState(false)
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -26,11 +26,11 @@ export function FavoritesPage() {
     setLoading(true)
     setError(null)
     try {
-      const result = await historyClient.listFavorites(0, PAGE_SIZE)
+      const result = await historyClient.listFavorites(null, PAGE_SIZE)
       if (generation !== requestGeneration.current) return
-      setTemplates(result.data)
-      setPage(0)
-      setHasNext(result.meta.hasNext)
+      setTemplates(result.items)
+      setCursor(result.nextCursor)
+      setHasMore(result.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải danh sách yêu thích, vui lòng thử lại sau.')
@@ -46,21 +46,21 @@ export function FavoritesPage() {
 
   const handleLoadMore = useCallback(async () => {
     const generation = requestGeneration.current
-    const nextPage = page + 1
+    if (!cursor) return
     setIsLoadingMore(true)
     try {
-      const result = await historyClient.listFavorites(nextPage, PAGE_SIZE)
+      const result = await historyClient.listFavorites(cursor, PAGE_SIZE)
       if (generation !== requestGeneration.current) return
-      setTemplates((prev) => [...prev, ...result.data])
-      setPage(nextPage)
-      setHasNext(result.meta.hasNext)
+      setTemplates((prev) => [...prev, ...result.items])
+      setCursor(result.nextCursor)
+      setHasMore(result.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải thêm, vui lòng thử lại sau.')
     } finally {
       if (generation === requestGeneration.current) setIsLoadingMore(false)
     }
-  }, [historyClient, page])
+  }, [historyClient, cursor])
 
   const handleUnfavorited = useCallback((templateId: string) => {
     setTemplates((prev) => prev.filter((t) => t.id !== templateId))
@@ -90,7 +90,7 @@ export function FavoritesPage() {
         <FavoriteTemplateGrid
           templates={templates}
           onUnfavorited={handleUnfavorited}
-          hasNext={hasNext}
+          hasNext={hasMore}
           isLoadingMore={isLoadingMore}
           onLoadMore={() => void handleLoadMore()}
         />

@@ -1,14 +1,16 @@
-import type { PageMeta } from '@/shared/types/api'
 import type { TemplateListItem } from '@/features/home/types'
 import type { HistoryDetail, HistoryFilters, HistoryListItem } from '../types'
 
 export interface HistoryClient {
   list(
     filters: Partial<HistoryFilters>,
-    page: number,
+    cursor: string | null,
     size: number,
-  ): Promise<{ data: HistoryListItem[]; meta: PageMeta }>
+  ): Promise<{ items: HistoryListItem[]; nextCursor: string | null; hasMore: boolean }>
   get(id: string): Promise<HistoryDetail>
   remove(id: string): Promise<void>
-  listFavorites(page: number, size: number): Promise<{ data: TemplateListItem[]; meta: PageMeta }>
+  listFavorites(
+    cursor: string | null,
+    size: number,
+  ): Promise<{ items: TemplateListItem[]; nextCursor: string | null; hasMore: boolean }>
 }

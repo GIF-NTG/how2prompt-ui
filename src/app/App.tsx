@@ -39,7 +39,7 @@ export function App() {
 
             <Route element={<RootLayout />}>
               <Route index element={<CatalogPage />} />
-              <Route path="templates/:slug" element={<TemplateDetailPage />} />
+              <Route path="templates/:id" element={<TemplateDetailPage />} />
               <Route path="history" element={<HistoryPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="profile" element={<ProfileSettingsPage />} />

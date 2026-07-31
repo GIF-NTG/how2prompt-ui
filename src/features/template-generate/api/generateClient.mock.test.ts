@@ -6,7 +6,7 @@ describe('createMockGenerateClient().generate — history auto-save (US2)', () =
   it('adds a new history entry for a logged-in generate call', async () => {
     const client = createMockGenerateClient('demo-token')
     const historyClient = createMockHistoryClient()
-    const before = await historyClient.list({}, 0, 100)
+    const before = await historyClient.list({}, null, 100)
 
     const result = await client.generate('debug-loi-hieu-qua', {
       aiModelCode: 'gpt-4o',
@@ -15,8 +15,8 @@ describe('createMockGenerateClient().generate — history auto-save (US2)', () =
     })
 
     expect(result.generatedPromptId).toBeTruthy()
-    const after = await historyClient.list({}, 0, 100)
-    expect(after.meta.totalElements).toBe(before.meta.totalElements + 1)
+    const after = await historyClient.list({}, null, 100)
+    expect(after.items.length).toBe(before.items.length + 1)
 
     const created = await historyClient.get(result.generatedPromptId!)
     expect(created.templateId).toBe('debug-loi-hieu-qua')
@@ -54,7 +54,7 @@ describe('createMockGenerateClient().generate — history auto-save (US2)', () =
   it('adds nothing for a Guest (no accessToken) generate call', async () => {
     const client = createMockGenerateClient(undefined)
     const historyClient = createMockHistoryClient()
-    const before = await historyClient.list({}, 0, 100)
+    const before = await historyClient.list({}, null, 100)
 
     const result = await client.generate('debug-loi-hieu-qua', {
       aiModelCode: 'gpt-4o',
@@ -63,7 +63,7 @@ describe('createMockGenerateClient().generate — history auto-save (US2)', () =
     })
 
     expect(result.generatedPromptId).toBeNull()
-    const after = await historyClient.list({}, 0, 100)
-    expect(after.meta.totalElements).toBe(before.meta.totalElements)
+    const after = await historyClient.list({}, null, 100)
+    expect(after.items.length).toBe(before.items.length)
   })
 })

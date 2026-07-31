@@ -14,9 +14,9 @@ import { createHistoryClient } from '@/features/history/api/historyClient'
 import type { HistoryDetail } from '@/features/history/types'
 
 export function TemplateDetailPage() {
-  const { slug } = useParams<{ slug: string }>()
+  const { id } = useParams<{ id: string }>()
   const { session } = useAuth()
-  const { template, isLoading, error, notFound } = useTemplateDetail(slug ?? '')
+  const { template, isLoading, error, notFound } = useTemplateDetail(id ?? '')
 
   const [searchParams] = useSearchParams()
   const reloadId = searchParams.get('reload')

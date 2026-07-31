@@ -107,8 +107,8 @@ export function CatalogPage() {
   }, [cursor, queryKey])
 
   const handleTemplateClick = useCallback(
-    (slug: string) => {
-      navigate(`/templates/${slug}`, { viewTransition: true })
+    (id: string) => {
+      navigate(`/templates/${id}`, { viewTransition: true })
     },
     [navigate],
   )

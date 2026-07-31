@@ -4,7 +4,7 @@ import { TemplateCard } from './TemplateCard'
 interface TemplateGridProps {
   templates: TemplateListItem[]
   isSignedIn?: boolean
-  onTemplateClick?: (slug: string) => void
+  onTemplateClick?: (id: string) => void
   hasNext?: boolean
   isLoadingMore?: boolean
   onLoadMore?: () => void

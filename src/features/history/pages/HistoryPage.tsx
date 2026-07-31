@@ -18,8 +18,8 @@ export function HistoryPage() {
   const historyClient = useMemo(() => createHistoryClient(session?.token), [session?.token])
 
   const [items, setItems] = useState<HistoryListItem[]>([])
-  const [page, setPage] = useState(0)
-  const [hasNext, setHasNext] = useState(false)
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -41,11 +41,11 @@ export function HistoryPage() {
     setError(null)
 
     try {
-      const result = await historyClient.list(queryKey, 0, PAGE_SIZE)
+      const result = await historyClient.list(queryKey, null, PAGE_SIZE)
       if (generation !== requestGeneration.current) return
-      setItems(result.data)
-      setPage(0)
-      setHasNext(result.meta.hasNext)
+      setItems(result.items)
+      setCursor(result.nextCursor)
+      setHasMore(result.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải lịch sử, vui lòng thử lại sau.')
@@ -61,21 +61,21 @@ export function HistoryPage() {
 
   const handleLoadMore = useCallback(async () => {
     const generation = requestGeneration.current
-    const nextPage = page + 1
+    if (!cursor) return
     setIsLoadingMore(true)
     try {
-      const result = await historyClient.list(queryKey, nextPage, PAGE_SIZE)
+      const result = await historyClient.list(queryKey, cursor, PAGE_SIZE)
       if (generation !== requestGeneration.current) return
-      setItems((prev) => [...prev, ...result.data])
-      setPage(nextPage)
-      setHasNext(result.meta.hasNext)
+      setItems((prev) => [...prev, ...result.items])
+      setCursor(result.nextCursor)
+      setHasMore(result.hasMore)
     } catch {
       if (generation !== requestGeneration.current) return
       setError('Không thể tải thêm lịch sử, vui lòng thử lại sau.')
     } finally {
       if (generation === requestGeneration.current) setIsLoadingMore(false)
     }
-  }, [historyClient, queryKey, page])
+  }, [historyClient, queryKey, cursor])
 
   const handleConfirmDelete = useCallback(
     (ids: string[]) => {
@@ -138,7 +138,7 @@ export function HistoryPage() {
       ) : (
         <HistoryList
           items={items}
-          hasNext={hasNext}
+          hasNext={hasMore}
           isLoadingMore={isLoadingMore}
           onLoadMore={() => void handleLoadMore()}
           getDetail={(id) => historyClient.get(id)}

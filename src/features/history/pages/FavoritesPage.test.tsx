@@ -65,7 +65,7 @@ function renderFavoritesPage(authValue: AuthContextValue) {
       <MemoryRouter initialEntries={['/favorites']}>
         <Routes>
           <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/templates/:slug" element={<div>Template detail</div>} />
+          <Route path="/templates/:id" element={<div>Template detail</div>} />
         </Routes>
       </MemoryRouter>
     </AuthContext.Provider>,
@@ -75,15 +75,9 @@ function renderFavoritesPage(authValue: AuthContextValue) {
 describe('FavoritesPage', () => {
   it('lists favorited templates', async () => {
     const listFavorites = vi.fn().mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: {
-        page: 0,
-        size: 20,
-        totalElements: 1,
-        totalPages: 1,
-        hasNext: false,
-        hasPrevious: false,
-      },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
     mockedCreateHistoryClient.mockReturnValue({
       list: vi.fn(),
@@ -98,15 +92,9 @@ describe('FavoritesPage', () => {
 
   it('shows the empty state when there are no favorites', async () => {
     const listFavorites = vi.fn().mockResolvedValue({
-      data: [],
-      meta: {
-        page: 0,
-        size: 20,
-        totalElements: 0,
-        totalPages: 1,
-        hasNext: false,
-        hasPrevious: false,
-      },
+      items: [],
+      nextCursor: null,
+      hasMore: false,
     })
     mockedCreateHistoryClient.mockReturnValue({
       list: vi.fn(),
@@ -123,26 +111,14 @@ describe('FavoritesPage', () => {
     const listFavorites = vi
       .fn()
       .mockResolvedValueOnce({
-        data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-        meta: {
-          page: 0,
-          size: 1,
-          totalElements: 2,
-          totalPages: 2,
-          hasNext: true,
-          hasPrevious: false,
-        },
+        items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+        nextCursor: '1',
+        hasMore: true,
       })
       .mockResolvedValueOnce({
-        data: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
-        meta: {
-          page: 1,
-          size: 1,
-          totalElements: 2,
-          totalPages: 2,
-          hasNext: false,
-          hasPrevious: true,
-        },
+        items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
+        nextCursor: null,
+        hasMore: false,
       })
     mockedCreateHistoryClient.mockReturnValue({
       list: vi.fn(),
@@ -163,15 +139,9 @@ describe('FavoritesPage', () => {
 
   it('removes a template from the list when unfavorited', async () => {
     const listFavorites = vi.fn().mockResolvedValue({
-      data: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
-      meta: {
-        page: 0,
-        size: 20,
-        totalElements: 1,
-        totalPages: 1,
-        hasNext: false,
-        hasPrevious: false,
-      },
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
     })
     mockedCreateHistoryClient.mockReturnValue({
       list: vi.fn(),

@@ -9,7 +9,7 @@ import { getTagColorClasses } from '@/shared/utils/colorTag'
 interface TemplateCardProps {
   template: TemplateListItem
   isSignedIn: boolean
-  onClick?: (slug: string) => void
+  onClick?: (id: string) => void
   index?: number
   /** Called after a favorite toggle succeeds — lets a list (e.g.
    *  FavoriteTemplateGrid, FR-013) react to the new state, such as removing
@@ -47,11 +47,11 @@ export function TemplateCard({
       tabIndex={0}
       style={{ animationDelay: `${Math.min(index, 14) * 35}ms` }}
       className="group relative flex h-full w-full animate-[fade-slide-up_400ms_ease_backwards] cursor-pointer flex-col gap-[0.55rem] rounded-card border border-[#DBDFD3] bg-white p-[1.1rem_1.2rem] text-left transition-[border-color,transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:border-[#3652E0] hover:shadow-[0_12px_24px_-18px_rgba(27,29,27,0.4)] active:scale-[0.98] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:bg-[#1C2024] dark:hover:border-[#8493FF] dark:hover:shadow-[0_12px_24px_-18px_rgba(0,0,0,0.6)]"
-      onClick={() => onClick?.(template.slug)}
+      onClick={() => onClick?.(template.id)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onClick?.(template.slug)
+          onClick?.(template.id)
         }
       }}
     >
