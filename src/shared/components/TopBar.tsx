@@ -41,6 +41,18 @@ export function TopBar() {
           >
             Lịch sử
           </Link>
+          {session?.isAdmin && (
+            <Link
+              to="/admin/ai-models"
+              className={`text-[0.88rem] border-b border-transparent transition-colors duration-150 ${
+                location.pathname.startsWith('/admin')
+                  ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8] dark:border-b-[#6D726A]'
+                  : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
+              }`}
+            >
+              Quản trị
+            </Link>
+          )}
         </nav>
 
         <ThemeToggle />

@@ -61,16 +61,24 @@ reflects that restructure and does **not** match epic numbers from before this u
   re-generate rather than overwriting), favorite/unfavorite templates, soft-delete
   history records.
 - **Epic 5 — Admin & Content Management** (Phase 1): admin CRUD for AI models,
-  categories/tags (nested taxonomy), create & publish official templates
-  (`is_official=true`), analytics dashboard. Implemented under
+  categories (nested taxonomy) and read-only tags, create & publish official
+  templates (`is_official=true`), analytics dashboard. Implemented under
   `src/features/admin` (`specs/011-admin-content-management`), gated by a
   `RequireAdmin` route guard on `/admin/ai-models`, `/admin/taxonomy`,
-  `/admin/templates`, `/admin/dashboard`. Three sub-requirements are scoped out
-  as tracked backend-contract gaps, not silently dropped — `docs/api/openapi.yaml`
-  currently has no delete endpoint for AI models or categories, no admin tag
-  CRUD/merge endpoints at all, and no signup→first-generate conversion metric on
-  `DashboardStats` (see `specs/011-admin-content-management/research.md`
-  Decision 3). Revisit this scoping once the backend adds those endpoints.
+  `/admin/templates`, `/admin/dashboard`. Rebuilt from scratch after an earlier
+  implementation was removed (commit `f0832cc`); `Session.isAdmin` and its
+  seeded mock admin account (`admin@how2prompt.dev` / `admin1234`) survived that
+  removal and needed no changes. Several sub-requirements are scoped out as
+  tracked backend-contract gaps, not silently dropped — `docs/api/openapi.yaml`
+  currently has no delete endpoint for AI models or categories, **no admin tag
+  endpoints of any kind** (not even creation), no signup→first-generate
+  conversion metric on `DashboardStats`, and no `GET /admin/templates` list
+  endpoint (the admin template list is mock-only until the backend adds one)
+  (see `specs/011-admin-content-management/research.md` Decision 3). Revisit
+  this scoping once the backend adds those endpoints. The "newer version
+  available" indicator required by this epic's template-publish flow (FR-014a)
+  turned out to already be implemented in `src/features/template-detail`
+  (Epic 4) — no duplicate component was built for it.
 - **Later phases** (not in scope yet, see `SRS.md` §6 roadmap): Epic 6 AI
   Enhancement — refine/score/playground (Phase 2); Epic 7 Template Customization &
   Versioning — fork/edit/version (Phase 2); Epic 8 Community & Social — votes,

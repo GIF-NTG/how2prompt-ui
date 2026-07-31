@@ -8,6 +8,12 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
 import { TemplateDetailPage } from '@/features/template-detail/components/TemplateDetailPage'
 import { HistoryPage } from '@/features/history/pages/HistoryPage'
 import { FavoritesPage } from '@/features/history/pages/FavoritesPage'
+import { RequireAdmin } from '@/features/admin/components/RequireAdmin'
+import { AdminLayout } from '@/features/admin/components/AdminLayout'
+import { AiModelsPage } from '@/features/admin/pages/AiModelsPage'
+import { TaxonomyPage } from '@/features/admin/pages/TaxonomyPage'
+import { TemplatesAdminPage } from '@/features/admin/pages/TemplatesAdminPage'
+import { DashboardPage } from '@/features/admin/pages/DashboardPage'
 import { VerifyEmailPage } from '@/features/auth/pages/VerifyEmailPage'
 import { ProfileSettingsPage } from '@/features/auth/pages/ProfileSettingsPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
@@ -37,6 +43,18 @@ export function App() {
               <Route path="history" element={<HistoryPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="profile" element={<ProfileSettingsPage />} />
+            </Route>
+
+            {/* Admin uses its own sidebar shell (AdminLayout), per
+                docs/design/how2prompt-admin-dashboard-mockup.html — not nested
+                under RootLayout's TopBar. */}
+            <Route element={<RequireAdmin />}>
+              <Route element={<AdminLayout />}>
+                <Route path="admin/ai-models" element={<AiModelsPage />} />
+                <Route path="admin/taxonomy" element={<TaxonomyPage />} />
+                <Route path="admin/templates" element={<TemplatesAdminPage />} />
+                <Route path="admin/dashboard" element={<DashboardPage />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>

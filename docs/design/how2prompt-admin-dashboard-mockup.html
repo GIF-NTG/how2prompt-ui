@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How2Prompt — Admin Dashboard (Design Reference)</title>
+    <style>
+      :root {
+        --bg: #f3f5f0;
+        --surface: #ffffff;
+        --surface-2: #eaede6;
+        --ink: #1b1d1b;
+        --ink-soft: #5b5f58;
+        --ink-faint: #8b8f86;
+        --accent: #3652e0;
+        --accent-ink: #ffffff;
+        --accent-soft: #e7eafc;
+        --line: #dbdfd3;
+        --danger: #c23a2e;
+        --danger-soft: #fbe7e4;
+        --good: #2e7d4f;
+        --good-soft: #e4f3ea;
+        --warn: #c98a1f;
+        --warn-soft: #f7ecd7;
+        --focus: #3652e0;
+        --shadow: 0 24px 60px -30px rgba(27, 29, 27, 0.35);
+        --font-sans: ui-sans-serif, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        --font-mono:
+          ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+      }
+
+      :root[data-theme='dark'] {
+        --bg: #14171a;
+        --surface: #1c2024;
+        --surface-2: #23282c;
+        --ink: #eceee8;
+        --ink-soft: #a2a79c;
+        --ink-faint: #6d726a;
+        --accent: #8493ff;
+        --accent-ink: #14171a;
+        --accent-soft: #262c4a;
+        --line: #2c3130;
+        --danger: #ff7a6b;
+        --danger-soft: #3a2224;
+        --good: #6fcf9a;
+        --good-soft: #1e3327;
+        --warn: #e0b25c;
+        --warn-soft: #362c1a;
+        --focus: #8493ff;
+        --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #14171a;
+          --surface: #1c2024;
+          --surface-2: #23282c;
+          --ink: #eceee8;
+          --ink-soft: #a2a79c;
+          --ink-faint: #6d726a;
+          --accent: #8493ff;
+          --accent-ink: #14171a;
+          --accent-soft: #262c4a;
+          --line: #2c3130;
+          --danger: #ff7a6b;
+          --danger-soft: #3a2224;
+          --good: #6fcf9a;
+          --good-soft: #1e3327;
+          --warn: #e0b25c;
+          --warn-soft: #362c1a;
+          --focus: #8493ff;
+          --shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        overflow-x: hidden;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+      }
+      a {
+        color: inherit;
+      }
+      button {
+        font-family: inherit;
+      }
+
+      /* ============ shell: sidebar + main, deliberately NOT the
+         consumer app's TopBar/nav shell (RootLayout/TopBar.tsx) — this
+         is a standalone admin surface. ============ */
+      .shell {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        padding: 1.4rem 1.1rem;
+        gap: 1.75rem;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        padding: 0 0.4rem;
+      }
+      .brand .mark {
+        font-family: var(--font-mono);
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 6px;
+        padding: 0.15rem 0.45rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .brand .sub {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .nav-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .nav-group-label {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0 0.65rem;
+        margin-bottom: 0.4rem;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .nav-item .ic {
+        width: 1.1rem;
+        height: 1.1rem;
+        flex-shrink: 0;
+        display: inline-flex;
+      }
+      .nav-item .ic svg {
+        width: 100%;
+        height: 100%;
+      }
+      .nav-item:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+      .nav-item[aria-current='page'] {
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .nav-item:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .sidebar-foot {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--line);
+      }
+      .admin-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.4rem 0.4rem;
+      }
+      .avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .admin-chip .who {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .admin-chip .who strong {
+        font-size: 0.85rem;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .admin-chip .who span {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+      }
+      .sidebar-link {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        padding: 0.5rem 0.65rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+      }
+      .sidebar-link:hover {
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+      .sidebar-link:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      /* ============ main column ============ */
+      .main {
+        min-width: 0;
+        padding: 1.4rem clamp(1.25rem, 3vw, 2.5rem) 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .topbar .heading {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .topbar h1 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.2vw, 1.6rem);
+        letter-spacing: -0.015em;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .range-group {
+        display: flex;
+        gap: 0.25rem;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.2rem;
+      }
+      .range-chip {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        background: none;
+        border: none;
+        border-radius: 7px;
+        padding: 0.4rem 0.7rem;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .range-chip[aria-pressed='true'] {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 1px 0 var(--line);
+      }
+      .range-chip:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .ghost-btn {
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .ghost-btn:hover {
+        border-color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+      .ghost-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .icon-btn {
+        width: 2.15rem;
+        height: 2.15rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+      .icon-btn:hover {
+        color: var(--ink);
+        border-color: var(--ink-faint);
+      }
+      .icon-btn:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      .icon-btn svg {
+        width: 1.05rem;
+        height: 1.05rem;
+      }
+
+      /* ============ kpi cards ============ */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+        gap: 0.9rem;
+      }
+      .kpi-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .kpi-card .kpi-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .kpi-label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .kpi-icon {
+        width: 1.8rem;
+        height: 1.8rem;
+        border-radius: 8px;
+        background: var(--surface-2);
+        color: var(--ink-faint);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .kpi-icon svg {
+        width: 1rem;
+        height: 1rem;
+      }
+      .kpi-value {
+        font-size: 1.7rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .kpi-delta {
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        width: fit-content;
+        border-radius: 999px;
+        padding: 0.12rem 0.5rem;
+      }
+      .kpi-delta.up {
+        color: var(--good);
+        background: var(--good-soft);
+      }
+      .kpi-delta.down {
+        color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .kpi-delta.flat {
+        color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+
+      /* ============ panels ============ */
+      .panel-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+        gap: 1rem;
+      }
+      @media (max-width: 900px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 1.25rem 1.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-width: 0;
+      }
+      .panel-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .panel-head h2 {
+        margin: 0;
+        font-size: 0.98rem;
+        letter-spacing: -0.005em;
+      }
+      .panel-head .hint {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+      }
+
+      /* line chart */
+      .chart-wrap {
+        position: relative;
+      }
+      .chart-wrap svg {
+        width: 100%;
+        height: 190px;
+        display: block;
+        overflow: visible;
+      }
+      .chart-axis {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        color: var(--ink-faint);
+        margin-top: 0.4rem;
+      }
+
+      /* horizontal bar list (models) */
+      .bar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .bar-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .bar-row .bar-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+      }
+      .bar-row .bar-top .name {
+        font-weight: 600;
+      }
+      .bar-row .bar-top .pct {
+        font-family: var(--font-mono);
+        color: var(--ink-faint);
+        font-size: 0.76rem;
+      }
+      .bar-track {
+        height: 0.5rem;
+        border-radius: 999px;
+        background: var(--surface-2);
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      /* table */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .data-table th {
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ink-faint);
+        font-weight: 600;
+        padding: 0 0.6rem 0.6rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table td {
+        padding: 0.65rem 0.6rem;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .rank {
+        font-family: var(--font-mono);
+        color: var(--ink-faint);
+        width: 1.5rem;
+      }
+      .tpl-name {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .tpl-name strong {
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+      .tpl-name span {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+      }
+      .badge-official {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--accent);
+        background: var(--accent-soft);
+        border-radius: 5px;
+        padding: 0.1rem 0.35rem;
+        width: fit-content;
+      }
+      .usage-cell {
+        font-family: var(--font-mono);
+        font-weight: 600;
+      }
+      .trend {
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
+      .trend.up {
+        color: var(--good);
+      }
+      .trend.down {
+        color: var(--danger);
+      }
+
+      /* funnel */
+      .funnel {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .funnel-step {
+        display: grid;
+        grid-template-columns: 9rem minmax(0, 1fr) 3.4rem;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .funnel-step .step-label {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+      }
+      .funnel-track {
+        height: 1.6rem;
+        border-radius: 8px;
+        background: var(--surface-2);
+        overflow: hidden;
+      }
+      .funnel-fill {
+        height: 100%;
+        border-radius: 8px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+        display: flex;
+        align-items: center;
+      }
+      .funnel-step .step-pct {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        text-align: right;
+        color: var(--ink-soft);
+      }
+
+      /* activity feed */
+      .activity-list {
+        display: flex;
+        flex-direction: column;
+      }
+      .activity-row {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px dashed var(--line);
+      }
+      .activity-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .activity-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        margin-top: 0.4rem;
+        flex-shrink: 0;
+        background: var(--ink-faint);
+      }
+      .activity-dot.good {
+        background: var(--good);
+      }
+      .activity-dot.warn {
+        background: var(--warn);
+      }
+      .activity-dot.accent {
+        background: var(--accent);
+      }
+      .activity-row p {
+        margin: 0;
+        font-size: 0.84rem;
+        line-height: 1.5;
+      }
+      .activity-row time {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+      }
+
+      .cache-note {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .cache-note .pill {
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 999px;
+        padding: 0.08rem 0.5rem;
+        font-weight: 600;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+
+      @media (max-width: 960px) {
+        .shell {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+        .sidebar {
+          position: static;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- ============ sidebar ============ -->
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="mark">{ }</span>
+          <div>
+            <div>How2Prompt</div>
+            <div class="sub">Admin</div>
+          </div>
+        </div>
+
+        <nav class="nav-group">
+          <div class="nav-group-label">Tổng quan</div>
+          <a class="nav-item" href="#" aria-current="page">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="7" height="9" rx="1.5" />
+                <rect x="14" y="3" width="7" height="5" rx="1.5" />
+                <rect x="14" y="12" width="7" height="9" rx="1.5" />
+                <rect x="3" y="16" width="7" height="5" rx="1.5" />
+              </svg>
+            </span>
+            Dashboard
+          </a>
+        </nav>
+
+        <nav class="nav-group">
+          <div class="nav-group-label">Nội dung</div>
+          <a class="nav-item" href="#">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="4" width="18" height="12" rx="2" />
+                <path d="M8 20h8M12 16v4" />
+              </svg>
+            </span>
+            AI Models
+          </a>
+          <a class="nav-item" href="#">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 6h6l2 2h8v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" />
+              </svg>
+            </span>
+            Danh mục &amp; Tag
+          </a>
+          <a class="nav-item" href="#">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                <path d="M14 3v5h5M8 13h8M8 17h5" />
+              </svg>
+            </span>
+            Templates
+          </a>
+        </nav>
+
+        <div class="sidebar-foot">
+          <div class="admin-chip">
+            <span class="avatar">A</span>
+            <div class="who">
+              <strong>Admin Demo</strong>
+              <span>admin@how2prompt.dev</span>
+            </div>
+          </div>
+          <button type="button" class="sidebar-link" onclick="toggleTheme()">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="4" />
+                <path
+                  d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+                />
+              </svg>
+            </span>
+            Đổi giao diện sáng/tối
+          </button>
+          <a class="sidebar-link" href="#">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M10 19l-7-7 7-7M3 12h18" />
+              </svg>
+            </span>
+            Về trang chính
+          </a>
+        </div>
+      </aside>
+
+      <!-- ============ main ============ -->
+      <div class="main">
+        <div class="topbar">
+          <div class="heading">
+            <span class="eyebrow">admin / analytics</span>
+            <h1>Dashboard</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="range-group" role="group" aria-label="Khoảng thời gian">
+              <button class="range-chip" aria-pressed="false">7 ngày</button>
+              <button class="range-chip" aria-pressed="true">30 ngày</button>
+              <button class="range-chip" aria-pressed="false">90 ngày</button>
+            </div>
+            <button type="button" class="ghost-btn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                width="15"
+                height="15"
+              >
+                <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+              </svg>
+              Xuất báo cáo
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI row -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">DAU</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">1.284</span>
+            <span class="kpi-delta up">↑ 8,4% so với hôm qua</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">WAU</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 12h4l3-8 4 16 3-8h4" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">6.032</span>
+            <span class="kpi-delta up">↑ 3,1% so với tuần trước</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">MAU</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="4" width="18" height="17" rx="2" />
+                  <path d="M3 9h18M8 3v3M16 3v3" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">18.940</span>
+            <span class="kpi-delta down">↓ 1,2% so với tháng trước</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Prompt hôm nay</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                  <path d="M9 13h6M9 17h6" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">3.512</span>
+            <span class="kpi-delta up">↑ 14% so với hôm qua</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Template đã publish</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
+                  <path d="M9 12h6M9 16h6" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">214</span>
+            <span class="kpi-delta flat">→ không đổi</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Signup → tạo prompt</span>
+              <span class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 5h16l-6 8v6l-4 2v-8L4 5Z" />
+                </svg>
+              </span>
+            </div>
+            <span class="kpi-value">42%</span>
+            <span class="kpi-delta up">↑ 5 điểm % so với tháng trước</span>
+          </div>
+        </div>
+
+        <!-- charts row -->
+        <div class="panel-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Prompt được tạo theo ngày</h2>
+              <span class="hint">30 ngày gần nhất</span>
+            </div>
+            <div class="chart-wrap">
+              <svg viewBox="0 0 560 190" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
+                    <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <line x1="0" y1="30" x2="560" y2="30" stroke="var(--line)" stroke-width="1" />
+                <line x1="0" y1="80" x2="560" y2="80" stroke="var(--line)" stroke-width="1" />
+                <line x1="0" y1="130" x2="560" y2="130" stroke="var(--line)" stroke-width="1" />
+                <line x1="0" y1="178" x2="560" y2="178" stroke="var(--line)" stroke-width="1" />
+                <path
+                  d="M0,140 L40,132 L80,120 L120,128 L160,96 L200,104 L240,80 L280,92 L320,60 L360,70 L400,48 L440,56 L480,34 L520,44 L560,26 L560,178 L0,178 Z"
+                  fill="url(#areaFill)"
+                  stroke="none"
+                />
+                <path
+                  d="M0,140 L40,132 L80,120 L120,128 L160,96 L200,104 L240,80 L280,92 L320,60 L360,70 L400,48 L440,56 L480,34 L520,44 L560,26"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="chart-axis">
+              <span>1 thg 7</span>
+              <span>8 thg 7</span>
+              <span>15 thg 7</span>
+              <span>22 thg 7</span>
+              <span>30 thg 7</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Model AI được dùng nhiều nhất</h2>
+            </div>
+            <div class="bar-list">
+              <div class="bar-row">
+                <div class="bar-top">
+                  <span class="name">GPT-4o</span>
+                  <span class="pct">38%</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width: 38%"></div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-top">
+                  <span class="name">Claude</span>
+                  <span class="pct">31%</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width: 31%"></div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-top">
+                  <span class="name">Gemini</span>
+                  <span class="pct">22%</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width: 22%"></div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-top">
+                  <span class="name">Midjourney</span>
+                  <span class="pct">9%</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width: 9%"></div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- table + funnel row -->
+        <div class="panel-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Mẫu phổ biến nhất</h2>
+              <span class="hint">theo lượt tạo, 30 ngày</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Template</th>
+                  <th>Lượt dùng</th>
+                  <th>Xu hướng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="rank">1</td>
+                  <td>
+                    <div class="tpl-name">
+                      <strong>Debug lỗi hiệu quả</strong>
+                      <span class="badge-official">CHÍNH THỨC</span>
+                    </div>
+                  </td>
+                  <td class="usage-cell">2.140</td>
+                  <td><span class="trend up">↑ 12%</span></td>
+                </tr>
+                <tr>
+                  <td class="rank">2</td>
+                  <td>
+                    <div class="tpl-name">
+                      <strong>Viết mô tả sản phẩm</strong>
+                      <span class="badge-official">CHÍNH THỨC</span>
+                    </div>
+                  </td>
+                  <td class="usage-cell">1.876</td>
+                  <td><span class="trend up">↑ 6%</span></td>
+                </tr>
+                <tr>
+                  <td class="rank">3</td>
+                  <td>
+                    <div class="tpl-name">
+                      <strong>Tóm tắt tài liệu dài</strong>
+                      <span></span>
+                    </div>
+                  </td>
+                  <td class="usage-cell">1.402</td>
+                  <td><span class="trend down">↓ 3%</span></td>
+                </tr>
+                <tr>
+                  <td class="rank">4</td>
+                  <td>
+                    <div class="tpl-name">
+                      <strong>Lên kế hoạch nội dung tuần</strong>
+                      <span class="badge-official">CHÍNH THỨC</span>
+                    </div>
+                  </td>
+                  <td class="usage-cell">988</td>
+                  <td><span class="trend up">↑ 21%</span></td>
+                </tr>
+                <tr>
+                  <td class="rank">5</td>
+                  <td>
+                    <div class="tpl-name">
+                      <strong>Dịch giữ nguyên văn phong</strong>
+                      <span></span>
+                    </div>
+                  </td>
+                  <td class="usage-cell">754</td>
+                  <td><span class="trend down">↓ 8%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Phễu Signup → tạo prompt đầu tiên</h2>
+            </div>
+            <div class="funnel">
+              <div class="funnel-step">
+                <span class="step-label">Đăng ký</span>
+                <div class="funnel-track">
+                  <div class="funnel-fill" style="width: 100%"></div>
+                </div>
+                <span class="step-pct">100%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="step-label">Xác minh email</span>
+                <div class="funnel-track">
+                  <div class="funnel-fill" style="width: 71%"></div>
+                </div>
+                <span class="step-pct">71%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="step-label">Chọn 1 template</span>
+                <div class="funnel-track">
+                  <div class="funnel-fill" style="width: 58%"></div>
+                </div>
+                <span class="step-pct">58%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="step-label">Tạo prompt đầu tiên</span>
+                <div class="funnel-track">
+                  <div class="funnel-fill" style="width: 42%"></div>
+                </div>
+                <span class="step-pct">42%</span>
+              </div>
+            </div>
+
+            <div class="panel-head" style="margin-top: 0.25rem">
+              <h2>Hoạt động gần đây</h2>
+            </div>
+            <div class="activity-list">
+              <div class="activity-row">
+                <span class="activity-dot good"></span>
+                <div>
+                  <p>Template <strong>"Debug lỗi hiệu quả"</strong> vừa được publish.</p>
+                  <time>2 phút trước</time>
+                </div>
+              </div>
+              <div class="activity-row">
+                <span class="activity-dot accent"></span>
+                <div>
+                  <p>Đã thêm model AI mới <strong>Gemini 2.5 Flash</strong> vào catalog.</p>
+                  <time>41 phút trước</time>
+                </div>
+              </div>
+              <div class="activity-row">
+                <span class="activity-dot warn"></span>
+                <div>
+                  <p>Ngưỡng guest quota (3 lượt/ngày/IP) đạt 92% công suất giờ cao điểm.</p>
+                  <time>1 giờ trước</time>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <p class="cache-note"><span class="pill">CACHE</span> Số liệu được làm mới mỗi 5 phút.</p>
+      </div>
+    </div>
+
+    <script>
+      function toggleTheme() {
+        const root = document.documentElement
+        const current = root.getAttribute('data-theme')
+        if (current === 'dark') {
+          root.setAttribute('data-theme', 'light')
+        } else if (current === 'light') {
+          root.removeAttribute('data-theme')
+        } else {
+          root.setAttribute('data-theme', 'dark')
+        }
+      }
+
+      document.querySelectorAll('.range-group .range-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          document
+            .querySelectorAll('.range-group .range-chip')
+            .forEach((c) => c.setAttribute('aria-pressed', 'false'))
+          chip.setAttribute('aria-pressed', 'true')
+        })
+      })
+    </script>
+  </body>
+</html>

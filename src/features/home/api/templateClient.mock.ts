@@ -1,7 +1,11 @@
 import type { TemplateClient } from './templateClient.types'
 import type { TemplateListItem, AiModel, Category, Tag } from '../types'
 
-const MOCK_MODELS: AiModel[] = [
+/** Exported (mutable) so `src/features/admin/api/aiModelsClient.mock.ts` can
+ *  create/update entries in place — the admin catalog and every public
+ *  model-selection dropdown must share one fixture array for FR-003 ("reflects
+ *  immediately") to hold true without a real backend. */
+export const MOCK_MODELS: AiModel[] = [
   {
     id: 'm1',
     code: 'gpt-4o',
@@ -40,7 +44,9 @@ const MOCK_MODELS: AiModel[] = [
   },
 ]
 
-const MOCK_CATEGORIES: Category[] = [
+/** Exported (mutable) for the same reason as `MOCK_MODELS` — shared with
+ *  `src/features/admin/api/taxonomyClient.mock.ts`. */
+export const MOCK_CATEGORIES: Category[] = [
   {
     id: 'c1',
     slug: 'debugging',
@@ -87,7 +93,10 @@ const MOCK_CATEGORIES: Category[] = [
   },
 ]
 
-const MOCK_TAGS: Tag[] = [
+/** Exported (read-only from the admin side, per FR-007a) — read by
+ *  `src/features/admin/api/taxonomyClient.mock.ts` for tag display and by
+ *  `templatesAdminClient.mock.ts` for the tag picker. */
+export const MOCK_TAGS: Tag[] = [
   { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 20 },
   { id: 'tg2', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 15 },
   { id: 'tg3', slug: 'chuyen-nghiep', name: 'Chuyên nghiệp', usageCount: 18 },

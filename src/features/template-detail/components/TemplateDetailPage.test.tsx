@@ -35,6 +35,9 @@ describe('TemplateDetailPage reload branches (US3)', () => {
     renderAt('/templates/debug-loi-hieu-qua?reload=h1')
     const roleInput = await screen.findByLabelText(/Your Role|Vai trò/i)
     expect((roleInput as HTMLInputElement).value).toBe('Backend Developer')
+    // FR-014a (Epic 5 spec.md Clarifications): no "newer version" badge when
+    // the reloaded entry already matches the template's current version.
+    expect(screen.queryByText(/phiên bản mới hơn/i)).not.toBeInTheDocument()
   })
 
   it('shows the unavailable banner and blocks the form when the template is deleted', async () => {
@@ -44,8 +47,10 @@ describe('TemplateDetailPage reload branches (US3)', () => {
   })
 
   it('shows the newer-version badge when the reload target used an older version', async () => {
+    // FR-014a: h3's templateVersionId ('ver-t1-0') is older than the debug
+    // template's current version ('ver-t1-1') — NewerVersionBadge must render.
     renderAt('/templates/debug-loi-hieu-qua?reload=h3')
-    expect(await screen.findByRole('status', { name: '' })).toBeInTheDocument()
+    expect(await screen.findByText(/phiên bản mới hơn/i)).toBeInTheDocument()
     const roleInput = await screen.findByLabelText(/Your Role|Vai trò/i)
     expect((roleInput as HTMLInputElement).value).toBe('Frontend Developer')
   })
