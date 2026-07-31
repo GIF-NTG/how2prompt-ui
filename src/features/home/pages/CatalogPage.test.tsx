@@ -250,6 +250,7 @@ describe('CatalogPage', () => {
     renderPage()
     await screen.findByText('First')
 
+    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
     await user.click(await screen.findByRole('button', { name: 'Debugging' }))
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
@@ -301,6 +302,7 @@ describe('CatalogPage', () => {
       hasMore: false,
     })
 
+    const user = userEvent.setup()
     renderPage(['/?category=debugging&tag=chi-tiet'])
 
     await waitFor(() =>
@@ -308,6 +310,7 @@ describe('CatalogPage', () => {
         expect.objectContaining({ category: 'debugging', tags: 'chi-tiet' }),
       ),
     )
+    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
     const categoryButton = await screen.findByRole('button', { name: 'Debugging' })
     const tagButton = screen.getByRole('button', { name: 'Chi tiết' })
     expect(categoryButton).toHaveAttribute('aria-pressed', 'true')

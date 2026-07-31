@@ -8,7 +8,7 @@ export function TopBar() {
   const location = useLocation()
 
   return (
-    <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-[clamp(1.25rem,4vw,3rem)]">
+    <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-[clamp(1.25rem,4vw,3rem)]">
       <Link
         to="/"
         className="flex items-center gap-2.5 text-[1.05rem] font-bold tracking-[-0.01em]"
@@ -58,26 +58,36 @@ export function TopBar() {
         <ThemeToggle />
 
         {session ? (
-          <div className="flex items-center gap-3">
-            <span
-              className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-mono text-[0.85rem] font-bold ${getTagAvatarClasses(session.accountId)}`}
-            >
-              {session.displayName.charAt(0).toUpperCase()}
-            </span>
-            <span className="text-[0.9rem] font-semibold">{session.displayName}</span>
-            <Link
-              to="/profile"
-              className="font-mono text-[0.78rem] text-[#5B5F58] underline underline-offset-2 hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
-            >
-              Hồ sơ
-            </Link>
+          <div className="group relative">
             <button
               type="button"
-              onClick={() => void signOut()}
-              className="font-mono text-[0.78rem] text-[#5B5F58] underline underline-offset-2 hover:text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
+              className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2.5 transition-colors duration-150 hover:bg-[#E7E9E2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:hover:bg-[#1C2024]"
             >
-              Đăng xuất
+              <span
+                className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-mono text-[0.85rem] font-bold ${getTagAvatarClasses(session.accountId)}`}
+              >
+                {session.displayName.charAt(0).toUpperCase()}
+              </span>
+              <span className="text-[0.9rem] font-semibold">{session.displayName}</span>
             </button>
+
+            <div className="invisible absolute right-0 top-full z-20 w-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="flex flex-col gap-0.5 rounded-xl border border-[#DBDFD3] bg-white p-1.5 shadow-lg dark:border-[#2C3130] dark:bg-[#1C2024]">
+                <Link
+                  to="/profile"
+                  className="rounded-lg px-3 py-2 text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
+                >
+                  Hồ sơ
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  className="rounded-lg px-3 py-2 text-left text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <Link

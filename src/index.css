@@ -39,6 +39,22 @@
   animation: 220ms cubic-bezier(0, 0, 0.2, 1) both vt-fade-in;
 }
 
+/* Buttons/selects don't get a pointer cursor from the browser by default
+   (unlike links), and adding `cursor-pointer` to every one of them
+   individually had drifted inconsistent across the codebase — some had it,
+   most didn't. One base-layer rule instead of a per-element class. */
+@layer base {
+  button:not(:disabled),
+  select:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}
+
 /* Micro-interaction keyframes reused across features (favorite toggle,
    generate result reveal). */
 @keyframes pop {
