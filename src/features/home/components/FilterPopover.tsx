@@ -63,7 +63,17 @@ export function FilterPopover({
     }
   }, [open])
 
-  if (!loading && categories.length === 0 && tags.length === 0) return null
+  // Defends against a category/tag with no usable i18n label for the current
+  // locale (e.g. a backend record missing `nameI18n.vi`/`en`) — render
+  // nothing for it instead of an empty bordered chip.
+  const categoryItems = categories
+    .map((c) => ({ id: c.id, slug: c.slug, label: getI18nValue(c.name) }))
+    .filter((c) => c.label)
+  const tagItems = tags
+    .map((t) => ({ id: t.id, slug: t.slug, label: t.name }))
+    .filter((t) => t.label)
+
+  if (!loading && categoryItems.length === 0 && tagItems.length === 0) return null
 
   const activeCount = (category ? 1 : 0) + (tag ? 1 : 0)
 
@@ -91,17 +101,13 @@ export function FilterPopover({
 
       {open && (
         <div className="absolute right-0 top-[calc(100%+0.5rem)] z-20 flex w-[min(360px,90vw)] flex-col gap-4 rounded-xl border border-[#DBDFD3] bg-white p-4 shadow-lg dark:border-[#2C3130] dark:bg-[#1C2024]">
-          {categories.length > 0 && (
+          {categoryItems.length > 0 && (
             <div className="flex flex-col gap-2">
               <span className="text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-[#8B8F86] dark:text-[#6D726A]">
                 Chủ đề
               </span>
               <ChipFilterGroup
-                items={categories.map((c) => ({
-                  id: c.id,
-                  slug: c.slug,
-                  label: getI18nValue(c.name),
-                }))}
+                items={categoryItems}
                 value={category}
                 onChange={onCategoryChange}
                 ariaLabel="Lọc theo chủ đề"
@@ -109,13 +115,13 @@ export function FilterPopover({
             </div>
           )}
 
-          {tags.length > 0 && (
+          {tagItems.length > 0 && (
             <div className="flex flex-col gap-2">
               <span className="text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-[#8B8F86] dark:text-[#6D726A]">
                 Tag
               </span>
               <ChipFilterGroup
-                items={tags.map((t) => ({ id: t.id, slug: t.slug, label: t.name }))}
+                items={tagItems}
                 value={tag}
                 onChange={onTagChange}
                 ariaLabel="Lọc theo tag"
