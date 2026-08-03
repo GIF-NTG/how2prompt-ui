@@ -1,8 +1,9 @@
 import { apiFetch } from '@/shared/utils/httpClient'
 import type { TemplateDetailClient } from './templateDetailClient.types'
-import type { AuthorBrief, Category, TemplateDetail, TemplateVersion } from '../types'
+import type { AuthorBrief, TemplateDetail, TemplateVersion } from '../types'
 import type { I18nString } from '@/shared/types/api'
 import type { TemplateVariable, TemplateVariant } from '@/features/template-generate/types'
+import { mapCategory, type RawCategory } from '@/features/home/api/templateClient.real'
 
 /** Shape actually returned by the real backend for a template detail, which
  *  diverges from `docs/api/openapi.yaml`'s `TemplateDetail`/`TemplateVersion`/
@@ -48,7 +49,7 @@ interface RawTemplateDetail {
   official: boolean
   authorId: string | null
   authorType: AuthorBrief['type']
-  categories: Category[]
+  categories: RawCategory[]
   models: string[]
   usageCount: number
   favoriteCount: number
@@ -104,7 +105,7 @@ function mapTemplateDetail(raw: RawTemplateDetail): TemplateDetail {
       avatarUrl: null,
       type: raw.authorType,
     },
-    categories: raw.categories ?? [],
+    categories: (raw.categories ?? []).map(mapCategory),
     supportedModels: raw.models ?? [],
     usageCount: raw.usageCount,
     favoriteCount: raw.favoriteCount,

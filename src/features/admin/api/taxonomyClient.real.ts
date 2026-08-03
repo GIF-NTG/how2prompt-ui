@@ -1,5 +1,6 @@
 import { apiFetch } from '@/shared/utils/httpClient'
-import type { Category, Tag } from '@/features/home/types'
+import type { Tag } from '@/features/home/types'
+import { mapCategory, type RawCategory } from '@/features/home/api/templateClient.real'
 import type { TaxonomyClient } from './taxonomyClient.types'
 
 export function createRealTaxonomyClient(accessToken?: string): TaxonomyClient {
@@ -7,19 +8,26 @@ export function createRealTaxonomyClient(accessToken?: string): TaxonomyClient {
     // Reuses the existing public category-read endpoint — the contract has no
     // separate admin listing endpoint (contracts/admin-api.md).
     async listCategories() {
-      return apiFetch<Category[]>('/categories')
+      const categories = await apiFetch<RawCategory[]>('/categories')
+      return categories.map(mapCategory)
     },
 
     async createCategory(input) {
-      return apiFetch<Category>('/admin/categories', { method: 'POST', body: input, accessToken })
+      const category = await apiFetch<RawCategory>('/admin/categories', {
+        method: 'POST',
+        body: input,
+        accessToken,
+      })
+      return mapCategory(category)
     },
 
     async updateCategory(id, input) {
-      return apiFetch<Category>(`/admin/categories/${id}`, {
+      const category = await apiFetch<RawCategory>(`/admin/categories/${id}`, {
         method: 'PATCH',
         body: input,
         accessToken,
       })
+      return mapCategory(category)
     },
 
     async listTags() {
