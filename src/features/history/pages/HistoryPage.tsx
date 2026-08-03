@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
-import { getI18nValue } from '@/shared/utils/i18n'
 import { createHistoryClient } from '../api/historyClient'
+import { getHistoryDisplayTitle } from '../utils/displayTitle'
 import { useHistoryFilters } from '../hooks/useHistoryFilters'
 import { HistoryFilterBar } from '../components/HistoryFilterBar'
 import { HistoryList } from '../components/HistoryList'
@@ -93,7 +93,7 @@ export function HistoryPage() {
     const seen = new Map<string, string>()
     for (const item of items) {
       if (item.templateId && !seen.has(item.templateId)) {
-        seen.set(item.templateId, getI18nValue(item.templateTitle))
+        seen.set(item.templateId, getHistoryDisplayTitle(item))
       }
     }
     return [...seen.entries()].map(([id, title]) => ({ id, title }))
