@@ -61,7 +61,7 @@ describe('CatalogPage', () => {
     mockedClient.getTags.mockReset().mockResolvedValue([])
   })
 
-  it('renders the page heading and eyebrow', async () => {
+  it('renders the page heading', async () => {
     mockedClient.getTemplates.mockResolvedValue({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
       nextCursor: null,
@@ -69,7 +69,6 @@ describe('CatalogPage', () => {
     })
 
     renderPage()
-    expect(screen.getByText('templates · guest & member')).toBeInTheDocument()
     expect(
       screen.getByText('Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'),
     ).toBeInTheDocument()
@@ -315,5 +314,47 @@ describe('CatalogPage', () => {
     const tagButton = screen.getByRole('button', { name: 'Chi tiết' })
     expect(categoryButton).toHaveAttribute('aria-pressed', 'true')
     expect(tagButton).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('"Xóa bộ lọc" clears both Category and Tag at once', async () => {
+    mockedClient.getCategories.mockResolvedValue([
+      {
+        id: 'c1',
+        slug: 'debugging',
+        name: { en: 'Debugging', vi: 'Debugging' },
+        description: { en: '', vi: '' },
+        icon: null,
+        color: null,
+        parentId: null,
+        sortOrder: 1,
+        templateCount: 1,
+      },
+    ])
+    mockedClient.getTags.mockResolvedValue([
+      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
+    ])
+    mockedClient.getTemplates.mockResolvedValue({
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
+    })
+
+    const user = userEvent.setup()
+    renderPage(['/?category=debugging&tag=chi-tiet'])
+
+    await waitFor(() =>
+      expect(mockedClient.getTemplates).toHaveBeenCalledWith(
+        expect.objectContaining({ category: 'debugging', tags: 'chi-tiet' }),
+      ),
+    )
+    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
+    await user.click(await screen.findByRole('button', { name: 'Xóa bộ lọc' }))
+
+    await waitFor(() =>
+      expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
+        category: undefined,
+        tags: undefined,
+      }),
+    )
   })
 })

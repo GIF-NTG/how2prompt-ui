@@ -17,7 +17,8 @@ const PAGE_SIZE = 20
 export function CatalogPage() {
   const navigate = useNavigate()
   const { session } = useAuth()
-  const { filters, setCategory, setTag, setModel, setSearch, setSort } = useCatalogFilters()
+  const { filters, setCategory, setTag, setModel, setSearch, setSort, clearCategoryAndTag } =
+    useCatalogFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
   const [featured, setFeatured] = useState<TemplateListItem[]>([])
   const [trending, setTrending] = useState<TemplateListItem[]>([])
@@ -121,9 +122,6 @@ export function CatalogPage() {
     return (
       <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF]">
-            templates · guest & member
-          </span>
           <p className="m-0 text-[0.88rem] text-[#C23A2A] dark:text-[#FF7A6B]">{error}</p>
         </div>
       </main>
@@ -133,9 +131,6 @@ export function CatalogPage() {
   return (
     <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
       <div className="flex animate-[fade-slide-up_450ms_ease] flex-col gap-2">
-        <span className="before:mr-1.5 before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3652E0] font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF] dark:before:bg-[#8493FF]">
-          templates · guest & member
-        </span>
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
           {greeting}
         </h1>
@@ -151,6 +146,7 @@ export function CatalogPage() {
           onCategoryChange={setCategory}
           onTagChange={setTag}
           onSortChange={setSort}
+          onClearCategoryAndTag={clearCategoryAndTag}
           search={<SearchBox value={filters.search} onChange={setSearch} />}
         />
       </div>

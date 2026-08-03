@@ -114,6 +114,23 @@ export function useCatalogFilters() {
     setSearchParams({}, { replace: true })
   }, [setSearchParams])
 
+  // Clears category + tag together in one `setSearchParams` call — calling
+  // `setCategory('')` then `setTag('')` back to back doesn't compose: each
+  // reads the same pre-update `searchParams` snapshot (react-router only
+  // refreshes it on the next render, not synchronously), so the second call
+  // clobbers the first instead of building on it and one filter stays applied.
+  const clearCategoryAndTag = useCallback(() => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('category')
+        next.delete('tag')
+        return next
+      },
+      { replace: true },
+    )
+  }, [setSearchParams])
+
   return {
     filters: { category, tag, model, search, sort } as CatalogFilterState,
     setCategory,
@@ -122,5 +139,6 @@ export function useCatalogFilters() {
     setSearch,
     setSort,
     resetFilters,
+    clearCategoryAndTag,
   }
 }

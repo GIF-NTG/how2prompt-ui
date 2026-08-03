@@ -10,6 +10,7 @@ interface FilterPopoverProps {
   tag: string
   onCategoryChange: (slug: string) => void
   onTagChange: (slug: string) => void
+  onClear: () => void
 }
 
 /** Single "Bộ lọc" trigger that groups Category + Tag into one popover panel,
@@ -21,6 +22,7 @@ export function FilterPopover({
   tag,
   onCategoryChange,
   onTagChange,
+  onClear,
 }: FilterPopoverProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
@@ -124,10 +126,7 @@ export function FilterPopover({
           {activeCount > 0 && (
             <button
               type="button"
-              onClick={() => {
-                onCategoryChange('')
-                onTagChange('')
-              }}
+              onClick={onClear}
               className="self-start font-mono text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
             >
               Xóa bộ lọc

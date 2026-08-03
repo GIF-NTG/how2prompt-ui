@@ -8,6 +8,7 @@ interface FilterBarProps {
   onCategoryChange: (slug: string) => void
   onTagChange: (slug: string) => void
   onSortChange: (value: CatalogSort) => void
+  onClearCategoryAndTag: () => void
   search?: React.ReactNode
 }
 
@@ -17,6 +18,7 @@ export function FilterBar({
   onCategoryChange,
   onTagChange,
   onSortChange,
+  onClearCategoryAndTag,
   search,
 }: FilterBarProps) {
   return (
@@ -37,6 +39,7 @@ export function FilterBar({
         tag={filters.tag}
         onCategoryChange={onCategoryChange}
         onTagChange={onTagChange}
+        onClear={onClearCategoryAndTag}
       />
     </div>
   )
