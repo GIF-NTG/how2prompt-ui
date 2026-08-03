@@ -25,6 +25,8 @@ export function TemplateRail({
   isSignedIn,
   onTemplateClick,
 }: TemplateRailProps) {
+  if (templates.length === 0) return null
+
   return (
     <section className="flex flex-col gap-[0.75rem]">
       <div className="flex items-baseline justify-between gap-4">
@@ -35,24 +37,18 @@ export function TemplateRail({
           </span>
         )}
       </div>
-      {templates.length === 0 ? (
-        <p className="m-0 rounded-card border border-dashed border-[#DBDFD3] px-4 py-6 text-[0.82rem] text-[#8B8F86] dark:border-[#2C3130] dark:text-[#6D726A]">
-          Chưa có dữ liệu.
-        </p>
-      ) : (
-        <Marquee pauseOnHover pauseOnClick speed={40} gradient={false} className="pb-[0.35rem]">
-          {templates.map((t, index) => (
-            <div key={t.id} className="mr-[0.9rem] h-[232px] w-[264px] flex-[0_0_auto]">
-              <TemplateCard
-                template={t}
-                isSignedIn={!!isSignedIn}
-                onClick={onTemplateClick}
-                index={index}
-              />
-            </div>
-          ))}
-        </Marquee>
-      )}
+      <Marquee pauseOnHover pauseOnClick speed={40} gradient={false} className="pb-[0.35rem]">
+        {templates.map((t, index) => (
+          <div key={t.id} className="mr-[0.9rem] h-[232px] w-[264px] flex-[0_0_auto]">
+            <TemplateCard
+              template={t}
+              isSignedIn={!!isSignedIn}
+              onClick={onTemplateClick}
+              index={index}
+            />
+          </div>
+        ))}
+      </Marquee>
     </section>
   )
 }
