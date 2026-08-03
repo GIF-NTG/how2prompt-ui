@@ -39,7 +39,7 @@ export const InlineBlank = forwardRef<HTMLInputElement, InlineBlankProps>(functi
         }
       }}
       className={[
-        'mx-1 inline-block min-w-[2ch] rounded-none border-0 border-b-2 bg-transparent px-0.5 align-baseline',
+        'mx-1 inline-block min-w-[2ch] max-w-full overflow-hidden text-ellipsis rounded-none border-0 border-b-2 bg-transparent px-0.5 align-baseline',
         'font-mono text-[0.95em] leading-tight text-[#1B1D1B] dark:text-[#ECEEE8]',
         'placeholder:text-[#8B8F86] dark:placeholder:text-[#6D726A]',
         'focus:outline-none',

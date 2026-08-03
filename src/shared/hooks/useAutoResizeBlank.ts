@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
 const MIN_WIDTH_PX = 24
+const MAX_WIDTH_PX = 420
 const WIDTH_PADDING_PX = 16
 
 /**
@@ -39,8 +40,15 @@ export function useAutoResizeBlank(value: string, placeholder = '') {
     measure.style.letterSpacing = computed.letterSpacing
     measure.textContent = value || placeholder || ''
 
+    // Capped at MAX_WIDTH_PX: an uncapped width (e.g. from a long pasted
+    // paragraph) becomes the input's min-content contribution to its flex
+    // ancestors, which forces them to grow past their intended size and
+    // overflows the page — CSS `max-width` on the input alone can't stop this
+    // because the container it's a percentage of is the thing being stretched.
+    // Text beyond the cap scrolls natively inside the input instead.
     const measuredWidth = measure.getBoundingClientRect().width
-    input.style.width = `${Math.max(measuredWidth + WIDTH_PADDING_PX, MIN_WIDTH_PX)}px`
+    const targetWidth = Math.min(measuredWidth + WIDTH_PADDING_PX, MAX_WIDTH_PX)
+    input.style.width = `${Math.max(targetWidth, MIN_WIDTH_PX)}px`
   }, [value, placeholder])
 
   useEffect(() => {
