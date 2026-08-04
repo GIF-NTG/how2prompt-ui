@@ -59,5 +59,6 @@ export type UseGenerateFormResult = {
   setModelCode: (code: string) => void
   setValue: (varKey: string, value: string | number | boolean | string[]) => void
   setExtraInstructions: (text: string) => void
+  markTouched: (varKey: string) => void
   activeVariables: TemplateVariable[]
 }

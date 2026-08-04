@@ -115,16 +115,29 @@ export function useGenerateForm(
       : getInitialValues(initialVariables),
   )
   const [extraInstructions, setExtraInstructions] = useState(override?.extraInstructions ?? '')
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   const activeVariables = useMemo(
     () => getActiveVariables(template, selectedModelCode),
     [template, selectedModelCode],
   )
 
-  const { errors, isValid } = useMemo(
+  const { errors: allErrors, isValid } = useMemo(
     () => validateAll(activeVariables, inputValues),
     [activeVariables, inputValues],
   )
+
+  // Only surface errors for fields the visitor has actually interacted with —
+  // otherwise every required field flashes an error before they've typed anything.
+  const errors = useMemo(() => {
+    const visible: Record<string, string> = {}
+    for (const key of Object.keys(allErrors)) {
+      if (touched[key]) {
+        visible[key] = allErrors[key]
+      }
+    }
+    return visible
+  }, [allErrors, touched])
 
   const setModelCode = useCallback(
     (code: string) => {
@@ -140,12 +153,18 @@ export function useGenerateForm(
         }
         return { ...getInitialValues(newVars), ...preserved }
       })
+      setTouched({})
     },
     [template],
   )
 
   const setValue = useCallback((varKey: string, value: string | number | boolean | string[]) => {
     setInputValues((prev) => ({ ...prev, [varKey]: value }))
+    setTouched((prev) => (prev[varKey] ? prev : { ...prev, [varKey]: true }))
+  }, [])
+
+  const markTouched = useCallback((varKey: string) => {
+    setTouched((prev) => (prev[varKey] ? prev : { ...prev, [varKey]: true }))
   }, [])
 
   const setExtraInstructionsText = useCallback((text: string) => {
@@ -157,6 +176,7 @@ export function useGenerateForm(
     setModelCode,
     setValue,
     setExtraInstructions: setExtraInstructionsText,
+    markTouched,
     activeVariables,
   }
 }

@@ -83,6 +83,7 @@ function renderForm(
         inputValues={overrides.inputValues ?? {}}
         errors={overrides.errors ?? {}}
         onValueChange={onValueChange}
+        onBlur={vi.fn()}
       />,
     ),
   }

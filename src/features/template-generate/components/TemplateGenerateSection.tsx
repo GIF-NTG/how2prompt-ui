@@ -25,10 +25,8 @@ export function TemplateGenerateSection({
   template,
   reloadOverride,
 }: TemplateGenerateSectionProps) {
-  const { state, setModelCode, setValue, setExtraInstructions, activeVariables } = useGenerateForm(
-    template,
-    reloadOverride,
-  )
+  const { state, setModelCode, setValue, setExtraInstructions, markTouched, activeVariables } =
+    useGenerateForm(template, reloadOverride)
   const activePromptBody = getActivePromptBody(template, state.selectedModelCode)
 
   const { session } = useAuth()
@@ -96,6 +94,7 @@ export function TemplateGenerateSection({
           inputValues={state.inputValues}
           errors={state.errors}
           onValueChange={handleValueChange}
+          onBlur={markTouched}
         />
 
         {/* Developer A: ExtraInstructionsField slot */}

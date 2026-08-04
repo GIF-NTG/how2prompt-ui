@@ -6,6 +6,7 @@ interface FormFieldProps {
   error: string | undefined
   locale?: 'en' | 'vi'
   onChange: (value: string | number | boolean | string[]) => void
+  onBlur: () => void
 }
 
 function getLocalizedText(obj: { en: string; vi?: string }, locale: 'en' | 'vi'): string {
@@ -20,11 +21,15 @@ function TextInput({
   value,
   locale,
   onChange,
+  onBlur,
+  hasError,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: string) => void
+  onBlur: () => void
+  hasError: boolean
 }) {
   return (
     <input
@@ -35,7 +40,8 @@ function TextInput({
       placeholder={getLocalizedText(variable.placeholder, locale)}
       required={variable.isRequired}
       onChange={(e) => onChange(e.target.value)}
-      className={`${inputBase} border-[#DBDFD3] dark:border-[#2C3130]`}
+      onBlur={onBlur}
+      className={`${inputBase} ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     />
   )
 }
@@ -45,11 +51,15 @@ function TextareaInput({
   value,
   locale,
   onChange,
+  onBlur,
+  hasError,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: string) => void
+  onBlur: () => void
+  hasError: boolean
 }) {
   return (
     <textarea
@@ -60,7 +70,8 @@ function TextareaInput({
       required={variable.isRequired}
       rows={4}
       onChange={(e) => onChange(e.target.value)}
-      className={`${inputBase} min-h-[5rem] resize-y border-[#DBDFD3] dark:border-[#2C3130]`}
+      onBlur={onBlur}
+      className={`${inputBase} min-h-[5rem] resize-y ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     />
   )
 }
@@ -70,11 +81,15 @@ function SelectInput({
   value,
   locale,
   onChange,
+  onBlur,
+  hasError,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: string) => void
+  onBlur: () => void
+  hasError: boolean
 }) {
   return (
     <select
@@ -83,7 +98,8 @@ function SelectInput({
       value={typeof value === 'string' ? value : ''}
       required={variable.isRequired}
       onChange={(e) => onChange(e.target.value)}
-      className={`${inputBase} cursor-pointer border-[#DBDFD3] dark:border-[#2C3130]`}
+      onBlur={onBlur}
+      className={`${inputBase} cursor-pointer ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     >
       <option value="">{getLocalizedText(variable.placeholder, locale) || '-- Chọn --'}</option>
       {variable.options.map((opt) => (
@@ -100,11 +116,13 @@ function MultiselectInput({
   value,
   locale,
   onChange,
+  onBlur,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: string[]) => void
+  onBlur: () => void
 }) {
   const selected: string[] = Array.isArray(value) ? value : []
 
@@ -125,6 +143,7 @@ function MultiselectInput({
             key={opt.value}
             type="button"
             onClick={() => toggle(opt.value)}
+            onBlur={onBlur}
             className={`cursor-pointer rounded-full border px-[0.75rem] py-[0.35rem] text-[0.8rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
               active
                 ? 'border-[#3652E0] bg-[#3652E0] text-white dark:border-[#8493FF] dark:bg-[#8493FF]'
@@ -143,10 +162,14 @@ function NumberInput({
   variable,
   value,
   onChange,
+  onBlur,
+  hasError,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   onChange: (v: number) => void
+  onBlur: () => void
+  hasError: boolean
 }) {
   return (
     <input
@@ -161,7 +184,8 @@ function NumberInput({
         const raw = e.target.value
         onChange(raw === '' ? 0 : Number(raw))
       }}
-      className={`${inputBase} border-[#DBDFD3] dark:border-[#2C3130]`}
+      onBlur={onBlur}
+      className={`${inputBase} ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     />
   )
 }
@@ -171,11 +195,13 @@ function BooleanInput({
   value,
   locale,
   onChange,
+  onBlur,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: boolean) => void
+  onBlur: () => void
 }) {
   const checked = value === true || value === 'true'
   const label = getLocalizedText(variable.label, locale)
@@ -188,6 +214,7 @@ function BooleanInput({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
+        onBlur={onBlur}
         className={`relative inline-flex h-[1.35rem] w-[2.4rem] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
           checked ? 'bg-[#3652E0] dark:bg-[#8493FF]' : 'bg-[#DBDFD3] dark:bg-[#2C3130]'
         }`}
@@ -207,10 +234,12 @@ function SliderInput({
   variable,
   value,
   onChange,
+  onBlur,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   onChange: (v: number) => void
+  onBlur: () => void
 }) {
   const num = typeof value === 'number' ? value : 0
   const min = variable.validation.min ?? 0
@@ -226,6 +255,7 @@ function SliderInput({
         min={min}
         max={max}
         onChange={(e) => onChange(Number(e.target.value))}
+        onBlur={onBlur}
         className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-[#DBDFD3] accent-[#3652E0] dark:bg-[#2C3130] dark:accent-[#8493FF]"
       />
       <span className="min-w-[2.5rem] text-right text-[0.82rem] text-[#4A4F4A] dark:text-[#A8ADA7]">
@@ -240,11 +270,15 @@ function FallbackInput({
   value,
   locale,
   onChange,
+  onBlur,
+  hasError,
 }: {
   variable: TemplateVariable
   value: string | number | boolean | string[] | undefined
   locale: 'en' | 'vi'
   onChange: (v: string) => void
+  onBlur: () => void
+  hasError: boolean
 }) {
   return (
     <input
@@ -255,25 +289,59 @@ function FallbackInput({
       placeholder={getLocalizedText(variable.placeholder, locale)}
       required={variable.isRequired}
       onChange={(e) => onChange(e.target.value)}
-      className={`${inputBase} border-[#DBDFD3] dark:border-[#2C3130]`}
+      onBlur={onBlur}
+      className={`${inputBase} ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     />
   )
 }
 
-export function FormField({ variable, value, error, locale = 'vi', onChange }: FormFieldProps) {
+export function FormField({
+  variable,
+  value,
+  error,
+  locale = 'vi',
+  onChange,
+  onBlur,
+}: FormFieldProps) {
   const label = getLocalizedText(variable.label, locale)
   const helpText = getLocalizedText(variable.helpText, locale)
+  const hasError = Boolean(error)
 
   function renderControl() {
     switch (variable.inputType) {
       case 'text':
-        return <TextInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        return (
+          <TextInput
+            variable={variable}
+            value={value}
+            locale={locale}
+            onChange={onChange}
+            onBlur={onBlur}
+            hasError={hasError}
+          />
+        )
       case 'textarea':
         return (
-          <TextareaInput variable={variable} value={value} locale={locale} onChange={onChange} />
+          <TextareaInput
+            variable={variable}
+            value={value}
+            locale={locale}
+            onChange={onChange}
+            onBlur={onBlur}
+            hasError={hasError}
+          />
         )
       case 'select':
-        return <SelectInput variable={variable} value={value} locale={locale} onChange={onChange} />
+        return (
+          <SelectInput
+            variable={variable}
+            value={value}
+            locale={locale}
+            onChange={onChange}
+            onBlur={onBlur}
+            hasError={hasError}
+          />
+        )
       case 'multiselect':
         return (
           <MultiselectInput
@@ -281,6 +349,7 @@ export function FormField({ variable, value, error, locale = 'vi', onChange }: F
             value={value}
             locale={locale}
             onChange={onChange as (v: string[]) => void}
+            onBlur={onBlur}
           />
         )
       case 'number':
@@ -289,6 +358,8 @@ export function FormField({ variable, value, error, locale = 'vi', onChange }: F
             variable={variable}
             value={value}
             onChange={onChange as (v: number) => void}
+            onBlur={onBlur}
+            hasError={hasError}
           />
         )
       case 'boolean':
@@ -298,6 +369,7 @@ export function FormField({ variable, value, error, locale = 'vi', onChange }: F
             value={value}
             locale={locale}
             onChange={onChange as (v: boolean) => void}
+            onBlur={onBlur}
           />
         )
       case 'slider':
@@ -306,11 +378,19 @@ export function FormField({ variable, value, error, locale = 'vi', onChange }: F
             variable={variable}
             value={value}
             onChange={onChange as (v: number) => void}
+            onBlur={onBlur}
           />
         )
       default:
         return (
-          <FallbackInput variable={variable} value={value} locale={locale} onChange={onChange} />
+          <FallbackInput
+            variable={variable}
+            value={value}
+            locale={locale}
+            onChange={onChange}
+            onBlur={onBlur}
+            hasError={hasError}
+          />
         )
     }
   }

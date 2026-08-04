@@ -7,9 +7,16 @@ interface DynamicFormProps {
   inputValues: Record<string, string | number | boolean | string[]>
   errors: Record<string, string>
   onValueChange: (varKey: string, value: string | number | boolean | string[]) => void
+  onBlur: (varKey: string) => void
 }
 
-export function DynamicForm({ variables, inputValues, errors, onValueChange }: DynamicFormProps) {
+export function DynamicForm({
+  variables,
+  inputValues,
+  errors,
+  onValueChange,
+  onBlur,
+}: DynamicFormProps) {
   const sorted = useMemo(
     () => [...variables].sort((a, b) => a.sortOrder - b.sortOrder),
     [variables],
@@ -28,6 +35,7 @@ export function DynamicForm({ variables, inputValues, errors, onValueChange }: D
           value={inputValues[v.varKey]}
           error={errors[v.varKey]}
           onChange={(val) => onValueChange(v.varKey, val)}
+          onBlur={() => onBlur(v.varKey)}
         />
       ))}
     </div>
