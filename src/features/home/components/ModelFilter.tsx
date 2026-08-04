@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { templateClient } from '@/features/home/api/templateClient'
-import type { AiModel } from '@/features/home/types'
+import { useEffect } from 'react'
+import { useHomeData } from '@/features/home/context/useHomeData'
 
 interface ModelFilterProps {
   value: string
@@ -8,21 +7,11 @@ interface ModelFilterProps {
 }
 
 export function ModelFilter({ value, onChange }: ModelFilterProps) {
-  const [models, setModels] = useState<AiModel[]>([])
-  const [loading, setLoading] = useState(true)
+  const { models, modelsLoaded, ensureModels } = useHomeData()
 
   useEffect(() => {
-    let cancelled = false
-    templateClient.getModels().then((data) => {
-      if (!cancelled) {
-        setModels(data)
-        setLoading(false)
-      }
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    void ensureModels()
+  }, [ensureModels])
 
   return (
     <select
@@ -30,7 +19,7 @@ export function ModelFilter({ value, onChange }: ModelFilterProps) {
       onChange={(e) => onChange(e.target.value)}
       className="font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
     >
-      <option value="">{loading ? 'Đang tải...' : 'Tất cả model AI'}</option>
+      <option value="">{modelsLoaded ? 'Tất cả model AI' : 'Đang tải...'}</option>
       {models.map((m) => (
         <option key={m.id} value={m.code}>
           {m.name}

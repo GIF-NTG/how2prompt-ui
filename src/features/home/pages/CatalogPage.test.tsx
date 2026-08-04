@@ -4,6 +4,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { CatalogPage } from './CatalogPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
+import { HomeDataProvider } from '@/features/home/context/HomeDataProvider'
 import { templateClient } from '@/features/home/api/templateClient'
 import type { TemplateListItem } from '@/features/home/types'
 
@@ -45,7 +46,9 @@ function renderPage(initialEntries: string[] = ['/']) {
   return render(
     <AuthProvider>
       <MemoryRouter initialEntries={initialEntries}>
-        <CatalogPage />
+        <HomeDataProvider>
+          <CatalogPage />
+        </HomeDataProvider>
       </MemoryRouter>
     </AuthProvider>,
   )
@@ -358,5 +361,53 @@ describe('CatalogPage', () => {
         tags: undefined,
       }),
     )
+  })
+
+  it('does not re-fetch featured/trending/templates when navigating away and back with the same filters', async () => {
+    mockedClient.getTemplates.mockResolvedValue({
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
+      nextCursor: null,
+      hasMore: false,
+    })
+
+    // Simulates RootLayout's Outlet swapping the nested route while
+    // HomeDataProvider itself stays mounted across the navigation.
+    const { rerender } = render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <HomeDataProvider>
+            <CatalogPage />
+          </HomeDataProvider>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
+    await screen.findByText('First')
+    expect(mockedClient.getFeatured).toHaveBeenCalledTimes(1)
+    expect(mockedClient.getTrending).toHaveBeenCalledTimes(1)
+    expect(mockedClient.getTemplates).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <HomeDataProvider>
+            <p>Template detail page</p>
+          </HomeDataProvider>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
+    rerender(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <HomeDataProvider>
+            <CatalogPage />
+          </HomeDataProvider>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
+    await screen.findByText('First')
+
+    expect(mockedClient.getFeatured).toHaveBeenCalledTimes(1)
+    expect(mockedClient.getTrending).toHaveBeenCalledTimes(1)
+    expect(mockedClient.getTemplates).toHaveBeenCalledTimes(1)
   })
 })

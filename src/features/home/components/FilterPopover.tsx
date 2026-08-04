@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FunnelSimple } from '@phosphor-icons/react'
-import { templateClient } from '@/features/home/api/templateClient'
-import type { Category, Tag } from '@/features/home/types'
+import { useHomeData } from '@/features/home/context/useHomeData'
 import { getI18nValue } from '@/shared/utils/i18n'
 import { ChipFilterGroup } from './ChipFilterGroup'
 
@@ -24,26 +23,16 @@ export function FilterPopover({
   onTagChange,
   onClear,
 }: FilterPopoverProps) {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [tags, setTags] = useState<Tag[]>([])
-  const [loading, setLoading] = useState(true)
+  const { categories, categoriesLoaded, tags, tagsLoaded, ensureCategories, ensureTags } =
+    useHomeData()
+  const loading = !categoriesLoaded || !tagsLoaded
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    let cancelled = false
-    Promise.all([templateClient.getCategories(), templateClient.getTags()]).then(
-      ([categoriesResult, tagsResult]) => {
-        if (cancelled) return
-        setCategories(categoriesResult)
-        setTags(tagsResult)
-        setLoading(false)
-      },
-    )
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    void ensureCategories()
+    void ensureTags()
+  }, [ensureCategories, ensureTags])
 
   useEffect(() => {
     if (!open) return

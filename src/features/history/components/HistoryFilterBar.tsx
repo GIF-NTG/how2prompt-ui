@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { templateClient } from '@/features/home/api/templateClient'
-import type { AiModel } from '@/features/home/types'
+import { useEffect } from 'react'
+import { useHomeData } from '@/features/home/context/useHomeData'
 import type { HistoryFilters } from '../types'
 
 interface TemplateOption {
@@ -31,17 +30,11 @@ export function HistoryFilterBar({
   onFromChange,
   onToChange,
 }: HistoryFilterBarProps) {
-  const [models, setModels] = useState<AiModel[]>([])
+  const { models, ensureModels } = useHomeData()
 
   useEffect(() => {
-    let cancelled = false
-    templateClient.getModels().then((data) => {
-      if (!cancelled) setModels(data)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    void ensureModels()
+  }, [ensureModels])
 
   return (
     <div className="flex flex-wrap items-center gap-3">

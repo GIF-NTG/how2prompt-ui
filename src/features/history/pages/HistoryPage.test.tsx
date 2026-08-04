@@ -2,8 +2,25 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { HistoryPage } from './HistoryPage'
+import { HistoryDataProvider } from '../context/HistoryDataProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/AuthContext'
 import type { Session } from '@/features/auth/api/types'
+import { createHistoryClient } from '../api/historyClient'
+import { createMockHistoryClient } from '../api/historyClient.mock'
+
+vi.mock('../api/historyClient', () => ({ createHistoryClient: vi.fn() }))
+
+const mockedCreateHistoryClient = vi.mocked(createHistoryClient)
+
+/** Real mock-store behavior (list/get/remove all work against the same
+ *  in-memory `historyClient.mock.ts` store the app uses without a backend),
+ *  wrapped with a `list` spy so tests can assert on call counts. */
+function useRealishHistoryClient() {
+  const client = createMockHistoryClient()
+  const listSpy = vi.spyOn(client, 'list')
+  mockedCreateHistoryClient.mockReturnValue(client)
+  return { client, listSpy }
+}
 
 const DEMO_SESSION: Session = {
   accountId: 'acc1',
@@ -33,29 +50,34 @@ function makeAuthValue(overrides: Partial<AuthContextValue>): AuthContextValue {
 function renderHistoryPage(authValue: AuthContextValue, initialEntries = ['/history']) {
   return render(
     <AuthContext.Provider value={authValue}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Routes>
-          <Route path="/history" element={<HistoryPage />} />
-          <Route path="/login" element={<div>Trang đăng nhập</div>} />
-        </Routes>
-      </MemoryRouter>
+      <HistoryDataProvider>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Routes>
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/login" element={<div>Trang đăng nhập</div>} />
+          </Routes>
+        </MemoryRouter>
+      </HistoryDataProvider>
     </AuthContext.Provider>,
   )
 }
 
 describe('HistoryPage', () => {
   it('redirects a Guest session to /login', async () => {
+    useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: null }))
     expect(await screen.findByText('Trang đăng nhập')).toBeInTheDocument()
   })
 
   it('renders nothing while the session is still restoring (no premature redirect)', () => {
+    useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: null, isRestoring: true }))
     expect(screen.queryByText('Trang đăng nhập')).not.toBeInTheDocument()
     expect(screen.queryByText('Lịch sử prompt đã tạo')).not.toBeInTheDocument()
   })
 
   it('lists history entries for a logged-in User (mock client)', async () => {
+    useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: DEMO_SESSION }))
     expect(await screen.findByText('Lịch sử prompt đã tạo')).toBeInTheDocument()
     await waitFor(() => {
@@ -64,9 +86,55 @@ describe('HistoryPage', () => {
   })
 
   it('shows the empty state copy when there is no history (no active filters)', async () => {
+    useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: DEMO_SESSION }), [
       '/history?templateId=no-such-template',
     ])
     expect(await screen.findByText('Không có kết quả phù hợp với bộ lọc')).toBeInTheDocument()
+  })
+
+  it('does not re-fetch when navigating away and back with the same filters', async () => {
+    const { listSpy } = useRealishHistoryClient()
+    const authValue = makeAuthValue({ session: DEMO_SESSION })
+
+    const { rerender } = render(
+      <AuthContext.Provider value={authValue}>
+        <HistoryDataProvider>
+          <MemoryRouter initialEntries={['/history']}>
+            <Routes>
+              <Route path="/history" element={<HistoryPage />} />
+            </Routes>
+          </MemoryRouter>
+        </HistoryDataProvider>
+      </AuthContext.Provider>,
+    )
+    await screen.findByText('Lịch sử prompt đã tạo')
+    await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
+    expect(listSpy).toHaveBeenCalledTimes(1)
+
+    // Simulates RootLayout's Outlet swapping the nested route while
+    // HistoryDataProvider itself stays mounted across the navigation.
+    rerender(
+      <AuthContext.Provider value={authValue}>
+        <HistoryDataProvider>
+          <p>Elsewhere</p>
+        </HistoryDataProvider>
+      </AuthContext.Provider>,
+    )
+    rerender(
+      <AuthContext.Provider value={authValue}>
+        <HistoryDataProvider>
+          <MemoryRouter initialEntries={['/history']}>
+            <Routes>
+              <Route path="/history" element={<HistoryPage />} />
+            </Routes>
+          </MemoryRouter>
+        </HistoryDataProvider>
+      </AuthContext.Provider>,
+    )
+    await screen.findByText('Lịch sử prompt đã tạo')
+    await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
+
+    expect(listSpy).toHaveBeenCalledTimes(1)
   })
 })

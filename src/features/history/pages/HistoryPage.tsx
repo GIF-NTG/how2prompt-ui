@@ -1,29 +1,27 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
-import { createHistoryClient } from '../api/historyClient'
+import { useHistoryData } from '../context/useHistoryData'
 import { getHistoryDisplayTitle } from '../utils/displayTitle'
 import { useHistoryFilters } from '../hooks/useHistoryFilters'
 import { HistoryFilterBar } from '../components/HistoryFilterBar'
 import { HistoryList } from '../components/HistoryList'
 import { HistoryEmptyState } from '../components/HistoryEmptyState'
 import { HistoryListSkeleton } from '../components/HistoryListSkeleton'
-import type { HistoryListItem } from '../types'
-
-const PAGE_SIZE = 20
 
 export function HistoryPage() {
   const { session, isRestoring } = useAuth()
   const { filters, setTemplateId, setModel, setFrom, setTo, resetFilters } = useHistoryFilters()
-  const historyClient = useMemo(() => createHistoryClient(session?.token), [session?.token])
+  // History list is shared, lazily-fetched, cross-page state (see
+  // HistoryDataProvider) — `ensureHistory()` only re-fetches when the
+  // filters actually change, so navigating away from and back to History
+  // reuses the cached data instead of re-fetching it.
+  const { items, cursor, hasMore, historyClient, ensureHistory, loadMoreHistory, removeHistoryItems } =
+    useHistoryData()
 
-  const [items, setItems] = useState<HistoryListItem[]>([])
-  const [cursor, setCursor] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const requestGeneration = useRef(0)
 
   const queryKey = useMemo(
     () => ({
@@ -35,58 +33,43 @@ export function HistoryPage() {
     [filters.templateId, filters.model, filters.from, filters.to],
   )
 
-  const loadData = useCallback(async () => {
-    const generation = ++requestGeneration.current
-    setLoading(true)
-    setError(null)
-
-    try {
-      const result = await historyClient.list(queryKey, null, PAGE_SIZE)
-      if (generation !== requestGeneration.current) return
-      setItems(result.items)
-      setCursor(result.nextCursor)
-      setHasMore(result.hasMore)
-    } catch {
-      if (generation !== requestGeneration.current) return
-      setError('Không thể tải lịch sử, vui lòng thử lại sau.')
-    } finally {
-      if (generation === requestGeneration.current) setLoading(false)
-    }
-  }, [historyClient, queryKey])
-
   useEffect(() => {
     if (!session) return
-    void loadData()
-  }, [session, loadData])
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    ensureHistory(queryKey)
+      .catch(() => {
+        if (!cancelled) setError('Không thể tải lịch sử, vui lòng thử lại sau.')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [session, queryKey, ensureHistory])
 
   const handleLoadMore = useCallback(async () => {
-    const generation = requestGeneration.current
     if (!cursor) return
     setIsLoadingMore(true)
     try {
-      const result = await historyClient.list(queryKey, cursor, PAGE_SIZE)
-      if (generation !== requestGeneration.current) return
-      setItems((prev) => [...prev, ...result.items])
-      setCursor(result.nextCursor)
-      setHasMore(result.hasMore)
+      await loadMoreHistory()
     } catch {
-      if (generation !== requestGeneration.current) return
       setError('Không thể tải thêm lịch sử, vui lòng thử lại sau.')
     } finally {
-      if (generation === requestGeneration.current) setIsLoadingMore(false)
+      setIsLoadingMore(false)
     }
-  }, [historyClient, queryKey, cursor])
+  }, [cursor, loadMoreHistory])
 
   const handleConfirmDelete = useCallback(
     (ids: string[]) => {
-      const idSet = new Set(ids)
       // Optimistic removal (FR-014/015/016) — treat an already-deleted
       // entry (e.g. removed by a concurrent session) as a no-op success,
       // not an error, per spec.md's Edge Cases.
-      setItems((prev) => prev.filter((item) => !idSet.has(item.id)))
-      void Promise.all(ids.map((id) => historyClient.remove(id).catch(() => {})))
+      removeHistoryItems(ids)
     },
-    [historyClient],
+    [removeHistoryItems],
   )
 
   const templateOptions = useMemo(() => {
