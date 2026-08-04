@@ -55,17 +55,20 @@ export function HomeDataProvider({ children }: { children: ReactNode }) {
   )
 
   const refetchCategories = useCallback(async () => {
-    setCategories(await templateClient.getCategories())
+    const result = await templateClient.getCategories()
+    setCategories(Array.isArray(result) ? result : [])
     setCategoriesLoaded(true)
   }, [])
 
   const refetchTags = useCallback(async () => {
-    setTags(await templateClient.getTags())
+    const result = await templateClient.getTags()
+    setTags(Array.isArray(result) ? result : [])
     setTagsLoaded(true)
   }, [])
 
   const refetchModels = useCallback(async () => {
-    setModels(await templateClient.getModels())
+    const result = await templateClient.getModels()
+    setModels(Array.isArray(result) ? result : [])
     setModelsLoaded(true)
   }, [])
 
@@ -111,7 +114,7 @@ export function HomeDataProvider({ children }: { children: ReactNode }) {
           .getFeatured(accessToken)
           .catch(() => [])
           .then((result) => {
-            setFeatured(result)
+            setFeatured(Array.isArray(result) ? result : [])
             setFeaturedLoaded(true)
           })
           .finally(() => {
@@ -131,7 +134,7 @@ export function HomeDataProvider({ children }: { children: ReactNode }) {
           .getTrending(undefined, accessToken)
           .catch(() => [])
           .then((result) => {
-            setTrending(result)
+            setTrending(Array.isArray(result) ? result : [])
             setTrendingLoaded(true)
           })
           .finally(() => {
