@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuth } from '@/features/auth/context/useAuth'
-import { ApiError } from '@/shared/utils/httpClient'
-import { createAiModelsClient } from '../api/aiModelsClient'
+import { useEffect, useState } from 'react'
 import type { AiModel, AiModelUpsert } from '../api/aiModelsClient.types'
+import { useAdminData } from '../context/useAdminData'
 import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { AiModelForm } from '../components/AiModelForm'
@@ -10,44 +8,26 @@ import { AiModelTable } from '../components/AiModelTable'
 import { Modal } from '../components/Modal'
 
 export function AiModelsPage() {
-  const { session } = useAuth()
-  const client = useMemo(() => createAiModelsClient(session?.token), [session?.token])
-
-  const [models, setModels] = useState<AiModel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { models, modelsLoaded, error, aiModelsClient, ensureModels, refetchModels } =
+    useAdminData()
   const [formTarget, setFormTarget] = useState<AiModel | 'new' | null>(null)
 
-  const loadModels = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setModels(await client.list())
-    } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : 'Không thể tải danh sách AI model, vui lòng thử lại.',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [client])
-
   useEffect(() => {
-    void loadModels()
-  }, [loadModels])
+    void ensureModels()
+  }, [ensureModels])
 
   async function handleSubmit(input: AiModelUpsert) {
     if (formTarget && formTarget !== 'new') {
-      await client.update(formTarget.id, input)
+      await aiModelsClient.update(formTarget.id, input)
     } else {
-      await client.create(input)
+      await aiModelsClient.create(input)
     }
     setFormTarget(null)
-    await loadModels()
+    await refetchModels()
   }
 
   async function handleToggleActive(model: AiModel) {
-    await client.update(model.id, {
+    await aiModelsClient.update(model.id, {
       code: model.code,
       name: model.name,
       provider: model.provider,
@@ -59,7 +39,7 @@ export function AiModelsPage() {
       isActive: !model.isActive,
       sortOrder: model.sortOrder,
     })
-    await loadModels()
+    await refetchModels()
   }
 
   return (
@@ -79,7 +59,7 @@ export function AiModelsPage() {
           </button>
         }
       >
-        {loading ? (
+        {!modelsLoaded && !error ? (
           <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
         ) : error ? (
           <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">

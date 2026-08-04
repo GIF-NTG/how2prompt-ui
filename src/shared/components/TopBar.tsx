@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { ThemeToggle } from './ThemeToggle'
 import { getTagAvatarClasses } from '@/shared/utils/colorTag'
+import { adminAiModelsChunk, historyChunk, profileChunk } from '@/app/routeChunks'
 
 export function TopBar() {
   const { session, signOut } = useAuth()
@@ -33,6 +34,8 @@ export function TopBar() {
           </Link>
           <Link
             to="/history"
+            onMouseEnter={() => void historyChunk()}
+            onFocus={() => void historyChunk()}
             className={`text-[0.88rem] border-b border-transparent transition-colors duration-150 ${
               location.pathname === '/history'
                 ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8] dark:border-b-[#6D726A]'
@@ -44,6 +47,8 @@ export function TopBar() {
           {session?.isAdmin && (
             <Link
               to="/admin/ai-models"
+              onMouseEnter={() => void adminAiModelsChunk()}
+              onFocus={() => void adminAiModelsChunk()}
               className={`text-[0.88rem] border-b border-transparent transition-colors duration-150 ${
                 location.pathname.startsWith('/admin')
                   ? 'text-[#1B1D1B] border-b-[#8B8F86] dark:text-[#ECEEE8] dark:border-b-[#6D726A]'
@@ -75,6 +80,8 @@ export function TopBar() {
               <div className="flex flex-col gap-0.5 rounded-xl border border-[#DBDFD3] bg-white p-1.5 shadow-lg dark:border-[#2C3130] dark:bg-[#1C2024]">
                 <Link
                   to="/profile"
+                  onMouseEnter={() => void profileChunk()}
+                  onFocus={() => void profileChunk()}
                   className="rounded-lg px-3 py-2 text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
                 >
                   Hồ sơ

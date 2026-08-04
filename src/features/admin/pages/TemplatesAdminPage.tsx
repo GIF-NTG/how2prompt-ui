@@ -2,11 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { ApiError } from '@/shared/utils/httpClient'
 import { createTemplatesAdminClient } from '../api/templatesAdminClient'
-import { createTaxonomyClient } from '../api/taxonomyClient'
-import { createAiModelsClient } from '../api/aiModelsClient'
 import type { AdminTemplate, TemplateUpsert } from '../api/templatesAdminClient.types'
-import type { Category, Tag } from '../api/taxonomyClient.types'
-import type { AiModel } from '../api/aiModelsClient.types'
+import { useAdminData } from '../context/useAdminData'
 import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { TemplateEditorForm } from '../components/TemplateEditorForm'
@@ -18,15 +15,21 @@ export function TemplatesAdminPage() {
     () => createTemplatesAdminClient(session?.token),
     [session?.token],
   )
-  const taxonomyClient = useMemo(() => createTaxonomyClient(session?.token), [session?.token])
-  const aiModelsClient = useMemo(() => createAiModelsClient(session?.token), [session?.token])
+  // Categories/tags/AI models are shared, lazily-fetched, cross-page state
+  // (see AdminDataProvider) — `ensureX()` only fetches the first time any
+  // admin page actually needs it, and is cached afterwards so switching
+  // between Templates and Taxonomy doesn't re-fetch.
+  const { categories, tags, models, ensureCategories, ensureTags, ensureModels } = useAdminData()
+
+  useEffect(() => {
+    void ensureCategories()
+    void ensureTags()
+    void ensureModels()
+  }, [ensureCategories, ensureTags, ensureModels])
 
   const [templates, setTemplates] = useState<AdminTemplate[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(false)
-  const [categories, setCategories] = useState<Category[]>([])
-  const [tags, setTags] = useState<Tag[]>([])
-  const [models, setModels] = useState<AiModel[]>([])
   const [editingTemplate, setEditingTemplate] = useState<AdminTemplate | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -37,26 +40,16 @@ export function TemplatesAdminPage() {
     setLoading(true)
     setError(null)
     try {
-      const [templatesPage, categoriesResult, tagsResult, modelsResult] = await Promise.all([
-        templatesClient.list(),
-        taxonomyClient.listCategories(),
-        taxonomyClient.listTags(),
-        aiModelsClient.list(),
-      ])
+      const templatesPage = await templatesClient.list()
       setTemplates(templatesPage.items)
       setCursor(templatesPage.nextCursor)
       setHasMore(templatesPage.hasMore)
-      setCategories(categoriesResult)
-      setTags(tagsResult)
-      setModels(modelsResult)
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.',
-      )
+      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
-  }, [templatesClient, taxonomyClient, aiModelsClient])
+  }, [templatesClient])
 
   async function handleLoadMore() {
     if (!cursor) return

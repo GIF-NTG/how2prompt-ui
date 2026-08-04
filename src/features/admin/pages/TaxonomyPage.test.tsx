@@ -2,15 +2,21 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { TaxonomyPage } from './TaxonomyPage'
+import { AdminDataProvider } from '../context/AdminDataProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/AuthContext'
 import type { Session } from '@/features/auth/api/types'
 import { createTaxonomyClient } from '../api/taxonomyClient'
+import { createAiModelsClient } from '../api/aiModelsClient'
 
 vi.mock('../api/taxonomyClient', () => ({
   createTaxonomyClient: vi.fn(),
 }))
+vi.mock('../api/aiModelsClient', () => ({
+  createAiModelsClient: vi.fn(),
+}))
 
 const mockedCreateTaxonomyClient = vi.mocked(createTaxonomyClient)
+const mockedCreateAiModelsClient = vi.mocked(createAiModelsClient)
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
@@ -37,9 +43,16 @@ function makeAuthValue(): AuthContextValue {
 }
 
 function renderPage() {
+  mockedCreateAiModelsClient.mockReturnValue({
+    list: vi.fn().mockResolvedValue([]),
+    create: vi.fn(),
+    update: vi.fn(),
+  })
   return render(
     <AuthContext.Provider value={makeAuthValue()}>
-      <TaxonomyPage />
+      <AdminDataProvider>
+        <TaxonomyPage />
+      </AdminDataProvider>
     </AuthContext.Provider>,
   )
 }

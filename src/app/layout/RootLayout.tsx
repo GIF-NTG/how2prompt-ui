@@ -1,8 +1,10 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { EmailVerificationBanner } from '@/features/auth/components/EmailVerificationBanner'
 import { TopBar } from '@/shared/components/TopBar'
 import { BraceField } from '@/shared/components/BraceField'
+import { PageFallback } from '../PageFallback'
 
 export function RootLayout() {
   const { session } = useAuth()
@@ -13,7 +15,13 @@ export function RootLayout() {
       <div className="relative z-10">
         <TopBar />
         {session && !session.emailVerified && <EmailVerificationBanner />}
-        <Outlet />
+        {/* Scoped to just the routed page so a not-yet-loaded lazy chunk
+         *  (see `App.tsx`) only swaps this area, not the whole shell —
+         *  a Suspense boundary above TopBar would unmount it too, which
+         *  reads as a full page reload on every first-time navigation. */}
+        <Suspense fallback={<PageFallback />}>
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   )

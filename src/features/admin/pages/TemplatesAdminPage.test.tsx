@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { TemplatesAdminPage } from './TemplatesAdminPage'
+import { AdminDataProvider } from '../context/AdminDataProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/AuthContext'
 import type { Session } from '@/features/auth/api/types'
 import { createTemplatesAdminClient } from '../api/templatesAdminClient'
@@ -63,7 +64,9 @@ function setupCommonMocks() {
 function renderPage() {
   return render(
     <AuthContext.Provider value={makeAuthValue()}>
-      <TemplatesAdminPage />
+      <AdminDataProvider>
+        <TemplatesAdminPage />
+      </AdminDataProvider>
     </AuthContext.Provider>,
   )
 }

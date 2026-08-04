@@ -1,47 +1,34 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuth } from '@/features/auth/context/useAuth'
-import { ApiError } from '@/shared/utils/httpClient'
-import { createTaxonomyClient } from '../api/taxonomyClient'
-import type { Category, Tag, TagUpsert } from '../api/taxonomyClient.types'
+import { useEffect } from 'react'
+import type { TagUpsert } from '../api/taxonomyClient.types'
+import { useAdminData } from '../context/useAdminData'
 import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { CategoryTree } from '../components/CategoryTree'
 import { TagTable } from '../components/TagTable'
 
 export function TaxonomyPage() {
-  const { session } = useAuth()
-  const client = useMemo(() => createTaxonomyClient(session?.token), [session?.token])
-
-  const [categories, setCategories] = useState<Category[]>([])
-  const [tags, setTags] = useState<Tag[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [categoriesResult, tagsResult] = await Promise.all([
-        client.listCategories(),
-        client.listTags(),
-      ])
-      setCategories(categoriesResult)
-      setTags(tagsResult)
-    } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : 'Không thể tải taxonomy, vui lòng thử lại.',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [client])
+  const {
+    categories,
+    categoriesLoaded,
+    tags,
+    tagsLoaded,
+    error,
+    taxonomyClient,
+    ensureCategories,
+    ensureTags,
+    refetchCategories,
+    refetchTags,
+  } = useAdminData()
 
   useEffect(() => {
-    void loadData()
-  }, [loadData])
+    void ensureCategories()
+    void ensureTags()
+  }, [ensureCategories, ensureTags])
+
+  const loading = !categoriesLoaded || !tagsLoaded
 
   async function handleCreateCategory(name: string, parentId: string | null) {
-    await client.createCategory({
+    await taxonomyClient.createCategory({
       slug: name.toLowerCase().replace(/\s+/g, '-'),
       name: { en: name },
       description: { en: '' },
@@ -50,13 +37,13 @@ export function TaxonomyPage() {
       parentId,
       sortOrder: categories.length,
     })
-    await loadData()
+    await refetchCategories()
   }
 
   async function handleUpdateCategory(id: string, name: string, parentId: string | null) {
     const existing = categories.find((c) => c.id === id)
     if (!existing) return
-    await client.updateCategory(id, {
+    await taxonomyClient.updateCategory(id, {
       slug: existing.slug,
       name: { ...existing.name, en: name },
       description: existing.description,
@@ -65,34 +52,34 @@ export function TaxonomyPage() {
       parentId,
       sortOrder: existing.sortOrder,
     })
-    await loadData()
+    await refetchCategories()
   }
 
   async function handleDeleteCategory(id: string) {
-    await client.deleteCategory(id)
-    await loadData()
+    await taxonomyClient.deleteCategory(id)
+    await refetchCategories()
   }
 
   async function handleCreateTag(input: TagUpsert) {
-    await client.createTag(input)
-    await loadData()
+    await taxonomyClient.createTag(input)
+    await refetchTags()
   }
 
   async function handleUpdateTag(id: string, input: TagUpsert) {
-    await client.updateTag(id, input)
-    await loadData()
+    await taxonomyClient.updateTag(id, input)
+    await refetchTags()
   }
 
   async function handleDeleteTag(id: string) {
-    await client.deleteTag(id)
-    await loadData()
+    await taxonomyClient.deleteTag(id)
+    await refetchTags()
   }
 
   return (
     <>
       <AdminPageHeader eyebrow="admin / nội dung" title="Danh mục & Tag" />
 
-      {loading ? (
+      {loading && !error ? (
         <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
       ) : error ? (
         <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
