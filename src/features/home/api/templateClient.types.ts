@@ -21,5 +21,9 @@ export interface TemplateClient {
 
   getTags(params?: { q?: string; limit?: number }): Promise<Tag[]>
 
-  toggleFavorite(templateId: string, isFavorited: boolean): Promise<{ isFavorited: boolean }>
+  toggleFavorite(
+    templateId: string,
+    isFavorited: boolean,
+    accessToken?: string,
+  ): Promise<{ isFavorited: boolean }>
 }

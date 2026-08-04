@@ -123,9 +123,10 @@ export function createRealTemplateDetailClient(): TemplateDetailClient {
       return mapTemplateDetail(raw)
     },
 
-    async toggleFavorite(templateId, isFavorited) {
+    async toggleFavorite(templateId, isFavorited, accessToken) {
       await apiFetch<void>(`/templates/${templateId}/favorite`, {
         method: isFavorited ? 'DELETE' : 'POST',
+        accessToken,
       })
       return { isFavorited: !isFavorited }
     },

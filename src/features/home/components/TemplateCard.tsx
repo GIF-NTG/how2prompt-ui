@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import type { TemplateListItem } from '../types'
 import { templateClient } from '@/features/home/api/templateClient'
+import { useAuth } from '@/features/auth/context/useAuth'
 import { getI18nValue } from '@/shared/utils/i18n'
 import { getModelLabel } from '@/shared/utils/modelLabel'
 import { getTagColorClasses } from '@/shared/utils/colorTag'
@@ -25,6 +26,7 @@ export function TemplateCard({
   onFavoriteChange,
 }: TemplateCardProps) {
   const [isFavorited, setIsFavorited] = useState(template.isFavorited)
+  const { session } = useAuth()
 
   async function handleFavorite(e: React.MouseEvent) {
     e.stopPropagation()
@@ -33,7 +35,7 @@ export function TemplateCard({
     const previous = isFavorited
     setIsFavorited(!previous)
     try {
-      const result = await templateClient.toggleFavorite(template.id, previous)
+      const result = await templateClient.toggleFavorite(template.id, previous, session?.token)
       setIsFavorited(result.isFavorited)
       onFavoriteChange?.(template.id, result.isFavorited)
     } catch {

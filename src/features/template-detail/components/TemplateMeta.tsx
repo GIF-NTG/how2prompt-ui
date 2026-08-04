@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { templateDetailClient } from '../api/templateDetailClient'
+import { useAuth } from '@/features/auth/context/useAuth'
 
 interface TemplateMetaProps {
   templateId: string
@@ -17,6 +18,7 @@ export function TemplateMeta({
 }: TemplateMetaProps) {
   const [favorited, setFavorited] = useState(isFavorited)
   const [toggling, setToggling] = useState(false)
+  const { session } = useAuth()
 
   async function handleToggle() {
     if (toggling) return
@@ -26,7 +28,7 @@ export function TemplateMeta({
     setFavorited(!previous)
     setToggling(true)
     try {
-      const result = await templateDetailClient.toggleFavorite(templateId, previous)
+      const result = await templateDetailClient.toggleFavorite(templateId, previous, session?.token)
       setFavorited(result.isFavorited)
     } catch {
       setFavorited(previous)
