@@ -50,7 +50,9 @@ interface RawTemplateDetail {
   authorId: string | null
   authorType: AuthorBrief['type']
   categories: RawCategory[]
-  models: string[]
+  // Same drift as templateClient.real.ts's RawTemplateListItem — the
+  // backend actually sends full model objects here, not code strings.
+  models: (string | { code: string })[]
   usageCount: number
   favoriteCount: number
   isFavorited?: boolean
@@ -106,7 +108,7 @@ function mapTemplateDetail(raw: RawTemplateDetail): TemplateDetail {
       type: raw.authorType,
     },
     categories: (raw.categories ?? []).map(mapCategory),
-    supportedModels: raw.models ?? [],
+    supportedModels: (raw.models ?? []).map((m) => (typeof m === 'string' ? m : m.code)),
     usageCount: raw.usageCount,
     favoriteCount: raw.favoriteCount,
     isFavorited: raw.isFavorited ?? false,

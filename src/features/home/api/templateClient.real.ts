@@ -51,7 +51,12 @@ export interface RawTemplateListItem {
   official: boolean
   categories: RawCategory[]
   tags: Tag[]
-  models: string[]
+  // Despite the name, the backend actually sends full model objects here
+  // (`{id, code, name, iconUrl}`), not plain code strings — extracted to
+  // `.code` below rather than propagated as-is, since `TemplateListItem`
+  // (and every renderer of `supportedModels`, e.g. TemplateCard) expects
+  // string codes.
+  models: (string | { code: string })[]
   usageCount: number
   favoriteCount: number
   isFavorited?: boolean
@@ -69,7 +74,7 @@ export function mapTemplateListItem(raw: RawTemplateListItem): TemplateListItem 
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: (raw.categories ?? []).map(mapCategory),
     tags: raw.tags ?? [],
-    supportedModels: raw.models ?? [],
+    supportedModels: (raw.models ?? []).map((m) => (typeof m === 'string' ? m : m.code)),
     usageCount: raw.usageCount,
     favoriteCount: raw.favoriteCount,
     isFavorited: raw.isFavorited ?? false,

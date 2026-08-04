@@ -104,7 +104,7 @@ function mapAdminTemplate(raw: RawTemplateDetail): AdminTemplate {
     coverImage: raw.coverImage,
     categoryIds: (raw.categories ?? []).map((c) => c.id),
     tagSlugs: (raw.tags ?? []).map((t) => t.slug),
-    modelCodes: raw.models ?? [],
+    modelCodes: (raw.models ?? []).map((m) => (typeof m === 'string' ? m : m.code)),
     isOfficial: raw.official,
     status: raw.status ?? 'published',
     currentVersion: mapTemplateVersion(raw.currentVersion),
