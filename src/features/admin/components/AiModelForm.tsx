@@ -37,9 +37,9 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
   useEffect(() => {
     if (editingModel) {
       setForm({
-        code: editingModel.code,
-        name: editingModel.name,
-        provider: editingModel.provider,
+        code: String(editingModel.code || ''),
+        name: String(editingModel.name || ''),
+        provider: String(editingModel.provider || ''),
         modelType: editingModel.modelType,
         description: editingModel.description,
         capabilities: editingModel.capabilities,
@@ -57,7 +57,10 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
-    if (!form.code.trim() || !form.name.trim() || !form.provider.trim()) {
+    const code = String(form.code || '').trim()
+    const name = String(form.name || '').trim()
+    const provider = String(form.provider || '').trim()
+    if (!code || !name || !provider) {
       setError('Vui lòng nhập đầy đủ code, name và provider.')
       return
     }
