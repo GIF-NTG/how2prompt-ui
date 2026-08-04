@@ -85,15 +85,20 @@ interface TemplatesPage {
 
 export function createRealTemplateClient(): TemplateClient {
   return {
+    // Query param names verified against the real backend's live
+    // `/v3/api-docs` (not `docs/api/openapi.yaml`, which is stale here):
+    // `search`/`tag`/`limit`, not `q`/`tags`/`size` — the old names were
+    // silently ignored by the backend, so search/tag-filter/page-size were
+    // all no-ops (every request just returned the full unfiltered catalog).
     async getTemplates(params, accessToken) {
       const searchParams = new URLSearchParams()
-      if (params.q) searchParams.set('q', params.q)
+      if (params.q) searchParams.set('search', params.q)
       if (params.category) searchParams.set('category', params.category)
-      if (params.tags) searchParams.set('tags', params.tags)
+      if (params.tags) searchParams.set('tag', params.tags)
       if (params.model) searchParams.set('model', params.model)
       if (params.sort) searchParams.set('sort', params.sort)
       if (params.cursor) searchParams.set('cursor', params.cursor)
-      if (params.size !== undefined) searchParams.set('size', String(params.size))
+      if (params.size !== undefined) searchParams.set('limit', String(params.size))
       const qs = searchParams.toString()
       const page = await apiFetch<TemplatesPage>(`/templates${qs ? `?${qs}` : ''}`, {
         accessToken,

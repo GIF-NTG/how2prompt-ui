@@ -48,8 +48,14 @@ export interface AdminTemplate {
   currentVersion: AdminTemplateVersion
 }
 
+export interface AdminTemplatePage {
+  items: AdminTemplate[]
+  nextCursor: string | null
+  hasMore: boolean
+}
+
 export interface TemplatesAdminClient {
-  list(): Promise<AdminTemplate[]>
+  list(cursor?: string): Promise<AdminTemplatePage>
   create(input: TemplateUpsert): Promise<AdminTemplate>
   /** Editing an already-published template creates a new version server-side
    *  (FR-014) rather than mutating the current one in place; concurrent edits

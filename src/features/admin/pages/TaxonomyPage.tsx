@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { ApiError } from '@/shared/utils/httpClient'
 import { createTaxonomyClient } from '../api/taxonomyClient'
-import type { Category, Tag } from '../api/taxonomyClient.types'
+import type { Category, Tag, TagUpsert } from '../api/taxonomyClient.types'
 import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { CategoryTree } from '../components/CategoryTree'
-import { TagManagementNotice } from '../components/TagManagementNotice'
+import { TagTable } from '../components/TagTable'
 
 export function TaxonomyPage() {
   const { session } = useAuth()
@@ -68,6 +68,26 @@ export function TaxonomyPage() {
     await loadData()
   }
 
+  async function handleDeleteCategory(id: string) {
+    await client.deleteCategory(id)
+    await loadData()
+  }
+
+  async function handleCreateTag(input: TagUpsert) {
+    await client.createTag(input)
+    await loadData()
+  }
+
+  async function handleUpdateTag(id: string, input: TagUpsert) {
+    await client.updateTag(id, input)
+    await loadData()
+  }
+
+  async function handleDeleteTag(id: string) {
+    await client.deleteTag(id)
+    await loadData()
+  }
+
   return (
     <>
       <AdminPageHeader eyebrow="admin / nội dung" title="Danh mục & Tag" />
@@ -85,10 +105,16 @@ export function TaxonomyPage() {
               categories={categories}
               onCreate={handleCreateCategory}
               onUpdate={handleUpdateCategory}
+              onDelete={handleDeleteCategory}
             />
           </AdminPanel>
           <AdminPanel title="Tags" hint={`${tags.length} tag`}>
-            <TagManagementNotice tags={tags} />
+            <TagTable
+              tags={tags}
+              onCreate={handleCreateTag}
+              onUpdate={handleUpdateTag}
+              onDelete={handleDeleteTag}
+            />
           </AdminPanel>
         </div>
       )}

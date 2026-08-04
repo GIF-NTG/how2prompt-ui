@@ -10,6 +10,7 @@ import type { AiModel } from '../api/aiModelsClient.types'
 import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { TemplateEditorForm } from '../components/TemplateEditorForm'
+import { Modal } from '../components/Modal'
 
 export function TemplatesAdminPage() {
   const { session } = useAuth()
@@ -21,24 +22,30 @@ export function TemplatesAdminPage() {
   const aiModelsClient = useMemo(() => createAiModelsClient(session?.token), [session?.token])
 
   const [templates, setTemplates] = useState<AdminTemplate[]>([])
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [models, setModels] = useState<AiModel[]>([])
   const [editingTemplate, setEditingTemplate] = useState<AdminTemplate | null>(null)
+  const [formOpen, setFormOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const [templatesResult, categoriesResult, tagsResult, modelsResult] = await Promise.all([
+      const [templatesPage, categoriesResult, tagsResult, modelsResult] = await Promise.all([
         templatesClient.list(),
         taxonomyClient.listCategories(),
         taxonomyClient.listTags(),
         aiModelsClient.list(),
       ])
-      setTemplates(templatesResult)
+      setTemplates(templatesPage.items)
+      setCursor(templatesPage.nextCursor)
+      setHasMore(templatesPage.hasMore)
       setCategories(categoriesResult)
       setTags(tagsResult)
       setModels(modelsResult)
@@ -51,9 +58,39 @@ export function TemplatesAdminPage() {
     }
   }, [templatesClient, taxonomyClient, aiModelsClient])
 
+  async function handleLoadMore() {
+    if (!cursor) return
+    setLoadingMore(true)
+    try {
+      const nextPage = await templatesClient.list(cursor)
+      setTemplates((prev) => [...prev, ...nextPage.items])
+      setCursor(nextPage.nextCursor)
+      setHasMore(nextPage.hasMore)
+    } catch {
+      setError('Không thể tải thêm template, vui lòng thử lại.')
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
   useEffect(() => {
     void loadData()
   }, [loadData])
+
+  function openCreateForm() {
+    setEditingTemplate(null)
+    setFormOpen(true)
+  }
+
+  function openEditForm(template: AdminTemplate) {
+    setEditingTemplate(template)
+    setFormOpen(true)
+  }
+
+  function closeForm() {
+    setFormOpen(false)
+    setEditingTemplate(null)
+  }
 
   async function handleSaveDraft(input: TemplateUpsert) {
     if (editingTemplate) {
@@ -71,7 +108,7 @@ export function TemplatesAdminPage() {
       await templatesClient.update(target.id, input)
     }
     await templatesClient.publish(target.id)
-    setEditingTemplate(null)
+    closeForm()
     await loadData()
   }
 
@@ -79,55 +116,111 @@ export function TemplatesAdminPage() {
     <>
       <AdminPageHeader eyebrow="admin / nội dung" title="Templates" />
 
-      {loading ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
-      ) : error ? (
-        <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
-          {error}
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
-          <AdminPanel title={editingTemplate ? `Chỉnh sửa: ${editingTemplate.title.en}` : 'Tạo template mới'}>
-            <TemplateEditorForm
-              editingTemplate={editingTemplate}
-              categories={categories}
-              tags={tags}
-              models={models}
-              onSaveDraft={handleSaveDraft}
-              onPublish={handlePublish}
-            />
-          </AdminPanel>
-
-          <AdminPanel title="Templates" hint={`${templates.length} mục`}>
-            {templates.length === 0 ? (
-              <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có template nào.</p>
-            ) : (
-              <ul className="flex flex-col gap-2">
+      <AdminPanel
+        title="Templates"
+        hint={`${templates.length} mục`}
+        action={
+          <button
+            type="button"
+            onClick={openCreateForm}
+            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
+          >
+            + Tạo template mới
+          </button>
+        }
+      >
+        {loading ? (
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+        ) : error ? (
+          <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
+            {error}
+          </p>
+        ) : templates.length === 0 ? (
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có template nào.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
+                  <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Tên
+                  </th>
+                  <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Version
+                  </th>
+                  <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Trạng thái
+                  </th>
+                  <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Hành động
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 {templates.map((template) => (
-                  <li
+                  <tr
                     key={template.id}
-                    className="flex items-center justify-between rounded-lg border border-[#DBDFD3] p-3 text-sm dark:border-[#2C3130]"
+                    className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]"
                   >
-                    <span>
-                      {template.title.en}{' '}
-                      <span className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">
-                        (v{template.currentVersion.versionNumber} —{' '}
-                        {template.status === 'published' ? 'đã publish' : 'draft'})
+                    <td className="px-3 py-2.5">{template.title.en}</td>
+                    <td className="px-3 py-2.5 font-mono text-xs text-[#5B5F58] dark:text-[#A2A79C]">
+                      v{template.currentVersion.versionNumber}
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <span
+                        className={
+                          template.status === 'published'
+                            ? 'rounded-full bg-[#E4F3EA] px-2 py-0.5 text-xs text-[#2E7D4F] dark:bg-[#1E3327] dark:text-[#6FCF9A]'
+                            : 'rounded-full bg-[#F7ECD7] px-2 py-0.5 text-xs text-[#C98A1F] dark:bg-[#362C1A] dark:text-[#E0B25C]'
+                        }
+                      >
+                        {template.status === 'published' ? 'đã publish' : 'draft'}
                       </span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setEditingTemplate(template)}
-                      className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
-                    >
-                      Sửa
-                    </button>
-                  </li>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <button
+                        type="button"
+                        onClick={() => openEditForm(template)}
+                        className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                      >
+                        Sửa
+                      </button>
+                    </td>
+                  </tr>
                 ))}
-              </ul>
+              </tbody>
+            </table>
+            {hasMore && (
+              <div className="flex justify-center pt-3">
+                <button
+                  type="button"
+                  onClick={() => void handleLoadMore()}
+                  disabled={loadingMore}
+                  className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-semibold disabled:opacity-60 dark:border-[#2C3130]"
+                >
+                  {loadingMore ? 'Đang tải...' : 'Tải thêm'}
+                </button>
+              </div>
             )}
-          </AdminPanel>
-        </div>
+          </div>
+        )}
+      </AdminPanel>
+
+      {formOpen && (
+        <Modal
+          title={editingTemplate ? `Chỉnh sửa: ${editingTemplate.title.en}` : 'Tạo template mới'}
+          onClose={closeForm}
+          wide
+        >
+          <TemplateEditorForm
+            editingTemplate={editingTemplate}
+            categories={categories}
+            tags={tags}
+            models={models}
+            onSaveDraft={handleSaveDraft}
+            onPublish={handlePublish}
+          />
+        </Modal>
       )}
     </>
   )

@@ -37,13 +37,21 @@ function emptyVariable(sortOrder: number): TemplateVariableInput {
 interface TemplateVariableEditorProps {
   variables: TemplateVariableInput[]
   onChange: (variables: TemplateVariableInput[]) => void
+  /** The backend has no endpoint to edit variables of an already-created
+   *  template (see `templatesAdminClient.real.ts`) — the editor form sets
+   *  this while editing so changes here aren't silently discarded. */
+  disabled?: boolean
 }
 
 /** Declares/reorders a template's variables (FR-009) — same
  *  `template_variables` shape Epic 3's dynamic form already consumes
  *  (Constitution Principle I), reused via `TemplateVariable` from
  *  `template-generate/types`. */
-export function TemplateVariableEditor({ variables, onChange }: TemplateVariableEditorProps) {
+export function TemplateVariableEditor({
+  variables,
+  onChange,
+  disabled = false,
+}: TemplateVariableEditorProps) {
   function updateVariable(index: number, patch: Partial<TemplateVariableInput>) {
     onChange(variables.map((v, i) => (i === index ? { ...v, ...patch } : v)))
   }
@@ -70,13 +78,15 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
         <h3 className="m-0 text-xs font-bold uppercase tracking-wide text-[#5B5F58] dark:text-[#A2A79C]">
           Variables
         </h3>
-        <button
-          type="button"
-          onClick={addVariable}
-          className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
-        >
-          + Thêm variable
-        </button>
+        {!disabled && (
+          <button
+            type="button"
+            onClick={addVariable}
+            className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+          >
+            + Thêm variable
+          </button>
+        )}
       </div>
 
       {variables.length === 0 ? (
@@ -93,6 +103,7 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
               <input
                 value={variable.varKey}
                 onChange={(e) => updateVariable(index, { varKey: e.target.value })}
+                readOnly={disabled}
                 placeholder="varKey"
                 className={FIELD_CLASSES}
               />
@@ -101,6 +112,7 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
                 onChange={(e) =>
                   updateVariable(index, { label: { ...variable.label, en: e.target.value } })
                 }
+                readOnly={disabled}
                 placeholder="Label"
                 className={FIELD_CLASSES}
               />
@@ -111,6 +123,7 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
                     inputType: e.target.value as TemplateVariable['inputType'],
                   })
                 }
+                disabled={disabled}
                 className={FIELD_CLASSES}
               >
                 {INPUT_TYPES.map((type) => (
@@ -124,32 +137,37 @@ export function TemplateVariableEditor({ variables, onChange }: TemplateVariable
                   type="checkbox"
                   checked={variable.isRequired}
                   onChange={(e) => updateVariable(index, { isRequired: e.target.checked })}
+                  disabled={disabled}
                 />
                 Bắt buộc
               </label>
-              <button
-                type="button"
-                onClick={() => moveVariable(index, -1)}
-                disabled={index === 0}
-                className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                onClick={() => moveVariable(index, 1)}
-                disabled={index === variables.length - 1}
-                className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
-              >
-                ↓
-              </button>
-              <button
-                type="button"
-                onClick={() => removeVariable(index)}
-                className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]"
-              >
-                Xoá
-              </button>
+              {!disabled && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => moveVariable(index, -1)}
+                    disabled={index === 0}
+                    className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveVariable(index, 1)}
+                    disabled={index === variables.length - 1}
+                    className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeVariable(index)}
+                    className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]"
+                  >
+                    Xoá
+                  </button>
+                </>
+              )}
             </li>
           ))}
         </ul>

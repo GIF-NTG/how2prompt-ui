@@ -3,8 +3,7 @@ import type { Category, Tag } from '@/features/home/types'
 export type { Category, Tag }
 
 /** Create/edit payload for a category. `slug`/`name` required; `parentId`
- *  optional (nullable) for nesting. No `CategoryUpsert` for tags exists — per
- *  FR-007a, tags are read-only in this feature. */
+ *  optional (nullable) for nesting. */
 export interface CategoryUpsert {
   slug: string
   name: Category['name']
@@ -15,10 +14,20 @@ export interface CategoryUpsert {
   sortOrder: number
 }
 
+/** Create/edit payload for a tag — flat (no i18n), per `CreateTagRequest`/
+ *  `TagResponse` on the real backend (`taxonomy-admin-controller`). */
+export interface TagUpsert {
+  slug: string
+  name: string
+}
+
 export interface TaxonomyClient {
   listCategories(): Promise<Category[]>
   createCategory(input: CategoryUpsert): Promise<Category>
   updateCategory(id: string, input: CategoryUpsert): Promise<Category>
-  /** Read-only — no admin tag endpoints exist (FR-007a). */
+  deleteCategory(id: string): Promise<void>
   listTags(): Promise<Tag[]>
+  createTag(input: TagUpsert): Promise<Tag>
+  updateTag(id: string, input: TagUpsert): Promise<Tag>
+  deleteTag(id: string): Promise<void>
 }

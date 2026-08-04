@@ -66,6 +66,9 @@ function mapHistoryDetail(raw: RawHistoryDetail): HistoryDetail {
 
 export function createRealHistoryClient(accessToken?: string): HistoryClient {
   return {
+    // `limit`, not `size` — verified against the real backend's live
+    // `/v3/api-docs` (`docs/api/openapi.yaml` in this repo is stale here,
+    // same as `/templates`'s param names — see templateClient.real.ts).
     async list(filters, cursor, size) {
       const searchParams = new URLSearchParams()
       if (filters.templateId) searchParams.set('templateId', filters.templateId)
@@ -73,7 +76,7 @@ export function createRealHistoryClient(accessToken?: string): HistoryClient {
       if (filters.from) searchParams.set('from', filters.from)
       if (filters.to) searchParams.set('to', filters.to)
       if (cursor) searchParams.set('cursor', cursor)
-      searchParams.set('size', String(size))
+      searchParams.set('limit', String(size))
       const page = await apiFetch<CursorPage<RawHistoryListItem>>(
         `/generated-prompts?${searchParams.toString()}`,
         { accessToken },

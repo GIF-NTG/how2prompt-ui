@@ -7,6 +7,7 @@ import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { AiModelForm } from '../components/AiModelForm'
 import { AiModelTable } from '../components/AiModelTable'
+import { Modal } from '../components/Modal'
 
 export function AiModelsPage() {
   const { session } = useAuth()
@@ -15,7 +16,7 @@ export function AiModelsPage() {
   const [models, setModels] = useState<AiModel[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [editingModel, setEditingModel] = useState<AiModel | null>(null)
+  const [formTarget, setFormTarget] = useState<AiModel | 'new' | null>(null)
 
   const loadModels = useCallback(async () => {
     setLoading(true)
@@ -36,12 +37,12 @@ export function AiModelsPage() {
   }, [loadModels])
 
   async function handleSubmit(input: AiModelUpsert) {
-    if (editingModel) {
-      await client.update(editingModel.id, input)
-      setEditingModel(null)
+    if (formTarget && formTarget !== 'new') {
+      await client.update(formTarget.id, input)
     } else {
       await client.create(input)
     }
+    setFormTarget(null)
     await loadModels()
   }
 
@@ -65,31 +66,46 @@ export function AiModelsPage() {
     <>
       <AdminPageHeader eyebrow="admin / nội dung" title="AI Models" />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.4fr]">
-        <AdminPanel title={editingModel ? 'Chỉnh sửa model' : 'Thêm model mới'}>
-          <AiModelForm
-            editingModel={editingModel}
-            onSubmit={handleSubmit}
-            onCancelEdit={() => setEditingModel(null)}
+      <AdminPanel
+        title="Danh sách model"
+        hint={`${models.length} model`}
+        action={
+          <button
+            type="button"
+            onClick={() => setFormTarget('new')}
+            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
+          >
+            + Thêm model
+          </button>
+        }
+      >
+        {loading ? (
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+        ) : error ? (
+          <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
+            {error}
+          </p>
+        ) : (
+          <AiModelTable
+            models={models}
+            onEdit={setFormTarget}
+            onToggleActive={(model) => void handleToggleActive(model)}
           />
-        </AdminPanel>
+        )}
+      </AdminPanel>
 
-        <AdminPanel title="Danh sách model" hint={`${models.length} model`}>
-          {loading ? (
-            <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
-          ) : error ? (
-            <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
-              {error}
-            </p>
-          ) : (
-            <AiModelTable
-              models={models}
-              onEdit={setEditingModel}
-              onToggleActive={(model) => void handleToggleActive(model)}
-            />
-          )}
-        </AdminPanel>
-      </div>
+      {formTarget && (
+        <Modal
+          title={formTarget === 'new' ? 'Thêm model mới' : 'Chỉnh sửa model'}
+          onClose={() => setFormTarget(null)}
+        >
+          <AiModelForm
+            editingModel={formTarget === 'new' ? null : formTarget}
+            onSubmit={handleSubmit}
+            onCancelEdit={() => setFormTarget(null)}
+          />
+        </Modal>
+      )}
     </>
   )
 }

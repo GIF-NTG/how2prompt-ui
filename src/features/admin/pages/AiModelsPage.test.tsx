@@ -70,10 +70,13 @@ describe('AiModelsPage', () => {
     renderPage()
     await waitFor(() => expect(list).toHaveBeenCalledTimes(1))
 
-    await user.type(screen.getByPlaceholderText('claude-opus-4'), 'new-model')
-    await user.type(screen.getByRole('textbox', { name: 'Tên hiển thị' }), 'New Model')
-    await user.type(screen.getByPlaceholderText('anthropic'), 'acme')
-    await user.click(screen.getByRole('button', { name: 'Tạo model' }))
+    await user.click(screen.getByRole('button', { name: '+ Thêm model' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Thêm model mới' })
+
+    await user.type(within(dialog).getByPlaceholderText('claude-opus-4'), 'new-model')
+    await user.type(within(dialog).getByRole('textbox', { name: 'Tên hiển thị' }), 'New Model')
+    await user.type(within(dialog).getByPlaceholderText('anthropic'), 'acme')
+    await user.click(within(dialog).getByRole('button', { name: 'Tạo model' }))
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1))
     expect(await screen.findByText('new-model')).toBeInTheDocument()
@@ -101,10 +104,11 @@ describe('AiModelsPage', () => {
     await screen.findByText('GPT-4o')
 
     await user.click(screen.getByRole('button', { name: 'Sửa' }))
-    const nameInput = screen.getByRole('textbox', { name: 'Tên hiển thị' })
+    const dialog = await screen.findByRole('dialog', { name: 'Chỉnh sửa model' })
+    const nameInput = within(dialog).getByRole('textbox', { name: 'Tên hiển thị' })
     await user.clear(nameInput)
     await user.type(nameInput, 'GPT-4o Updated')
-    await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Lưu thay đổi' }))
 
     await waitFor(() => expect(update).toHaveBeenCalledWith('m1', expect.objectContaining({ name: 'GPT-4o Updated' })))
   })

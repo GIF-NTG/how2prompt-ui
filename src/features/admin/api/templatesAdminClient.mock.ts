@@ -67,7 +67,7 @@ function syncPublicCatalog(template: AdminTemplate) {
 export function createMockTemplatesAdminClient(): TemplatesAdminClient {
   return {
     async list() {
-      return [...store.values()]
+      return { items: [...store.values()], nextCursor: null, hasMore: false }
     },
 
     async create(input) {

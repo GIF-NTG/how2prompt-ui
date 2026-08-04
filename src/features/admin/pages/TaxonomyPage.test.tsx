@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { TaxonomyPage } from './TaxonomyPage'
@@ -56,25 +56,30 @@ const PARENT_CATEGORY = {
   templateCount: 0,
 }
 
+const SAMPLE_TAG = { id: 't1', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 5 }
+
 describe('TaxonomyPage', () => {
-  it('creates a new category and re-parents an existing one', async () => {
+  it('creates a new category via the modal form', async () => {
     const user = userEvent.setup()
     const listCategories = vi.fn().mockResolvedValue([PARENT_CATEGORY])
     const createCategory = vi.fn().mockResolvedValue({ id: 'c2' })
-    const updateCategory = vi.fn().mockResolvedValue(PARENT_CATEGORY)
-    const listTags = vi.fn().mockResolvedValue([])
     mockedCreateTaxonomyClient.mockReturnValue({
       listCategories,
       createCategory,
-      updateCategory,
-      listTags,
+      updateCategory: vi.fn(),
+      deleteCategory: vi.fn(),
+      listTags: vi.fn().mockResolvedValue([]),
+      createTag: vi.fn(),
+      updateTag: vi.fn(),
+      deleteTag: vi.fn(),
     })
 
     renderPage()
     await screen.findByText('Marketing', { selector: 'span' })
 
-    await user.type(screen.getByPlaceholderText('Tên category mới'), 'Social Media')
-    await user.click(screen.getByRole('button', { name: 'Thêm category' }))
+    await user.click(screen.getByRole('button', { name: '+ Thêm category' }))
+    await user.type(screen.getByLabelText('Tên category'), 'Social Media')
+    await user.click(screen.getByRole('button', { name: 'Tạo category' }))
 
     await waitFor(() =>
       expect(createCategory).toHaveBeenCalledWith(
@@ -91,33 +96,94 @@ describe('TaxonomyPage', () => {
       listCategories,
       createCategory,
       updateCategory: vi.fn(),
+      deleteCategory: vi.fn(),
       listTags: vi.fn().mockResolvedValue([]),
+      createTag: vi.fn(),
+      updateTag: vi.fn(),
+      deleteTag: vi.fn(),
     })
 
     renderPage()
     await screen.findByText('Marketing', { selector: 'span' })
 
-    await user.type(screen.getByPlaceholderText('Tên category mới'), 'marketing')
-    await user.click(screen.getByRole('button', { name: 'Thêm category' }))
+    await user.click(screen.getByRole('button', { name: '+ Thêm category' }))
+    await user.type(screen.getByLabelText('Tên category'), 'marketing')
+    await user.click(screen.getByRole('button', { name: 'Tạo category' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/đã tồn tại/i)
     expect(createCategory).not.toHaveBeenCalled()
   })
 
-  it('shows the tag management notice with read-only tags', async () => {
-    const listCategories = vi.fn().mockResolvedValue([])
-    const listTags = vi
-      .fn()
-      .mockResolvedValue([{ id: 't1', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 5 }])
+  it('deletes a category after confirming', async () => {
+    const user = userEvent.setup()
+    const listCategories = vi.fn().mockResolvedValue([PARENT_CATEGORY])
+    const deleteCategory = vi.fn().mockResolvedValue(undefined)
     mockedCreateTaxonomyClient.mockReturnValue({
       listCategories,
       createCategory: vi.fn(),
       updateCategory: vi.fn(),
-      listTags,
+      deleteCategory,
+      listTags: vi.fn().mockResolvedValue([]),
+      createTag: vi.fn(),
+      updateTag: vi.fn(),
+      deleteTag: vi.fn(),
     })
 
     renderPage()
-    expect(await screen.findByText(/chưa khả dụng/i)).toBeInTheDocument()
-    expect(await screen.findByText(/Nhanh gọn/)).toBeInTheDocument()
+    await screen.findByText('Marketing', { selector: 'span' })
+
+    await user.click(screen.getByRole('button', { name: 'Xoá' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Xác nhận' })
+    await user.click(within(dialog).getByRole('button', { name: 'Xoá' }))
+
+    await waitFor(() => expect(deleteCategory).toHaveBeenCalledWith('c1'))
+  })
+
+  it('lists tags with full CRUD actions available', async () => {
+    const listCategories = vi.fn().mockResolvedValue([])
+    const listTags = vi.fn().mockResolvedValue([SAMPLE_TAG])
+    mockedCreateTaxonomyClient.mockReturnValue({
+      listCategories,
+      createCategory: vi.fn(),
+      updateCategory: vi.fn(),
+      deleteCategory: vi.fn(),
+      listTags,
+      createTag: vi.fn(),
+      updateTag: vi.fn(),
+      deleteTag: vi.fn(),
+    })
+
+    renderPage()
+    expect(await screen.findByText('Nhanh gọn')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '+ Thêm tag' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Sửa' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('button', { name: 'Xoá' }).length).toBeGreaterThan(0)
+  })
+
+  it('creates a new tag via the modal form', async () => {
+    const user = userEvent.setup()
+    const listTags = vi.fn().mockResolvedValue([])
+    const createTag = vi.fn().mockResolvedValue({ id: 't2' })
+    mockedCreateTaxonomyClient.mockReturnValue({
+      listCategories: vi.fn().mockResolvedValue([]),
+      createCategory: vi.fn(),
+      updateCategory: vi.fn(),
+      deleteCategory: vi.fn(),
+      listTags,
+      createTag,
+      updateTag: vi.fn(),
+      deleteTag: vi.fn(),
+    })
+
+    renderPage()
+    await screen.findByText('Chưa có tag nào.')
+
+    await user.click(screen.getByRole('button', { name: '+ Thêm tag' }))
+    await user.type(screen.getByLabelText('Tên tag'), 'Automation')
+    await user.click(screen.getByRole('button', { name: 'Tạo tag' }))
+
+    await waitFor(() =>
+      expect(createTag).toHaveBeenCalledWith({ name: 'Automation', slug: 'automation' }),
+    )
   })
 })

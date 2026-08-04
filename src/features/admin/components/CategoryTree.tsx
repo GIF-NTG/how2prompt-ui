@@ -1,7 +1,12 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
 import type { Category } from '../api/taxonomyClient.types'
 import { checkCategoryNameUnique } from '../utils/checkCategoryNameUnique'
+import { usePagedItems } from '../hooks/usePagedItems'
+import { Modal } from './Modal'
+import { ConfirmDialog } from './ConfirmDialog'
+import { Pagination } from './Pagination'
+
+const PAGE_SIZE = 8
 
 const FIELD_CLASSES =
   'rounded-lg border border-[#DBDFD3] bg-transparent px-3 py-2 text-sm text-[#1B1D1B] focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:text-[#ECEEE8] dark:focus:border-[#8493FF]'
@@ -10,6 +15,12 @@ interface CategoryTreeProps {
   categories: Category[]
   onCreate: (name: string, parentId: string | null) => Promise<void>
   onUpdate: (id: string, name: string, parentId: string | null) => Promise<void>
+  onDelete: (id: string) => Promise<void>
+}
+
+interface FlatCategory {
+  category: Category
+  depth: number
 }
 
 /** Collects `categoryId` and every descendant id, so a category can never be
@@ -29,213 +40,251 @@ function collectDescendantIds(categoryId: string, all: Category[]): Set<string> 
   return ids
 }
 
-function CategoryNode({
-  category,
-  categories,
-  depth,
-  editingId,
-  onStartEdit,
-  onCancelEdit,
-  onUpdate,
-}: {
-  category: Category
-  categories: Category[]
-  depth: number
-  editingId: string | null
-  onStartEdit: (id: string) => void
-  onCancelEdit: () => void
-  onUpdate: (id: string, name: string, parentId: string | null) => Promise<void>
-}) {
-  const [collapsed, setCollapsed] = useState(false)
-  const [name, setName] = useState(category.name.en)
-  const [parentId, setParentId] = useState<string | null>(category.parentId)
-  const [error, setError] = useState<string | null>(null)
+/** Depth-first flatten so nested categories render as adjacent table rows,
+ *  indented by depth, instead of needing a separate tree widget. */
+function flattenCategories(
+  categories: Category[],
+  parentId: string | null,
+  depth: number,
+): FlatCategory[] {
+  return categories
+    .filter((c) => c.parentId === parentId)
+    .flatMap((category) => [
+      { category, depth },
+      ...flattenCategories(categories, category.id, depth + 1),
+    ])
+}
 
-  const children = categories.filter((c) => c.parentId === category.id)
-  const isEditing = editingId === category.id
-  const excludedIds = useMemo(() => collectDescendantIds(category.id, categories), [
-    category.id,
-    categories,
-  ])
+interface CategoryFormModalProps {
+  editingCategory: Category | null
+  categories: Category[]
+  onClose: () => void
+  onCreate: (name: string, parentId: string | null) => Promise<void>
+  onUpdate: (id: string, name: string, parentId: string | null) => Promise<void>
+}
+
+function CategoryFormModal({
+  editingCategory,
+  categories,
+  onClose,
+  onCreate,
+  onUpdate,
+}: CategoryFormModalProps) {
+  const [name, setName] = useState(editingCategory?.name.en ?? '')
+  const [parentId, setParentId] = useState<string | null>(editingCategory?.parentId ?? null)
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const excludedIds = useMemo(
+    () => (editingCategory ? collectDescendantIds(editingCategory.id, categories) : new Set<string>()),
+    [editingCategory, categories],
+  )
   const parentOptions = categories.filter((c) => !excludedIds.has(c.id))
 
-  async function handleSave(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault()
     setError(null)
-    if (!checkCategoryNameUnique(name, parentId, categories, category.id)) {
+    if (!name.trim()) {
+      setError('Vui lòng nhập tên category.')
+      return
+    }
+    if (!checkCategoryNameUnique(name, parentId, categories, editingCategory?.id)) {
       setError('Đã tồn tại category cùng tên trong cùng nhóm cha.')
       return
     }
-    await onUpdate(category.id, name, parentId)
-    onCancelEdit()
+    setSubmitting(true)
+    try {
+      if (editingCategory) {
+        await onUpdate(editingCategory.id, name.trim(), parentId)
+      } else {
+        await onCreate(name.trim(), parentId)
+      }
+      onClose()
+    } catch {
+      setError('Không thể lưu category, vui lòng thử lại.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
-    <li>
-      <div className="flex items-center gap-2 py-1">
-        {children.length > 0 ? (
+    <Modal title={editingCategory ? 'Sửa category' : 'Thêm category mới'} onClose={onClose}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <label className="flex flex-col gap-1 text-xs">
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên category</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={FIELD_CLASSES}
+            autoFocus
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs">
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Danh mục cha</span>
+          <select
+            value={parentId ?? ''}
+            onChange={(e) => setParentId(e.target.value || null)}
+            className={FIELD_CLASSES}
+          >
+            <option value="">(Không có — cấp cao nhất)</option>
+            {parentOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name.en}
+              </option>
+            ))}
+          </select>
+        </label>
+        {error && (
+          <p role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
+            {error}
+          </p>
+        )}
+        <div className="flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? 'Mở rộng' : 'Thu gọn'}
-            className="text-[#5B5F58] dark:text-[#A2A79C]"
+            onClick={onClose}
+            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
           >
-            {collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+            Huỷ
           </button>
-        ) : (
-          <span className="w-[14px]" />
-        )}
-
-        {isEditing ? (
-          <form onSubmit={handleSave} className="flex flex-wrap items-center gap-2">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={FIELD_CLASSES}
-            />
-            <select
-              value={parentId ?? ''}
-              onChange={(e) => setParentId(e.target.value || null)}
-              className={FIELD_CLASSES}
-            >
-              <option value="">(Không có — cấp cao nhất)</option>
-              {parentOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name.en}
-                </option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="rounded-lg bg-[#3652E0] px-3 py-1.5 text-xs font-bold text-white dark:bg-[#8493FF] dark:text-[#14171A]"
-            >
-              Lưu
-            </button>
-            <button
-              type="button"
-              onClick={onCancelEdit}
-              className="rounded-lg border border-[#DBDFD3] px-3 py-1.5 text-xs dark:border-[#2C3130]"
-            >
-              Huỷ
-            </button>
-            {error && (
-              <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
-                {error}
-              </span>
-            )}
-          </form>
-        ) : (
-          <>
-            <span className="text-sm">{category.name.en}</span>
-            <button
-              type="button"
-              onClick={() => onStartEdit(category.id)}
-              className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
-            >
-              Sửa
-            </button>
-          </>
-        )}
-      </div>
-
-      {!collapsed && children.length > 0 && (
-        <ul className="ml-5 border-l border-[#DBDFD3] pl-4 dark:border-[#2C3130]">
-          {children.map((child) => (
-            <CategoryNode
-              key={child.id}
-              category={child}
-              categories={categories}
-              depth={depth + 1}
-              editingId={editingId}
-              onStartEdit={onStartEdit}
-              onCancelEdit={onCancelEdit}
-              onUpdate={onUpdate}
-            />
-          ))}
-        </ul>
-      )}
-    </li>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+          >
+            {editingCategory ? 'Lưu' : 'Tạo category'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   )
 }
 
-/** Nested category tree (FR-006): create/edit incl. re-parenting, with a
- *  client-side sibling-name uniqueness guard (research.md Decision 6) and a
- *  guard against selecting a category as its own ancestor. */
-export function CategoryTree({ categories, onCreate, onUpdate }: CategoryTreeProps) {
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [newName, setNewName] = useState('')
-  const [newParentId, setNewParentId] = useState<string | null>(null)
-  const [createError, setCreateError] = useState<string | null>(null)
+/** Nested category list (FR-006): create/edit incl. re-parenting (via a
+ *  modal form), delete, with a client-side sibling-name uniqueness guard
+ *  (research.md Decision 6) and a guard against selecting a category as its
+ *  own ancestor. Rendered as a table (name/slug/parent/action columns) with
+ *  depth-indented rows instead of a collapsible tree widget. */
+export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: CategoryTreeProps) {
+  const [formTarget, setFormTarget] = useState<Category | 'new' | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  const roots = categories.filter((c) => c.parentId === null)
+  const flatCategories = useMemo(() => flattenCategories(categories, null, 0), [categories])
+  const { page, pageCount, setPage, pageItems } = usePagedItems(flatCategories, PAGE_SIZE)
 
-  async function handleCreate(event: FormEvent) {
-    event.preventDefault()
-    setCreateError(null)
-    if (!newName.trim()) {
-      setCreateError('Vui lòng nhập tên category.')
-      return
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return
+    setDeleteError(null)
+    try {
+      await onDelete(deleteTarget.id)
+      setDeleteTarget(null)
+    } catch {
+      setDeleteError('Không thể xoá category, vui lòng thử lại.')
     }
-    if (!checkCategoryNameUnique(newName, newParentId, categories)) {
-      setCreateError('Đã tồn tại category cùng tên trong cùng nhóm cha.')
-      return
-    }
-    await onCreate(newName.trim(), newParentId)
-    setNewName('')
-    setNewParentId(null)
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={handleCreate} className="flex flex-wrap items-center gap-2">
-        <input
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          placeholder="Tên category mới"
-          className={FIELD_CLASSES}
-        />
-        <select
-          value={newParentId ?? ''}
-          onChange={(e) => setNewParentId(e.target.value || null)}
-          className={FIELD_CLASSES}
-        >
-          <option value="">(Không có — cấp cao nhất)</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name.en}
-            </option>
-          ))}
-        </select>
+      <div className="flex items-center justify-between">
         <button
-          type="submit"
-          className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white dark:bg-[#8493FF] dark:text-[#14171A]"
+          type="button"
+          onClick={() => setFormTarget('new')}
+          className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
         >
-          Thêm category
+          + Thêm category
         </button>
-        {createError && (
-          <span role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
-            {createError}
-          </span>
-        )}
-      </form>
+      </div>
 
-      {roots.length === 0 ? (
+      {flatCategories.length === 0 ? (
         <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có category nào.</p>
       ) : (
-        <ul>
-          {roots.map((category) => (
-            <CategoryNode
-              key={category.id}
-              category={category}
-              categories={categories}
-              depth={0}
-              editingId={editingId}
-              onStartEdit={setEditingId}
-              onCancelEdit={() => setEditingId(null)}
-              onUpdate={onUpdate}
-            />
-          ))}
-        </ul>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
+                <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                  Tên
+                </th>
+                <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                  Slug
+                </th>
+                <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                  Danh mục cha
+                </th>
+                <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                  Hành động
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {pageItems.map(({ category, depth }) => {
+                const parentCategory = categories.find((c) => c.id === category.parentId)
+                return (
+                  <tr
+                    key={category.id}
+                    className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]"
+                  >
+                    <td className="px-3 py-2.5" style={{ paddingLeft: `${12 + depth * 20}px` }}>
+                      <span className="text-sm">{category.name.en}</span>
+                    </td>
+                    <td className="px-3 py-2.5 font-mono text-xs text-[#5B5F58] dark:text-[#A2A79C]">
+                      {category.slug}
+                    </td>
+                    <td className="px-3 py-2.5 text-xs text-[#5B5F58] dark:text-[#A2A79C]">
+                      {parentCategory ? parentCategory.name.en : '—'}
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setFormTarget(category)}
+                          className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(category)}
+                          className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
+                        >
+                          Xoá
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
+        </div>
+      )}
+
+      {formTarget && (
+        <CategoryFormModal
+          editingCategory={formTarget === 'new' ? null : formTarget}
+          categories={categories}
+          onClose={() => setFormTarget(null)}
+          onCreate={onCreate}
+          onUpdate={onUpdate}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={`Xoá category "${deleteTarget.name.en}"? Hành động này không thể hoàn tác.`}
+          onConfirm={() => void handleConfirmDelete()}
+          onCancel={() => {
+            setDeleteTarget(null)
+            setDeleteError(null)
+          }}
+        />
+      )}
+      {deleteError && (
+        <p role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
+          {deleteError}
+        </p>
       )}
     </div>
   )

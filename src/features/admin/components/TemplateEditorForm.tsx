@@ -200,6 +200,17 @@ export function TemplateEditorForm({
         </div>
       </fieldset>
 
+      {editingTemplate && (
+        <p
+          role="status"
+          className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-3 py-2 text-xs text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262C4A] dark:text-[#8493FF]"
+        >
+          Backend chưa hỗ trợ sửa prompt body / guide / example output /
+          variables / variants của template đã tạo — chỉ tiêu đề, mô tả,
+          categories, tags và AI models bên dưới được lưu khi Lưu Draft.
+        </p>
+      )}
+
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">
           Prompt body (dùng {'{{varKey}}'} cho mỗi placeholder)
@@ -207,8 +218,9 @@ export function TemplateEditorForm({
         <textarea
           value={form.promptBody}
           onChange={(e) => setForm((f) => ({ ...f, promptBody: e.target.value }))}
+          readOnly={Boolean(editingTemplate)}
           rows={5}
-          className={`${FIELD_CLASSES} font-mono`}
+          className={`${FIELD_CLASSES} font-mono ${editingTemplate ? 'opacity-60' : ''}`}
         />
       </label>
 
@@ -217,8 +229,9 @@ export function TemplateEditorForm({
         <textarea
           value={form.guide.en}
           onChange={(e) => setForm((f) => ({ ...f, guide: { ...f.guide, en: e.target.value } }))}
+          readOnly={Boolean(editingTemplate)}
           rows={2}
-          className={FIELD_CLASSES}
+          className={`${FIELD_CLASSES} ${editingTemplate ? 'opacity-60' : ''}`}
         />
       </label>
 
@@ -227,14 +240,16 @@ export function TemplateEditorForm({
         <textarea
           value={form.exampleOutput ?? ''}
           onChange={(e) => setForm((f) => ({ ...f, exampleOutput: e.target.value || null }))}
+          readOnly={Boolean(editingTemplate)}
           rows={2}
-          className={FIELD_CLASSES}
+          className={`${FIELD_CLASSES} ${editingTemplate ? 'opacity-60' : ''}`}
         />
       </label>
 
       <TemplateVariableEditor
         variables={form.variables}
         onChange={(variables) => setForm((f) => ({ ...f, variables }))}
+        disabled={Boolean(editingTemplate)}
       />
 
       {error && (

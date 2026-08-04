@@ -18,7 +18,8 @@ export interface AiModelUpsert {
 }
 
 export interface AiModelsClient {
-  /** Includes inactive models — the public `/ai-models` list hides them. */
+  /** Reuses the public `/ai-models` read endpoint — inactive models won't
+   *  appear here (see `aiModelsClient.real.ts`). */
   list(): Promise<AiModel[]>
   create(input: AiModelUpsert): Promise<AiModel>
   update(id: string, input: AiModelUpsert): Promise<AiModel>

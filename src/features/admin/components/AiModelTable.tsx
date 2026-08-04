@@ -1,4 +1,9 @@
+import { useMemo } from 'react'
 import type { AiModel } from '../api/aiModelsClient.types'
+import { usePagedItems } from '../hooks/usePagedItems'
+import { Pagination } from './Pagination'
+
+const PAGE_SIZE = 8
 
 interface AiModelTableProps {
   models: AiModel[]
@@ -10,6 +15,9 @@ interface AiModelTableProps {
  *  action — deactivation (via onToggleActive) is the only removal affordance,
  *  per FR-004a / research.md Decision 3. */
 export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTableProps) {
+  const sortedModels = useMemo(() => [...models].sort((a, b) => a.sortOrder - b.sortOrder), [models])
+  const { page, pageCount, setPage, pageItems } = usePagedItems(sortedModels, PAGE_SIZE)
+
   if (models.length === 0) {
     return (
       <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có AI model nào.</p>
@@ -42,9 +50,7 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
           </tr>
         </thead>
         <tbody>
-          {[...models]
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((model) => (
+          {pageItems.map((model) => (
               <tr key={model.id} className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]">
                 <td className="px-3 py-2.5 font-mono text-xs">{model.code}</td>
                 <td className="px-3 py-2.5 font-semibold">{model.name}</td>
@@ -83,6 +89,7 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
             ))}
         </tbody>
       </table>
+      <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
     </div>
   )
 }

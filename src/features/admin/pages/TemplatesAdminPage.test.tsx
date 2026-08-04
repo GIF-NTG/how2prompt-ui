@@ -45,9 +45,13 @@ function setupCommonMocks() {
     listCategories: vi.fn().mockResolvedValue([]),
     createCategory: vi.fn(),
     updateCategory: vi.fn(),
+    deleteCategory: vi.fn(),
     listTags: vi
       .fn()
       .mockResolvedValue([{ id: 't1', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 5 }]),
+    createTag: vi.fn(),
+    updateTag: vi.fn(),
+    deleteTag: vi.fn(),
   })
   mockedCreateAiModelsClient.mockReturnValue({
     list: vi.fn().mockResolvedValue([]),
@@ -71,14 +75,15 @@ describe('TemplatesAdminPage', () => {
     const create = vi.fn()
     const publish = vi.fn()
     mockedCreateTemplatesAdminClient.mockReturnValue({
-      list: vi.fn().mockResolvedValue([]),
+      list: vi.fn().mockResolvedValue({ items: [], nextCursor: null, hasMore: false }),
       create,
       update: vi.fn(),
       publish,
     })
 
     renderPage()
-    await screen.findByText('Tạo template mới')
+    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
+    await screen.findByRole('dialog', { name: 'Tạo template mới' })
 
     await user.type(screen.getByRole('textbox', { name: 'Tiêu đề (EN)' }), 'My Template')
     // user-event's `type()` treats a single `{` as the start of a special-key
@@ -120,7 +125,7 @@ describe('TemplatesAdminPage', () => {
     }
     const create = vi.fn().mockResolvedValue(created)
     const publish = vi.fn().mockResolvedValue({ ...created, status: 'published', isOfficial: true })
-    const list = vi.fn().mockResolvedValue([])
+    const list = vi.fn().mockResolvedValue({ items: [], nextCursor: null, hasMore: false })
     mockedCreateTemplatesAdminClient.mockReturnValue({
       list,
       create,
@@ -129,7 +134,8 @@ describe('TemplatesAdminPage', () => {
     })
 
     renderPage()
-    await screen.findByText('Tạo template mới')
+    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
+    await screen.findByRole('dialog', { name: 'Tạo template mới' })
 
     await user.type(screen.getByRole('textbox', { name: 'Tiêu đề (EN)' }), 'My Template')
     await user.type(screen.getByRole('textbox', { name: /Prompt body/ }), 'Hello {{{{name}}')
@@ -165,7 +171,7 @@ describe('TemplatesAdminPage', () => {
         variants: [],
       },
     }
-    const list = vi.fn().mockResolvedValue([published])
+    const list = vi.fn().mockResolvedValue({ items: [published], nextCursor: null, hasMore: false })
     const update = vi.fn().mockResolvedValue({
       ...published,
       currentVersion: { ...published.currentVersion, id: 'tpl1-v2', versionNumber: 2 },
@@ -174,28 +180,78 @@ describe('TemplatesAdminPage', () => {
 
     const user = userEvent.setup()
     renderPage()
-    await screen.findByText(/Published Template/)
+    await screen.findByText('Published Template')
 
     await user.click(screen.getByRole('button', { name: 'Sửa' }))
+    await screen.findByRole('dialog', { name: 'Chỉnh sửa: Published Template' })
     await user.click(screen.getByRole('button', { name: 'Lưu Draft' }))
 
     await waitFor(() => expect(update).toHaveBeenCalledWith('tpl1', expect.any(Object)))
   })
 
   it('offers no create-new-tag affordance in the tag picker', async () => {
+    const user = userEvent.setup()
     setupCommonMocks()
     mockedCreateTemplatesAdminClient.mockReturnValue({
-      list: vi.fn().mockResolvedValue([]),
+      list: vi.fn().mockResolvedValue({ items: [], nextCursor: null, hasMore: false }),
       create: vi.fn(),
       update: vi.fn(),
       publish: vi.fn(),
     })
 
     renderPage()
-    await screen.findByText('Tạo template mới')
+    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
+    await screen.findByRole('dialog', { name: 'Tạo template mới' })
 
     expect(await screen.findByText('Nhanh gọn')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /thêm tag|new tag|create tag/i })).not.toBeInTheDocument()
     expect(screen.queryByPlaceholderText(/tag mới/i)).not.toBeInTheDocument()
+  })
+
+  it('loads the next page of templates via Tải thêm', async () => {
+    const user = userEvent.setup()
+    setupCommonMocks()
+    const page1Item = {
+      id: 'tpl1',
+      title: { en: 'Template One' },
+      description: { en: '' },
+      coverImage: null,
+      categoryIds: [],
+      tagSlugs: [],
+      modelCodes: [],
+      isOfficial: true,
+      status: 'published' as const,
+      currentVersion: {
+        id: 'tpl1-v1',
+        versionNumber: 1,
+        promptBody: '',
+        systemPrompt: null,
+        exampleOutput: null,
+        guide: { en: '' },
+        variables: [],
+        variants: [],
+      },
+    }
+    const page2Item = { ...page1Item, id: 'tpl2', title: { en: 'Template Two' } }
+    const list = vi
+      .fn()
+      .mockResolvedValueOnce({ items: [page1Item], nextCursor: 'cursor-2', hasMore: true })
+      .mockResolvedValueOnce({ items: [page2Item], nextCursor: null, hasMore: false })
+    mockedCreateTemplatesAdminClient.mockReturnValue({
+      list,
+      create: vi.fn(),
+      update: vi.fn(),
+      publish: vi.fn(),
+    })
+
+    renderPage()
+    await screen.findByText('Template One')
+    expect(screen.queryByText('Template Two')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
+
+    await screen.findByText('Template Two')
+    expect(list).toHaveBeenCalledWith('cursor-2')
+    expect(screen.queryByRole('button', { name: 'Tải thêm' })).not.toBeInTheDocument()
   })
 })
