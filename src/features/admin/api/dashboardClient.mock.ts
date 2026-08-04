@@ -1,36 +1,48 @@
 import type { DashboardClient, DashboardMetricSnapshot } from './dashboardClient.types'
+import { daysAgoIso } from '../utils/dateRange'
 
-const BASE_STATS: DashboardMetricSnapshot = {
-  totalUsers: 1280,
+function buildPromptsGeneratedPerDay(): Record<string, number> {
+  const entries: Record<string, number> = {}
+  for (let i = 0; i < 30; i++) {
+    entries[daysAgoIso(i)] = 40 + Math.round(Math.random() * 60)
+  }
+  return entries
+}
+
+const STATS: DashboardMetricSnapshot = {
   dau: 142,
   wau: 610,
   mau: 980,
-  totalTemplates: 36,
-  totalPromptsGenerated: 5420,
-  promptsToday: 87,
-  topTemplates: [
-    { templateId: 't1', title: { en: 'Debug effectively', vi: 'Debug lỗi hiệu quả' }, usageCount: 812 },
-    { templateId: 't2', title: { en: 'Rewrite content style', vi: 'Sửa văn phong nội dung' }, usageCount: 604 },
+  promptsGeneratedPerDay: buildPromptsGeneratedPerDay(),
+  popularTemplates: [
+    {
+      templateId: 't1',
+      slug: 'debug-effectively',
+      titleI18n: { en: 'Debug effectively', vi: 'Debug lỗi hiệu quả' },
+      usageCount: 812,
+    },
+    {
+      templateId: 't2',
+      slug: 'rewrite-content-style',
+      titleI18n: { en: 'Rewrite content style', vi: 'Sửa văn phong nội dung' },
+      usageCount: 604,
+    },
   ],
-  topModels: [
-    { modelCode: 'gpt-4o', usageCount: 2100 },
-    { modelCode: 'claude', usageCount: 1830 },
+  mostUsedModels: [
+    { modelId: 'm1', name: 'gpt-4o', usageCount: 2100 },
+    { modelId: 'm2', name: 'claude', usageCount: 1830 },
   ],
+  conversionFunnel: {
+    signups: 1280,
+    verifiedEmails: 1040,
+    promptGenerations: 860,
+  },
 }
 
-/** Varies its output slightly by whether a custom date range is applied, so
- *  the mock can demonstrate FR-016 without a real aggregation engine. */
 export function createMockDashboardClient(): DashboardClient {
   return {
-    async getStats(range) {
-      if (!range.from && !range.to) {
-        return BASE_STATS
-      }
-      return {
-        ...BASE_STATS,
-        dau: Math.round(BASE_STATS.dau * 0.6),
-        promptsToday: Math.round(BASE_STATS.promptsToday * 0.6),
-      }
+    async getStats() {
+      return STATS
     },
   }
 }

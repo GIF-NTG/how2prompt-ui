@@ -71,11 +71,17 @@ reflects that restructure and does **not** match epic numbers from before this u
   removal and needed no changes. Several sub-requirements are scoped out as
   tracked backend-contract gaps, not silently dropped — `docs/api/openapi.yaml`
   currently has no delete endpoint for AI models or categories, **no admin tag
-  endpoints of any kind** (not even creation), no signup→first-generate
-  conversion metric on `DashboardStats`, and no `GET /admin/templates` list
-  endpoint (the admin template list is mock-only until the backend adds one)
-  (see `specs/011-admin-content-management/research.md` Decision 3). Revisit
-  this scoping once the backend adds those endpoints. The "newer version
+  endpoints of any kind** (not even creation), and no `GET /admin/templates`
+  list endpoint (the admin template list is mock-only until the backend adds
+  one) (see `specs/011-admin-content-management/research.md` Decision 3).
+  Revisit this scoping once the backend adds those endpoints. The
+  signup→first-generate conversion gap tracked in that same decision is
+  closed: the dashboard endpoint moved from the documented
+  `/admin/dashboard/stats` to `GET /admin/analytics/dashboard`
+  (`analytics-admin-controller`) and now returns `conversionFunnel`
+  (`signups`/`verifiedEmails`/`promptGenerations`) alongside a reshaped
+  `dau`/`wau`/`mau`/`promptsGeneratedPerDay`/`popularTemplates`/
+  `mostUsedModels` body — see `dashboardClient.types.ts`. The "newer version
   available" indicator required by this epic's template-publish flow (FR-014a)
   turned out to already be implemented in `src/features/template-detail`
   (Epic 4) — no duplicate component was built for it.

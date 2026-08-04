@@ -1,7 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuth } from '@/features/auth/context/useAuth'
-import { ApiError } from '@/shared/utils/httpClient'
-import { createTemplatesAdminClient } from '../api/templatesAdminClient'
+import { useEffect, useState } from 'react'
 import type { AdminTemplate, TemplateUpsert } from '../api/templatesAdminClient.types'
 import { useAdminData } from '../context/useAdminData'
 import { AdminPageHeader } from '../components/AdminPageHeader'
@@ -10,65 +7,47 @@ import { TemplateEditorForm } from '../components/TemplateEditorForm'
 import { Modal } from '../components/Modal'
 
 export function TemplatesAdminPage() {
-  const { session } = useAuth()
-  const templatesClient = useMemo(
-    () => createTemplatesAdminClient(session?.token),
-    [session?.token],
-  )
-  // Categories/tags/AI models are shared, lazily-fetched, cross-page state
-  // (see AdminDataProvider) — `ensureX()` only fetches the first time any
-  // admin page actually needs it, and is cached afterwards so switching
-  // between Templates and Taxonomy doesn't re-fetch.
-  const { categories, tags, models, ensureCategories, ensureTags, ensureModels } = useAdminData()
+  // Categories/tags/AI models/templates are shared, lazily-fetched, cross-page
+  // state (see AdminDataProvider) — `ensureX()` only fetches the first time
+  // any admin page actually needs it, and is cached afterwards so navigating
+  // away from and back to Templates (or between Templates/Taxonomy) doesn't
+  // re-fetch.
+  const {
+    categories,
+    tags,
+    models,
+    templates,
+    templatesLoaded,
+    templatesHasMore,
+    error,
+    templatesAdminClient,
+    ensureCategories,
+    ensureTags,
+    ensureModels,
+    ensureTemplates,
+    refetchTemplates,
+    loadMoreTemplates,
+  } = useAdminData()
 
   useEffect(() => {
     void ensureCategories()
     void ensureTags()
     void ensureModels()
-  }, [ensureCategories, ensureTags, ensureModels])
+    void ensureTemplates()
+  }, [ensureCategories, ensureTags, ensureModels, ensureTemplates])
 
-  const [templates, setTemplates] = useState<AdminTemplate[]>([])
-  const [cursor, setCursor] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<AdminTemplate | null>(null)
   const [formOpen, setFormOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const templatesPage = await templatesClient.list()
-      setTemplates(templatesPage.items)
-      setCursor(templatesPage.nextCursor)
-      setHasMore(templatesPage.hasMore)
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [templatesClient])
 
   async function handleLoadMore() {
-    if (!cursor) return
     setLoadingMore(true)
     try {
-      const nextPage = await templatesClient.list(cursor)
-      setTemplates((prev) => [...prev, ...nextPage.items])
-      setCursor(nextPage.nextCursor)
-      setHasMore(nextPage.hasMore)
-    } catch {
-      setError('Không thể tải thêm template, vui lòng thử lại.')
+      await loadMoreTemplates()
     } finally {
       setLoadingMore(false)
     }
   }
-
-  useEffect(() => {
-    void loadData()
-  }, [loadData])
 
   function openCreateForm() {
     setEditingTemplate(null)
@@ -87,22 +66,22 @@ export function TemplatesAdminPage() {
 
   async function handleSaveDraft(input: TemplateUpsert) {
     if (editingTemplate) {
-      await templatesClient.update(editingTemplate.id, input)
+      await templatesAdminClient.update(editingTemplate.id, input)
     } else {
-      const created = await templatesClient.create(input)
+      const created = await templatesAdminClient.create(input)
       setEditingTemplate(created)
     }
-    await loadData()
+    await refetchTemplates()
   }
 
   async function handlePublish(input: TemplateUpsert) {
-    const target = editingTemplate ?? (await templatesClient.create(input))
+    const target = editingTemplate ?? (await templatesAdminClient.create(input))
     if (editingTemplate) {
-      await templatesClient.update(target.id, input)
+      await templatesAdminClient.update(target.id, input)
     }
-    await templatesClient.publish(target.id)
+    await templatesAdminClient.publish(target.id)
     closeForm()
-    await loadData()
+    await refetchTemplates()
   }
 
   return (
@@ -122,7 +101,7 @@ export function TemplatesAdminPage() {
           </button>
         }
       >
-        {loading ? (
+        {!templatesLoaded ? (
           <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
         ) : error ? (
           <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
@@ -183,7 +162,7 @@ export function TemplatesAdminPage() {
                 ))}
               </tbody>
             </table>
-            {hasMore && (
+            {templatesHasMore && (
               <div className="flex justify-center pt-3">
                 <button
                   type="button"

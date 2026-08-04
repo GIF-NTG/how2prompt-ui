@@ -1,102 +1,177 @@
-import { Users, TrendingUp, CalendarDays, FileText, LayoutTemplate } from 'lucide-react'
+import { Users, TrendingUp, CalendarDays, FileText, Layers, ArrowRight } from 'lucide-react'
 import { getI18nValue } from '@/shared/utils/i18n'
-import type { DashboardMetricSnapshot } from '../api/dashboardClient.types'
+import type { DashboardDateRange, DashboardMetricSnapshot } from '../api/dashboardClient.types'
+import { entriesInRange } from '../utils/dateRange'
 import { KpiCard } from './KpiCard'
 import { AdminPanel } from './AdminPanel'
+import { PromptsTrendChart } from './PromptsTrendChart'
 
 interface DashboardMetricsProps {
   stats: DashboardMetricSnapshot
+  range: DashboardDateRange
 }
 
 function formatNumber(value: number): string {
   return value.toLocaleString('vi-VN')
 }
 
+function EmptyState({ children }: { children: string }) {
+  return <p className="m-0 text-sm text-[#8B8F86] dark:text-[#6D726A]">{children}</p>
+}
+
 /** Dashboard tiles/panels (FR-015, FR-016), styled per the mockup's KPI grid +
- *  panel layout. No conversion-funnel widget is rendered — the contract
- *  doesn't expose that metric (FR-015a). */
-export function DashboardMetrics({ stats }: DashboardMetricsProps) {
-  const maxModelUsage = Math.max(...stats.topModels.map((m) => m.usageCount), 1)
+ *  panel layout. Sized to fit within `DashboardPage`'s single-screen height
+ *  budget: KPI row + a fixed-height chart/table/bars row + a compact
+ *  horizontal funnel row, each panel scrolling internally rather than
+ *  growing the page if its data set is unusually large.
+ *  `promptsGeneratedPerDay` has no server-side date filter, so the "Prompt
+ *  trong khoảng" tile and trend chart are both derived client-side via
+ *  `range`. */
+export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
+  const trendEntries = entriesInRange(stats.promptsGeneratedPerDay, range)
+  const promptsInRange = trendEntries.reduce((total, [, count]) => total + count, 0)
+  const promptsTotal = Object.values(stats.promptsGeneratedPerDay).reduce((a, b) => a + b, 0)
+  const maxModelUsage = Math.max(...stats.mostUsedModels.map((m) => m.usageCount), 1)
+  const { signups, verifiedEmails, promptGenerations } = stats.conversionFunnel
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard label="DAU" value={formatNumber(stats.dau)} icon={<Users size={16} />} />
         <KpiCard label="WAU" value={formatNumber(stats.wau)} icon={<TrendingUp size={16} />} />
         <KpiCard label="MAU" value={formatNumber(stats.mau)} icon={<CalendarDays size={16} />} />
         <KpiCard
-          label="Prompt hôm nay"
-          value={formatNumber(stats.promptsToday)}
+          label="Prompt trong khoảng"
+          value={formatNumber(promptsInRange)}
           icon={<FileText size={16} />}
         />
         <KpiCard
-          label="Tổng template"
-          value={formatNumber(stats.totalTemplates)}
-          icon={<LayoutTemplate size={16} />}
+          label="Tổng prompt"
+          value={formatNumber(promptsTotal)}
+          icon={<Layers size={16} />}
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.65fr_1fr]">
-        <AdminPanel title="Template phổ biến nhất" hint={`${stats.topTemplates.length} mục`}>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
-                <th className="w-6 pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]" />
-                <th className="pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Template
-                </th>
-                <th className="pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Lượt dùng
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.topTemplates.map((item, index) => (
-                <tr
-                  key={item.templateId}
-                  className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]"
-                >
-                  <td className="py-2.5 font-mono text-[#8B8F86] dark:text-[#6D726A]">
-                    {index + 1}
-                  </td>
-                  <td className="py-2.5 font-semibold">{getI18nValue(item.title)}</td>
-                  <td className="py-2.5 font-mono font-semibold">
-                    {formatNumber(item.usageCount)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-12">
+        <AdminPanel
+          title="Prompt theo ngày"
+          hint="Trong khoảng đã chọn"
+          className="min-h-0 lg:col-span-5"
+        >
+          <div className="min-h-24 flex-1">
+            <PromptsTrendChart entries={trendEntries} />
+          </div>
         </AdminPanel>
 
-        <AdminPanel title="Model AI được dùng nhiều nhất">
-          <div className="flex flex-col gap-3">
-            {stats.topModels.map((model) => (
-              <div key={model.modelCode} className="flex flex-col gap-1">
-                <div className="flex justify-between text-sm">
-                  <span className="font-mono font-semibold">{model.modelCode}</span>
-                  <span className="font-mono text-xs text-[#8B8F86] dark:text-[#6D726A]">
-                    {Math.round((model.usageCount / maxModelUsage) * 100)}%
-                  </span>
+        <AdminPanel
+          title="Template phổ biến nhất"
+          hint={`${stats.popularTemplates.length} mục`}
+          className="min-h-0 overflow-y-auto lg:col-span-4"
+        >
+          {stats.popularTemplates.length === 0 ? (
+            <EmptyState>Chưa có dữ liệu sử dụng template.</EmptyState>
+          ) : (
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
+                  <th className="w-6 pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]" />
+                  <th className="pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Template
+                  </th>
+                  <th className="pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                    Lượt dùng
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.popularTemplates.map((item, index) => (
+                  <tr
+                    key={item.templateId}
+                    className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]"
+                  >
+                    <td className="py-2 font-mono text-[#8B8F86] dark:text-[#6D726A]">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 font-semibold">{getI18nValue(item.titleI18n)}</td>
+                    <td className="py-2 font-mono font-semibold">
+                      {formatNumber(item.usageCount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </AdminPanel>
+
+        <AdminPanel
+          title="Model AI dùng nhiều nhất"
+          className="min-h-0 overflow-y-auto lg:col-span-3"
+        >
+          {stats.mostUsedModels.length === 0 ? (
+            <EmptyState>Chưa có dữ liệu sử dụng model.</EmptyState>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {stats.mostUsedModels.map((model) => (
+                <div key={model.modelId} className="flex flex-col gap-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-mono font-semibold">{model.name}</span>
+                    <span className="font-mono text-xs text-[#8B8F86] dark:text-[#6D726A]">
+                      {Math.round((model.usageCount / maxModelUsage) * 100)}%
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-[#EAEDE6] dark:bg-[#23282C]">
+                    <div
+                      className="h-full rounded-full bg-[#3652E0] dark:bg-[#8493FF]"
+                      style={{ width: `${(model.usageCount / maxModelUsage) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[#EAEDE6] dark:bg-[#23282C]">
-                  <div
-                    className="h-full rounded-full bg-[#3652E0] dark:bg-[#8493FF]"
-                    style={{ width: `${(model.usageCount / maxModelUsage) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </AdminPanel>
       </div>
 
-      <p className="m-0 flex items-center gap-2 font-mono text-[0.72rem] text-[#8B8F86] dark:text-[#6D726A]">
-        <span className="rounded-full bg-[#1B1D1B] px-2 py-0.5 font-bold text-[#F3F5F0] dark:bg-[#ECEEE8] dark:text-[#14171A]">
-          CACHE
-        </span>
-        Số liệu có thể trễ tối đa vài phút (FR-017).
-      </p>
+      <AdminPanel title="Phễu chuyển đổi" hint="Đăng ký → xác thực email → tạo prompt">
+        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-3">
+          {(
+            [
+              { label: 'Đăng ký', value: signups },
+              { label: 'Xác thực email', value: verifiedEmails },
+              { label: 'Tạo prompt', value: promptGenerations },
+            ] as const
+          ).flatMap((step, index, steps) => {
+            const pct = signups > 0 ? Math.round((step.value / signups) * 100) : 0
+            const card = (
+              <div
+                key={step.label}
+                className="flex flex-col gap-0.5 rounded-xl border border-[#DBDFD3] bg-[#F7F8F5] px-4 py-2.5 dark:border-[#2C3130] dark:bg-[#171A1D]"
+              >
+                <span className="font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
+                  {step.label}
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-xl font-bold tracking-[-0.02em]">
+                    {formatNumber(step.value)}
+                  </span>
+                  <span className="font-mono text-xs text-[#8B8F86] dark:text-[#6D726A]">
+                    {pct}%
+                  </span>
+                </div>
+              </div>
+            )
+            if (index === steps.length - 1) return [card]
+            return [
+              card,
+              <ArrowRight
+                key={`${step.label}-arrow`}
+                size={18}
+                className="flex-shrink-0 text-[#8B8F86] dark:text-[#6D726A]"
+              />,
+            ]
+          })}
+        </div>
+      </AdminPanel>
     </div>
   )
 }

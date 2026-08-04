@@ -867,17 +867,10 @@ paths:
         '422':
           description: Có placeholder trong promptBody chưa khai báo variable
 
-  /admin/dashboard/stats:
+  /admin/analytics/dashboard:
     get:
       tags: [Admin]
       summary: (Admin) Thống kê tổng quan
-      parameters:
-        - name: from
-          in: query
-          schema: { type: string, format: date }
-        - name: to
-          in: query
-          schema: { type: string, format: date }
       responses:
         '200':
           description: OK
@@ -1326,25 +1319,33 @@ components:
     DashboardStats:
       type: object
       properties:
-        totalUsers: { type: integer }
         dau: { type: integer, description: 'Daily active users' }
         wau: { type: integer }
         mau: { type: integer }
-        totalTemplates: { type: integer }
-        totalPromptsGenerated: { type: integer }
-        promptsToday: { type: integer }
-        topTemplates:
+        promptsGeneratedPerDay:
+          type: object
+          additionalProperties: { type: integer }
+          description: 'ISO date (YYYY-MM-DD) -> prompt count for that day'
+        popularTemplates:
           type: array
           items:
             type: object
             properties:
               templateId: { type: string, format: uuid }
-              title: { $ref: '#/components/schemas/I18nString' }
+              slug: { type: string }
+              titleI18n: { $ref: '#/components/schemas/I18nString' }
               usageCount: { type: integer }
-        topModels:
+        mostUsedModels:
           type: array
           items:
             type: object
             properties:
-              modelCode: { type: string }
+              modelId: { type: string, format: uuid }
+              name: { type: string }
               usageCount: { type: integer }
+        conversionFunnel:
+          type: object
+          properties:
+            signups: { type: integer }
+            verifiedEmails: { type: integer }
+            promptGenerations: { type: integer }

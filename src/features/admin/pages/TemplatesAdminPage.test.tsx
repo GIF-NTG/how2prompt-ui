@@ -257,4 +257,46 @@ describe('TemplatesAdminPage', () => {
     expect(list).toHaveBeenCalledWith('cursor-2')
     expect(screen.queryByRole('button', { name: 'Tải thêm' })).not.toBeInTheDocument()
   })
+
+  it('does not re-fetch when navigating away and back (cached at the AdminDataProvider level)', async () => {
+    setupCommonMocks()
+    const list = vi.fn().mockResolvedValue({ items: [], nextCursor: null, hasMore: false })
+    mockedCreateTemplatesAdminClient.mockReturnValue({
+      list,
+      create: vi.fn(),
+      update: vi.fn(),
+      publish: vi.fn(),
+    })
+
+    const authValue = makeAuthValue()
+    const { rerender } = render(
+      <AuthContext.Provider value={authValue}>
+        <AdminDataProvider>
+          <TemplatesAdminPage />
+        </AdminDataProvider>
+      </AuthContext.Provider>,
+    )
+    await screen.findByText('Chưa có template nào.')
+    expect(list).toHaveBeenCalledTimes(1)
+
+    // Simulates AdminLayout's Outlet swapping the nested route while
+    // AdminDataProvider itself stays mounted across the navigation.
+    rerender(
+      <AuthContext.Provider value={authValue}>
+        <AdminDataProvider>
+          <p>Other admin page</p>
+        </AdminDataProvider>
+      </AuthContext.Provider>,
+    )
+    rerender(
+      <AuthContext.Provider value={authValue}>
+        <AdminDataProvider>
+          <TemplatesAdminPage />
+        </AdminDataProvider>
+      </AuthContext.Provider>,
+    )
+    await screen.findByText('Chưa có template nào.')
+
+    expect(list).toHaveBeenCalledTimes(1)
+  })
 })
