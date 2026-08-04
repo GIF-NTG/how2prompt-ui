@@ -1,7 +1,7 @@
 import type { TemplateDetail } from '../types'
 
 export interface TemplateDetailClient {
-  getDetail(id: string): Promise<TemplateDetail>
+  getDetail(id: string, accessToken?: string): Promise<TemplateDetail>
   toggleFavorite(
     templateId: string,
     isFavorited: boolean,

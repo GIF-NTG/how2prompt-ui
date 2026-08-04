@@ -51,16 +51,19 @@ export function CatalogPage() {
       // failure there (e.g. a not-yet-implemented backend endpoint) doesn't block
       // the main template list, which is the page's core functionality.
       const [featuredResult, trendingResult, allData] = await Promise.all([
-        templateClient.getFeatured().catch(() => []),
-        templateClient.getTrending().catch(() => []),
-        templateClient.getTemplates({
-          sort: queryKey.sort,
-          size: PAGE_SIZE,
-          q: queryKey.q || undefined,
-          model: queryKey.model || undefined,
-          category: queryKey.category || undefined,
-          tags: queryKey.tag || undefined,
-        }),
+        templateClient.getFeatured(session?.token).catch(() => []),
+        templateClient.getTrending(undefined, session?.token).catch(() => []),
+        templateClient.getTemplates(
+          {
+            sort: queryKey.sort,
+            size: PAGE_SIZE,
+            q: queryKey.q || undefined,
+            model: queryKey.model || undefined,
+            category: queryKey.category || undefined,
+            tags: queryKey.tag || undefined,
+          },
+          session?.token,
+        ),
       ])
 
       if (generation !== requestGeneration.current) return
@@ -75,7 +78,7 @@ export function CatalogPage() {
     } finally {
       if (generation === requestGeneration.current) setLoading(false)
     }
-  }, [queryKey])
+  }, [queryKey, session?.token])
 
   useEffect(() => {
     void loadData()
@@ -86,15 +89,18 @@ export function CatalogPage() {
     if (!cursor) return
     setIsLoadingMore(true)
     try {
-      const allData = await templateClient.getTemplates({
-        sort: queryKey.sort,
-        cursor,
-        size: PAGE_SIZE,
-        q: queryKey.q || undefined,
-        model: queryKey.model || undefined,
-        category: queryKey.category || undefined,
-        tags: queryKey.tag || undefined,
-      })
+      const allData = await templateClient.getTemplates(
+        {
+          sort: queryKey.sort,
+          cursor,
+          size: PAGE_SIZE,
+          q: queryKey.q || undefined,
+          model: queryKey.model || undefined,
+          category: queryKey.category || undefined,
+          tags: queryKey.tag || undefined,
+        },
+        session?.token,
+      )
       if (generation !== requestGeneration.current) return
       setTemplates((prev) => [...prev, ...allData.items])
       setCursor(allData.nextCursor)
@@ -105,7 +111,7 @@ export function CatalogPage() {
     } finally {
       if (generation === requestGeneration.current) setIsLoadingMore(false)
     }
-  }, [cursor, queryKey])
+  }, [cursor, queryKey, session?.token])
 
   const handleTemplateClick = useCallback(
     (id: string) => {

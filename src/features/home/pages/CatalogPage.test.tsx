@@ -307,6 +307,7 @@ describe('CatalogPage', () => {
     await waitFor(() =>
       expect(mockedClient.getTemplates).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'debugging', tags: 'chi-tiet' }),
+        undefined,
       ),
     )
     await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
@@ -345,6 +346,7 @@ describe('CatalogPage', () => {
     await waitFor(() =>
       expect(mockedClient.getTemplates).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'debugging', tags: 'chi-tiet' }),
+        undefined,
       ),
     )
     await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))

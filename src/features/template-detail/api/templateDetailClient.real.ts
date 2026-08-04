@@ -118,8 +118,8 @@ function mapTemplateDetail(raw: RawTemplateDetail): TemplateDetail {
 
 export function createRealTemplateDetailClient(): TemplateDetailClient {
   return {
-    async getDetail(id) {
-      const raw = await apiFetch<RawTemplateDetail>(`/templates/${id}`)
+    async getDetail(id, accessToken) {
+      const raw = await apiFetch<RawTemplateDetail>(`/templates/${id}`, { accessToken })
       return mapTemplateDetail(raw)
     },
 

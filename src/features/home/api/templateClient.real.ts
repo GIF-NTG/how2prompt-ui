@@ -85,7 +85,7 @@ interface TemplatesPage {
 
 export function createRealTemplateClient(): TemplateClient {
   return {
-    async getTemplates(params) {
+    async getTemplates(params, accessToken) {
       const searchParams = new URLSearchParams()
       if (params.q) searchParams.set('q', params.q)
       if (params.category) searchParams.set('category', params.category)
@@ -95,21 +95,26 @@ export function createRealTemplateClient(): TemplateClient {
       if (params.cursor) searchParams.set('cursor', params.cursor)
       if (params.size !== undefined) searchParams.set('size', String(params.size))
       const qs = searchParams.toString()
-      const page = await apiFetch<TemplatesPage>(`/templates${qs ? `?${qs}` : ''}`)
+      const page = await apiFetch<TemplatesPage>(`/templates${qs ? `?${qs}` : ''}`, {
+        accessToken,
+      })
       return { ...page, items: page.items.map(mapTemplateListItem) }
     },
 
-    async getFeatured() {
-      const { items } = await apiFetch<{ items: RawTemplateListItem[] }>('/templates/featured')
+    async getFeatured(accessToken) {
+      const { items } = await apiFetch<{ items: RawTemplateListItem[] }>('/templates/featured', {
+        accessToken,
+      })
       return items.map(mapTemplateListItem)
     },
 
-    async getTrending(params) {
+    async getTrending(params, accessToken) {
       const searchParams = new URLSearchParams()
       if (params?.window) searchParams.set('window', params.window)
       const qs = searchParams.toString()
       const { items } = await apiFetch<{ items: RawTemplateListItem[] }>(
         `/templates/trending${qs ? `?${qs}` : ''}`,
+        { accessToken },
       )
       return items.map(mapTemplateListItem)
     },
