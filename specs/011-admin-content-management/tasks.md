@@ -286,8 +286,9 @@ the documented scope gaps.
 - [X] T048 [P] Run `npx tsc -b && npm run build` and fix any type errors across
       `src/features/admin/**` and the touched `shared`/`history` files
 - [X] T049 Run `npm run test` (full suite) and fix any failures
-- [ ] T050 Execute the full `quickstart.md` manual browser walkthrough (all 5
-      sections) against the running dev server and confirm every "Expected" outcome
+- [x] T050 Execute the full `quickstart.md` manual browser walkthrough (all 5
+      sections) against the running dev server and confirm every "Expected" outcome.
+      Manually verified by the user in a running browser — confirmed OK.
 - [X] T051 [P] Update CLAUDE.md's Epic 5 bullet to note the frontend is implemented
       again, cross-referencing the three documented backend-gap follow-ups
       (AI-model/category delete, admin tag endpoints of any kind, conversion funnel —

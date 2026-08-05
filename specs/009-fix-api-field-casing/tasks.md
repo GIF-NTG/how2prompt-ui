@@ -176,12 +176,10 @@ project's "Before calling something done" rule and Constitution Principle V.
 
 - [x] T015 Run `npm run lint`, `npm run build`, and `npm run test` and confirm all
       pass with zero snake_case-related failures.
-- [ ] T016 Run `npm run dev` and manually walk through the catalog page and a
+- [x] T016 Run `npm run dev` and manually walk through the catalog page and a
       template detail page per `quickstart.md` §1, confirming identical visual output
       and behavior (cards, badges, counts, dates, favoriting) to before this change.
-      NOT DONE by the implementing agent — no browser-driving tool was available in that
-      environment; `npm run dev` was confirmed to boot cleanly, and the Vitest/RTL suite
-      (T015) already renders `TemplateCard` and `CatalogPage` against real DOM assertions
+      Manually verified by the user in a running browser — confirmed OK.
       with the renamed fields, but an actual visual walkthrough still needs a human or a
       browser-automation tool before this is fully "done" per Constitution Principle V.
 

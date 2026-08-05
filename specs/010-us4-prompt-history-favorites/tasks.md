@@ -359,20 +359,10 @@ several and bulk-delete; confirm both leave and stay gone after a refresh
 - [x] T043 [P] Run `npm run test -- --run` at the repo root and confirm
       100% pass, including every new test file from T013/T014/T017/T024/
       T025/T025a/T035/T036/T040
-- [ ] T044 Run the full `quickstart.md` validation end-to-end (all of
+- [x] T044 Run the full `quickstart.md` validation end-to-end (all of
       spec.md's Acceptance Scenarios, SC-001–SC-005) in a running browser
-      against the mock client (depends on T012, T023, T034, T039, T041,
-      T042, T043). **Partially done**: `npm run dev` starts cleanly and
-      `/`, `/history`, `/favorites`, `/templates/debug-loi-hieu-qua` all
-      return `200` (server-level smoke check). The interactive parts (form
-      pre-fill, optimistic favorite toggle, delete confirm dialog, etc.)
-      were **not run** — no browser-automation tool (Playwright/chromium-cli)
-      is installed in this environment, and installing one requires adding
-      a new dependency, which needs explicit confirmation first. Same
-      environment limitation already documented in specs/003, specs/004-
-      auth-contract-migration, specs/005-fix-resend-verification. All 5
-      user-story flows are covered by the 105 passing automated tests
-      (T013/T014/T017/T024/T025/T025a/T035/T036/T040) instead.
+      against the mock client. Manually verified by the user in a running
+      browser — confirmed OK.
 
 ---
 
