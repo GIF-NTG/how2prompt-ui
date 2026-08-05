@@ -20,6 +20,25 @@ function getActiveVariables(template: TemplateDetail, modelCode: string): Templa
   return template.currentVersion.variables
 }
 
+// Regex patterns come from a fixed set of variable definitions per
+// template, so compiling each pattern once and reusing it avoids
+// re-parsing the same RegExp on every keystroke (validateAll runs on
+// every inputValues change).
+const compiledRegexCache = new Map<string, RegExp | null>()
+
+function getCompiledRegex(pattern: string): RegExp | null {
+  let compiled = compiledRegexCache.get(pattern)
+  if (compiled === undefined) {
+    try {
+      compiled = new RegExp(pattern)
+    } catch {
+      compiled = null
+    }
+    compiledRegexCache.set(pattern, compiled)
+  }
+  return compiled
+}
+
 function validateVariable(
   variable: TemplateVariable,
   value: string | number | boolean | string[] | undefined,
@@ -53,13 +72,9 @@ function validateVariable(
   }
 
   if ((variable.inputType === 'text' || variable.inputType === 'textarea') && validation.regex) {
-    try {
-      const re = new RegExp(validation.regex)
-      if (!re.test(String(value))) {
-        return `Must match pattern: ${validation.regex}`
-      }
-    } catch {
-      // invalid regex in data — skip validation
+    const re = getCompiledRegex(validation.regex)
+    if (re && !re.test(String(value))) {
+      return `Must match pattern: ${validation.regex}`
     }
   }
 

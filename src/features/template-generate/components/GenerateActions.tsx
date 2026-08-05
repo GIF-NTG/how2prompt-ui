@@ -1,19 +1,26 @@
 import { useState } from 'react'
-import confetti from 'canvas-confetti'
 import { AlertCircle, Check, CheckCircle2, Copy, Sparkles } from 'lucide-react'
 import { ApiError } from '@/shared/utils/httpClient'
 import { TAG_ACCENT_PALETTE_LIGHT } from '@/shared/utils/colorTag'
 import type { GenerateResponse } from '../api/generateClient.types'
 
-function fireSuccessConfetti() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  confetti({
-    particleCount: 60,
-    spread: 65,
-    startVelocity: 35,
-    origin: { y: 0.7 },
-    colors: ['#3652E0', ...TAG_ACCENT_PALETTE_LIGHT],
-  })
+// Only visitors who successfully generate a prompt ever trigger this, so
+// load canvas-confetti on demand instead of paying for it on every visit.
+// Purely decorative — never let a failure here surface as a generate error.
+async function fireSuccessConfetti() {
+  try {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const { default: confetti } = await import('canvas-confetti')
+    confetti({
+      particleCount: 60,
+      spread: 65,
+      startVelocity: 35,
+      origin: { y: 0.7 },
+      colors: ['#3652E0', ...TAG_ACCENT_PALETTE_LIGHT],
+    })
+  } catch {
+    // decorative only — ignore (e.g. matchMedia unavailable, chunk load failure)
+  }
 }
 
 interface GenerateActionsProps {
@@ -38,7 +45,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
     setIsGenerating(true)
     try {
       await onGenerate()
-      fireSuccessConfetti()
+      void fireSuccessConfetti()
     } catch (error) {
       if (error instanceof ApiError && error.code === 'GUEST_QUOTA_EXCEEDED') {
         setErrorMessage(QUOTA_ERROR_MESSAGE)

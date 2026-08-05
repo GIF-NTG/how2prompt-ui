@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { TemplateDetailPage } from './TemplateDetailPage'
+import { clearTemplateDetailCache } from '../hooks/useTemplateDetail'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/AuthContext'
 import { vi } from 'vitest'
 
@@ -31,6 +32,10 @@ function renderAt(path: string) {
 }
 
 describe('TemplateDetailPage reload branches (US3)', () => {
+  beforeEach(() => {
+    clearTemplateDetailCache()
+  })
+
   it('pre-fills the form normally when the reload target matches the current version', async () => {
     renderAt('/templates/t1?reload=h1')
     const roleInput = await screen.findByLabelText(/Your Role|Vai trò/i)

@@ -172,6 +172,7 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
 
   const flatCategories = useMemo(() => flattenCategories(categories, null, 0), [categories])
   const { page, pageCount, setPage, pageItems } = usePagedItems(flatCategories, PAGE_SIZE)
+  const categoriesById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
 
   async function handleConfirmDelete() {
     if (!deleteTarget) return
@@ -219,7 +220,9 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
             </thead>
             <tbody>
               {pageItems.map(({ category, depth }) => {
-                const parentCategory = categories.find((c) => c.id === category.parentId)
+                const parentCategory = category.parentId
+                  ? categoriesById.get(category.parentId)
+                  : undefined
                 return (
                   <tr
                     key={category.id}
