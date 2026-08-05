@@ -10,7 +10,12 @@
       // kept in sync with src/shared/context/ThemeProvider.tsx's storage key
       // and fallback-to-system logic.
       ;(function () {
-        var stored = localStorage.getItem('how2prompt-theme')
+        var stored = null
+        try {
+          stored = localStorage.getItem('how2prompt-theme:v1')
+        } catch {
+          // storage unavailable (private mode, quota) — fall back to system preference
+        }
         var isDark =
           stored === 'dark' ||
           (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)

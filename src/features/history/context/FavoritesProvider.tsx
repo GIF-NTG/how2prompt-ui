@@ -3,7 +3,7 @@ import { useAuth } from '@/features/auth/context/useAuth'
 import { FavoritesContext } from './FavoritesContext'
 
 function storageKey(accountId: string): string {
-  return `how2prompt:favorites:${accountId}`
+  return `how2prompt:favorites:v1:${accountId}`
 }
 
 function readIds(accountId: string): Set<string> {

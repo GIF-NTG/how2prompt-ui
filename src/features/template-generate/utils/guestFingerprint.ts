@@ -1,11 +1,16 @@
-const STORAGE_KEY = 'h2p_guest_fingerprint'
+const STORAGE_KEY = 'h2p_guest_fingerprint:v1'
 
 export function getGuestFingerprint(): string {
-  const existing = localStorage.getItem(STORAGE_KEY)
-  if (existing) {
-    return existing
-  }
   const id = crypto.randomUUID()
-  localStorage.setItem(STORAGE_KEY, id)
+  try {
+    const existing = localStorage.getItem(STORAGE_KEY)
+    if (existing) {
+      return existing
+    }
+    localStorage.setItem(STORAGE_KEY, id)
+  } catch {
+    // storage unavailable (private mode, quota) — fall back to a
+    // per-call id rather than breaking guest generation entirely
+  }
   return id
 }
