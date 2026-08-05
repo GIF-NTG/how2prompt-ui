@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Routes, Route, useParams } from 'react-router-dom'
 import { CatalogPage } from './CatalogPage'
 import { AuthProvider } from '@/features/auth/context/AuthProvider'
 import { HomeDataProvider } from '@/features/home/context/HomeDataProvider'
@@ -42,12 +42,20 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
   }
 }
 
+function TemplateDetailStub() {
+  const { id } = useParams<{ id: string }>()
+  return <p>Template detail page: {id}</p>
+}
+
 function renderPage(initialEntries: string[] = ['/']) {
   return render(
     <AuthProvider>
       <MemoryRouter initialEntries={initialEntries}>
         <HomeDataProvider>
-          <CatalogPage />
+          <Routes>
+            <Route path="/" element={<CatalogPage />} />
+            <Route path="/templates/:id" element={<TemplateDetailStub />} />
+          </Routes>
         </HomeDataProvider>
       </MemoryRouter>
     </AuthProvider>,
@@ -74,6 +82,23 @@ describe('CatalogPage', () => {
     renderPage()
     expect(
       screen.getByText('Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'),
+    ).toBeInTheDocument()
+  })
+
+  it('renders the featured hero and navigates to its fixed template on click', async () => {
+    mockedClient.getTemplates.mockResolvedValue({
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
+      nextCursor: null,
+      hasMore: false,
+    })
+
+    const user = userEvent.setup()
+    renderPage()
+
+    expect(await screen.findByText('Khung Prompt Phổ quát')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Dùng ngay' }))
+    expect(
+      screen.getByText('Template detail page: c0000000-0000-0000-0000-000000000012'),
     ).toBeInTheDocument()
   })
 

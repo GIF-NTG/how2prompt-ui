@@ -5,6 +5,7 @@ import { useHomeData } from '@/features/home/context/useHomeData'
 import { useCatalogFilters } from '@/features/home/hooks/useCatalogFilters'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { SearchBox } from '@/features/home/components/SearchBox'
+import { FeaturedTemplateHero } from '@/features/home/components/FeaturedTemplateHero'
 import { FilterBar } from '@/features/home/components/FilterBar'
 import { TemplateRail } from '@/features/home/components/TemplateRail'
 import { TemplateGrid } from '@/features/home/components/TemplateGrid'
@@ -107,6 +108,13 @@ export function CatalogPage() {
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
           {greeting}
         </h1>
+      </div>
+
+      <div
+        className="animate-[fade-slide-up_450ms_ease_backwards]"
+        style={{ animationDelay: '60ms' }}
+      >
+        <FeaturedTemplateHero />
       </div>
 
       <div
