@@ -78,7 +78,7 @@ export function TemplateGenerateSection({
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
       <section className="flex flex-col gap-6 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
         <h2 className="m-0 text-[1.1rem] font-semibold text-[#14171A] dark:text-[#F3F5F0]">
-          Tạo prompt từ template
+          Generate a prompt from template
         </h2>
 
         {/* Developer A: ModelVariantSelect slot */}

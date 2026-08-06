@@ -84,14 +84,14 @@ export function TemplateVariableEditor({
             onClick={addVariable}
             className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
           >
-            + Thêm variable
+            + Add variable
           </button>
         )}
       </div>
 
       {variables.length === 0 ? (
         <p className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">
-          Chưa có variable nào được khai báo.
+          No variables declared yet.
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -139,7 +139,7 @@ export function TemplateVariableEditor({
                   onChange={(e) => updateVariable(index, { isRequired: e.target.checked })}
                   disabled={disabled}
                 />
-                Bắt buộc
+                Required
               </label>
               {!disabled && (
                 <>
@@ -164,7 +164,7 @@ export function TemplateVariableEditor({
                     onClick={() => removeVariable(index)}
                     className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]"
                   >
-                    Xoá
+                    Delete
                   </button>
                 </>
               )}

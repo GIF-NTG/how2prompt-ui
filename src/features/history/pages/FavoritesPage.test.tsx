@@ -104,10 +104,10 @@ describe('FavoritesPage', () => {
     })
 
     renderFavoritesPage(makeAuthValue({ session: DEMO_SESSION }))
-    expect(await screen.findByText('Không tìm thấy mẫu phù hợp')).toBeInTheDocument()
+    expect(await screen.findByText('No matching templates found')).toBeInTheDocument()
   })
 
-  it('loads a second page via "Xem thêm" (FR-013 pagination)', async () => {
+  it('loads a second page via "Load more" (FR-013 pagination)', async () => {
     const listFavorites = vi
       .fn()
       .mockResolvedValueOnce({
@@ -131,7 +131,7 @@ describe('FavoritesPage', () => {
     renderFavoritesPage(makeAuthValue({ session: DEMO_SESSION }))
 
     expect(await screen.findByText('First')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Xem thêm' }))
+    await user.click(screen.getByRole('button', { name: 'Load more' }))
 
     await waitFor(() => expect(screen.getByText('Second')).toBeInTheDocument())
     expect(screen.getByText('First')).toBeInTheDocument()
@@ -154,7 +154,7 @@ describe('FavoritesPage', () => {
     renderFavoritesPage(makeAuthValue({ session: DEMO_SESSION }))
     await screen.findByText('First')
 
-    await user.click(screen.getByRole('button', { name: 'Bỏ yêu thích' }))
+    await user.click(screen.getByRole('button', { name: 'Remove from favorites' }))
     await waitFor(() => expect(screen.queryByText('First')).not.toBeInTheDocument())
   })
 
@@ -170,11 +170,11 @@ describe('FavoritesPage', () => {
         <MemoryRouter initialEntries={['/favorites']}>
           <Routes>
             <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/login" element={<div>Trang đăng nhập</div>} />
+            <Route path="/login" element={<div>Login page</div>} />
           </Routes>
         </MemoryRouter>
       </AuthContext.Provider>,
     )
-    expect(await screen.findByText('Trang đăng nhập')).toBeInTheDocument()
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
   })
 })

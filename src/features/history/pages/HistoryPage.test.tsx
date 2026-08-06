@@ -54,7 +54,7 @@ function renderHistoryPage(authValue: AuthContextValue, initialEntries = ['/hist
         <MemoryRouter initialEntries={initialEntries}>
           <Routes>
             <Route path="/history" element={<HistoryPage />} />
-            <Route path="/login" element={<div>Trang đăng nhập</div>} />
+            <Route path="/login" element={<div>Login page</div>} />
           </Routes>
         </MemoryRouter>
       </HistoryDataProvider>
@@ -66,20 +66,20 @@ describe('HistoryPage', () => {
   it('redirects a Guest session to /login', async () => {
     useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: null }))
-    expect(await screen.findByText('Trang đăng nhập')).toBeInTheDocument()
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
   })
 
   it('renders nothing while the session is still restoring (no premature redirect)', () => {
     useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: null, isRestoring: true }))
-    expect(screen.queryByText('Trang đăng nhập')).not.toBeInTheDocument()
-    expect(screen.queryByText('Lịch sử prompt đã tạo')).not.toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
+    expect(screen.queryByText('Generated Prompt History')).not.toBeInTheDocument()
   })
 
   it('lists history entries for a logged-in User (mock client)', async () => {
     useRealishHistoryClient()
     renderHistoryPage(makeAuthValue({ session: DEMO_SESSION }))
-    expect(await screen.findByText('Lịch sử prompt đã tạo')).toBeInTheDocument()
+    expect(await screen.findByText('Generated Prompt History')).toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getAllByRole('article').length).toBeGreaterThan(0)
     })
@@ -90,7 +90,7 @@ describe('HistoryPage', () => {
     renderHistoryPage(makeAuthValue({ session: DEMO_SESSION }), [
       '/history?templateId=no-such-template',
     ])
-    expect(await screen.findByText('Không có kết quả phù hợp với bộ lọc')).toBeInTheDocument()
+    expect(await screen.findByText('No results match your filters')).toBeInTheDocument()
   })
 
   it('does not re-fetch when navigating away and back with the same filters', async () => {
@@ -108,7 +108,7 @@ describe('HistoryPage', () => {
         </HistoryDataProvider>
       </AuthContext.Provider>,
     )
-    await screen.findByText('Lịch sử prompt đã tạo')
+    await screen.findByText('Generated Prompt History')
     await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
     expect(listSpy).toHaveBeenCalledTimes(1)
 
@@ -132,7 +132,7 @@ describe('HistoryPage', () => {
         </HistoryDataProvider>
       </AuthContext.Provider>,
     )
-    await screen.findByText('Lịch sử prompt đã tạo')
+    await screen.findByText('Generated Prompt History')
     await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
 
     expect(listSpy).toHaveBeenCalledTimes(1)

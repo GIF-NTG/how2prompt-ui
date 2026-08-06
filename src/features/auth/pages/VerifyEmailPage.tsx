@@ -41,12 +41,12 @@ export function VerifyEmailPage() {
     <AuthLayout>
       <div>
         <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-          Xác minh email
+          Verify email
         </h2>
       </div>
 
       {state === 'verifying' && (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang xác minh email của bạn...</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Verifying your email...</p>
       )}
 
       {state === 'success' && (
@@ -54,17 +54,17 @@ export function VerifyEmailPage() {
           role="status"
           className="rounded-lg border border-[#2E7D4F]/30 bg-[#E4F3EA] px-4 py-2 text-sm text-[#2E7D4F] dark:border-[#6FCF9A]/30 dark:bg-[#1E3327] dark:text-[#6FCF9A]"
         >
-          Email của bạn đã được xác minh thành công.
+          Your email has been verified successfully.
         </p>
       )}
 
       {state === 'expired' && (
         <div className="rounded-lg border border-[#C23A2E]/40 bg-[#FBE7E4] px-4 py-3 text-sm leading-normal text-[#C23A2E] dark:border-[#FF7A6B]/40 dark:bg-[#3A2224] dark:text-[#FF7A6B]">
-          Liên kết đã hết hạn hoặc đã được sử dụng.{' '}
+          This link has expired or has already been used.{' '}
           <Link to="/" className="underline underline-offset-2">
-            Quay lại trang chính
+            Go back to the homepage
           </Link>{' '}
-          để yêu cầu gửi lại email xác minh.
+          to request a new verification email.
         </div>
       )}
 

@@ -29,9 +29,9 @@ interface GenerateActionsProps {
   onGenerate: () => Promise<GenerateResponse>
 }
 
-const GENERIC_ERROR_MESSAGE = 'Không thể tạo prompt lúc này, vui lòng thử lại.'
+const GENERIC_ERROR_MESSAGE = 'Unable to generate the prompt right now, please try again.'
 const QUOTA_ERROR_MESSAGE =
-  'Bạn đã đạt giới hạn tạo prompt miễn phí hôm nay. Đăng nhập để tiếp tục hoặc quay lại vào ngày mai.'
+  "You've reached today's free prompt generation limit. Log in to continue, or come back tomorrow."
 
 export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateActionsProps) {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -62,7 +62,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
       return
     }
     await navigator.clipboard.writeText(finalPrompt)
-    setCopyStatus('Đã sao chép vào clipboard')
+    setCopyStatus('Copied to clipboard')
     setJustCopied(true)
     setTimeout(() => setJustCopied(false), 1500)
   }
@@ -77,7 +77,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
           className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-4 py-2 text-sm font-medium text-white transition-transform duration-150 active:scale-[0.97] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
         >
           <Sparkles size={15} aria-hidden="true" />
-          {isGenerating ? 'Đang tạo...' : 'Tạo prompt'}
+          {isGenerating ? 'Generating...' : 'Generate prompt'}
         </button>
         {finalPrompt && (
           <button
@@ -90,7 +90,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
             ) : (
               <Copy size={15} aria-hidden="true" />
             )}
-            Sao chép
+            Copy
           </button>
         )}
       </div>

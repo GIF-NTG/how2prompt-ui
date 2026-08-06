@@ -19,7 +19,7 @@ const mockedCreateAiModelsClient = vi.mocked(createAiModelsClient)
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
-  displayName: 'Quản trị viên Demo',
+  displayName: 'Demo Admin',
   email: 'admin@how2prompt.dev',
   token: 'admin-token',
   issuedAt: Date.now(),
@@ -49,7 +49,7 @@ function setupCommonMocks() {
     deleteCategory: vi.fn(),
     listTags: vi
       .fn()
-      .mockResolvedValue([{ id: 't1', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 5 }]),
+      .mockResolvedValue([{ id: 't1', slug: 'nhanh', name: 'Quick', usageCount: 5 }]),
     createTag: vi.fn(),
     updateTag: vi.fn(),
     deleteTag: vi.fn(),
@@ -85,10 +85,10 @@ describe('TemplatesAdminPage', () => {
     })
 
     renderPage()
-    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
-    await screen.findByRole('dialog', { name: 'Tạo template mới' })
+    await user.click(await screen.findByRole('button', { name: '+ Create new template' }))
+    await screen.findByRole('dialog', { name: 'Create new template' })
 
-    await user.type(screen.getByRole('textbox', { name: 'Tiêu đề (EN)' }), 'My Template')
+    await user.type(screen.getByRole('textbox', { name: 'Title (EN)' }), 'My Template')
     // user-event's `type()` treats a single `{` as the start of a special-key
     // sequence — doubling it (`{{`) types a literal brace; `}` needs no escaping.
     await user.type(
@@ -137,12 +137,12 @@ describe('TemplatesAdminPage', () => {
     })
 
     renderPage()
-    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
-    await screen.findByRole('dialog', { name: 'Tạo template mới' })
+    await user.click(await screen.findByRole('button', { name: '+ Create new template' }))
+    await screen.findByRole('dialog', { name: 'Create new template' })
 
-    await user.type(screen.getByRole('textbox', { name: 'Tiêu đề (EN)' }), 'My Template')
+    await user.type(screen.getByRole('textbox', { name: 'Title (EN)' }), 'My Template')
     await user.type(screen.getByRole('textbox', { name: /Prompt body/ }), 'Hello {{{{name}}')
-    await user.click(screen.getByRole('button', { name: '+ Thêm variable' }))
+    await user.click(screen.getByRole('button', { name: '+ Add variable' }))
     await user.type(screen.getByPlaceholderText('varKey'), 'name')
 
     await user.click(screen.getByRole('button', { name: 'Publish' }))
@@ -185,9 +185,9 @@ describe('TemplatesAdminPage', () => {
     renderPage()
     await screen.findByText('Published Template')
 
-    await user.click(screen.getByRole('button', { name: 'Sửa' }))
-    await screen.findByRole('dialog', { name: 'Chỉnh sửa: Published Template' })
-    await user.click(screen.getByRole('button', { name: 'Lưu Draft' }))
+    await user.click(screen.getByRole('button', { name: 'Edit' }))
+    await screen.findByRole('dialog', { name: 'Edit: Published Template' })
+    await user.click(screen.getByRole('button', { name: 'Save Draft' }))
 
     await waitFor(() => expect(update).toHaveBeenCalledWith('tpl1', expect.any(Object)))
   })
@@ -203,15 +203,15 @@ describe('TemplatesAdminPage', () => {
     })
 
     renderPage()
-    await user.click(await screen.findByRole('button', { name: '+ Tạo template mới' }))
-    await screen.findByRole('dialog', { name: 'Tạo template mới' })
+    await user.click(await screen.findByRole('button', { name: '+ Create new template' }))
+    await screen.findByRole('dialog', { name: 'Create new template' })
 
-    expect(await screen.findByText('Nhanh gọn')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /thêm tag|new tag|create tag/i })).not.toBeInTheDocument()
-    expect(screen.queryByPlaceholderText(/tag mới/i)).not.toBeInTheDocument()
+    expect(await screen.findByText('Quick')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /add tag|new tag|create tag/i })).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText(/new tag/i)).not.toBeInTheDocument()
   })
 
-  it('loads the next page of templates via Tải thêm', async () => {
+  it('loads the next page of templates via Load more', async () => {
     const user = userEvent.setup()
     setupCommonMocks()
     const page1Item = {
@@ -251,11 +251,11 @@ describe('TemplatesAdminPage', () => {
     await screen.findByText('Template One')
     expect(screen.queryByText('Template Two')).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Tải thêm' }))
+    await user.click(screen.getByRole('button', { name: 'Load more' }))
 
     await screen.findByText('Template Two')
     expect(list).toHaveBeenCalledWith('cursor-2')
-    expect(screen.queryByRole('button', { name: 'Tải thêm' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument()
   })
 
   it('does not re-fetch when navigating away and back (cached at the AdminDataProvider level)', async () => {
@@ -276,7 +276,7 @@ describe('TemplatesAdminPage', () => {
         </AdminDataProvider>
       </AuthContext.Provider>,
     )
-    await screen.findByText('Chưa có template nào.')
+    await screen.findByText('No templates yet.')
     expect(list).toHaveBeenCalledTimes(1)
 
     // Simulates AdminLayout's Outlet swapping the nested route while
@@ -295,7 +295,7 @@ describe('TemplatesAdminPage', () => {
         </AdminDataProvider>
       </AuthContext.Provider>,
     )
-    await screen.findByText('Chưa có template nào.')
+    await screen.findByText('No templates yet.')
 
     expect(list).toHaveBeenCalledTimes(1)
   })

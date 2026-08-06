@@ -12,7 +12,7 @@ interface FilterPopoverProps {
   onClear: () => void
 }
 
-/** Single "Bộ lọc" trigger that groups Category + Tag into one popover panel,
+/** Single "Filters" trigger that groups Category + Tag into one popover panel,
  *  instead of two permanently-visible chip rows — keeps the filter bar to
  *  one line and scales once there are many categories/tags. Hidden entirely
  *  once loaded with nothing to filter by, same as the old chip rows. */
@@ -80,7 +80,7 @@ export function FilterPopover({
         }`}
       >
         <FunnelSimple size={16} weight="bold" aria-hidden="true" />
-        Bộ lọc
+        Filters
         {activeCount > 0 && (
           <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/25 px-1 font-mono text-[0.68rem]">
             {activeCount}
@@ -93,13 +93,13 @@ export function FilterPopover({
           {categoryItems.length > 0 && (
             <div className="flex flex-col gap-2">
               <span className="text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-[#8B8F86] dark:text-[#6D726A]">
-                Chủ đề
+                Category
               </span>
               <ChipFilterGroup
                 items={categoryItems}
                 value={category}
                 onChange={onCategoryChange}
-                ariaLabel="Lọc theo chủ đề"
+                ariaLabel="Filter by category"
               />
             </div>
           )}
@@ -113,7 +113,7 @@ export function FilterPopover({
                 items={tagItems}
                 value={tag}
                 onChange={onTagChange}
-                ariaLabel="Lọc theo tag"
+                ariaLabel="Filter by tag"
               />
             </div>
           )}
@@ -124,7 +124,7 @@ export function FilterPopover({
               onClick={onClear}
               className="self-start font-mono text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
             >
-              Xóa bộ lọc
+              Clear filters
             </button>
           )}
         </div>

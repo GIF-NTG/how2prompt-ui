@@ -57,11 +57,11 @@ describe('useGenerateForm', () => {
       useGenerateForm(TEMPLATE, {
         modelCode: 'claude',
         inputValues: { role: 'Backend Developer' },
-        extraInstructions: 'Ưu tiên bảo mật',
+        extraInstructions: 'Prioritize security',
       }),
     )
     expect(result.current.state.selectedModelCode).toBe('claude')
     expect(result.current.state.inputValues.role).toBe('Backend Developer')
-    expect(result.current.state.extraInstructions).toBe('Ưu tiên bảo mật')
+    expect(result.current.state.extraInstructions).toBe('Prioritize security')
   })
 })

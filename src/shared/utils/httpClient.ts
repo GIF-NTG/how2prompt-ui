@@ -88,7 +88,7 @@ async function rawFetch(path: string, options: ApiFetchOptions): Promise<unknown
     const body = data as ApiErrorBody | null
     throw new ApiError(
       body?.error?.code ?? 'UNKNOWN_ERROR',
-      body?.error?.message ?? 'Đã có lỗi xảy ra, vui lòng thử lại.',
+      body?.error?.message ?? 'Something went wrong, please try again.',
       response.status,
       body?.error?.details,
     )

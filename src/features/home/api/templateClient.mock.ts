@@ -97,10 +97,10 @@ export const MOCK_CATEGORIES: Category[] = [
  *  `src/features/admin/api/taxonomyClient.mock.ts` for tag display and by
  *  `templatesAdminClient.mock.ts` for the tag picker. */
 export const MOCK_TAGS: Tag[] = [
-  { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 20 },
-  { id: 'tg2', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 15 },
-  { id: 'tg3', slug: 'chuyen-nghiep', name: 'Chuyên nghiệp', usageCount: 18 },
-  { id: 'tg4', slug: 'sang-tao', name: 'Sáng tạo', usageCount: 10 },
+  { id: 'tg1', slug: 'chi-tiet', name: 'Detailed', usageCount: 20 },
+  { id: 'tg2', slug: 'nhanh', name: 'Quick', usageCount: 15 },
+  { id: 'tg3', slug: 'chuyen-nghiep', name: 'Professional', usageCount: 18 },
+  { id: 'tg4', slug: 'sang-tao', name: 'Creative', usageCount: 10 },
 ]
 
 /** Exported so other feature mocks (e.g. historyClient.mock.ts's `listFavorites`)
@@ -194,8 +194,8 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     isOfficial: false,
     author: {
       id: 'u1',
-      fullName: 'Nguyễn Văn A',
-      username: 'nguyenvana',
+      fullName: 'John Doe',
+      username: 'johndoe',
       avatarUrl: null,
       type: 'user',
     },

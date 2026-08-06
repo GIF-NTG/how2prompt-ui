@@ -63,7 +63,7 @@ export function LoginPage() {
       const outcome = await authClient.resendVerificationEmail(trimmedEmail)
       if (outcome.status === 'success') {
         setResendStatusMessage(
-          'Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.',
+          'Your request to resend the verification email has been received — it will arrive in your inbox shortly.',
         )
       } else {
         setResendErrorMessage(outcome.message)
@@ -120,7 +120,7 @@ export function LoginPage() {
   return (
     <AuthLayout>
       <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-        Chào bạn quay lại
+        Welcome back
       </h2>
 
       {justRegistered && (
@@ -128,7 +128,7 @@ export function LoginPage() {
           role="status"
           className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-4 py-2 text-sm text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262B4A] dark:text-[#8493FF]"
         >
-          Đã tạo tài khoản thành công! Hãy đăng nhập để tiếp tục.
+          Account created successfully! Please log in to continue.
         </p>
       )}
 
@@ -137,7 +137,7 @@ export function LoginPage() {
           role="status"
           className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-4 py-2 text-sm text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262B4A] dark:text-[#8493FF]"
         >
-          Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.
+          Password reset successfully! Please log in with your new password.
         </p>
       )}
 
@@ -146,11 +146,11 @@ export function LoginPage() {
         noValidate
         className="rounded-card border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
       >
-        Đăng nhập bằng email{' '}
+        Log in with email{' '}
         <InlineBlank
           ref={emailRef}
           type="email"
-          placeholder="ban@vidu.com"
+          placeholder="you@example.com"
           value={email}
           onChange={(event) => {
             setEmail(event.target.value)
@@ -159,7 +159,7 @@ export function LoginPage() {
           invalid={emailInvalid}
           autoComplete="email"
         />{' '}
-        và mật khẩu{' '}
+        and password{' '}
         <InlineBlank
           ref={passwordRef}
           type={passwordVisible ? 'text' : 'password'}
@@ -174,7 +174,7 @@ export function LoginPage() {
           onClick={() => setPasswordVisible((visible) => !visible)}
           className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF]"
         >
-          {passwordVisible ? 'ẩn' : 'hiện'}
+          {passwordVisible ? 'hide' : 'show'}
         </button>
         .
         {errorMessage && (
@@ -193,7 +193,7 @@ export function LoginPage() {
               disabled={resendSending}
               className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:no-underline disabled:opacity-60 dark:text-[#8493FF]"
             >
-              Gửi lại email xác minh
+              Resend verification email
             </button>
             {resendStatusMessage && (
               <p role="status" className="mt-2 text-sm text-[#2E7D4F] dark:text-[#6FCF9A]">
@@ -213,7 +213,7 @@ export function LoginPage() {
             disabled={submitting}
             className="rounded-lg bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
           >
-            Đăng nhập →
+            Log in →
           </button>
         </div>
       </form>
@@ -223,27 +223,27 @@ export function LoginPage() {
           to="/forgot-password"
           className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
         >
-          Quên mật khẩu?
+          Forgot password?
         </Link>
       </p>
 
       <div className="flex items-center gap-3 text-xs text-[#8B8F86] dark:text-[#6D726A]">
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
-        hoặc
+        or
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
       </div>
 
       <GoogleSignInButton />
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        Chưa có tài khoản?{' '}
+        Don&apos;t have an account?{' '}
         <Link
           to="/register"
           className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
         >
-          Đăng ký ngay
+          Sign up now
         </Link>{' '}
-        — miễn phí, không cần thẻ.
+        — free, no card required.
       </p>
     </AuthLayout>
   )

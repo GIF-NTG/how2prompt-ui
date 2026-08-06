@@ -29,11 +29,11 @@ export function EmailVerificationBanner() {
       const outcome = await resendVerificationEmail()
       if (outcome.status === 'success') {
         setStatusMessage(
-          'Yêu cầu gửi lại email xác minh đã được tiếp nhận, email sẽ sớm được gửi tới hộp thư của bạn.',
+          'Your request to resend the verification email has been received — it will arrive in your inbox shortly.',
         )
         setSecondsLeft(COUNTDOWN_SECONDS)
       } else if (outcome.errorCode === 'RATE_LIMITED') {
-        setErrorMessage('Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.')
+        setErrorMessage('You just requested a resend — please wait a few minutes and try again.')
         setSecondsLeft(COUNTDOWN_SECONDS)
       } else {
         // FR-006: any other backend failure still surfaces as a user-readable
@@ -53,14 +53,14 @@ export function EmailVerificationBanner() {
   return (
     <div className="border-b border-[#DBDFD3] bg-[#EAEDE6] px-4 py-2 text-sm text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span>Vui lòng xác minh email của bạn để sử dụng đầy đủ tính năng.</span>
+        <span>Please verify your email to unlock full access.</span>
         <button
           type="button"
           onClick={() => void handleResend()}
           disabled={sending || secondsLeft > 0}
           className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:no-underline disabled:opacity-60 dark:text-[#8493FF]"
         >
-          {secondsLeft > 0 ? `Gửi lại email (${countdownLabel})` : 'Gửi lại email'}
+          {secondsLeft > 0 ? `Resend email (${countdownLabel})` : 'Resend email'}
         </button>
       </div>
       {statusMessage && (

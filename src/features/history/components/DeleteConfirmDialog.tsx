@@ -12,14 +12,14 @@ interface DeleteConfirmDialogProps {
 export function DeleteConfirmDialog({ count, onConfirm, onCancel }: DeleteConfirmDialogProps) {
   const message =
     count === 1
-      ? 'Xoá mục này khỏi lịch sử? Hành động này không thể hoàn tác.'
-      : `Xoá ${count} mục đã chọn khỏi lịch sử? Hành động này không thể hoàn tác.`
+      ? 'Delete this item from history? This action cannot be undone.'
+      : `Delete ${count} selected items from history? This action cannot be undone.`
 
   return (
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label="Xác nhận xoá"
+      aria-label="Confirm delete"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -40,14 +40,14 @@ export function DeleteConfirmDialog({ count, onConfirm, onCancel }: DeleteConfir
             onClick={onCancel}
             className="cursor-pointer rounded-md border border-[#DBDFD3] px-4 py-2 text-[0.85rem] font-semibold text-[#1B1D1B] transition-colors duration-150 hover:border-[#8B8F86] dark:border-[#2C3130] dark:text-[#ECEEE8]"
           >
-            Huỷ
+            Cancel
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="cursor-pointer rounded-md bg-[#C23A2E] px-4 py-2 text-[0.85rem] font-semibold text-white transition-colors duration-150 hover:brightness-110 dark:bg-[#FF7A6B] dark:text-[#14171A]"
           >
-            Xoá
+            Delete
           </button>
         </div>
       </motion.div>

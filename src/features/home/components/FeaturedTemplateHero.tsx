@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 // first-time visitor can use immediately without evaluating the catalog.
 const FEATURED_TEMPLATE = {
   id: 'c0000000-0000-0000-0000-000000000012',
-  title: 'Khung Prompt Phổ quát',
-  description: 'Một khung tiêu chuẩn rất linh hoạt áp dụng cho hầu hết mọi tác vụ.',
+  title: 'Universal Prompt Framework',
+  description: 'A highly flexible standard framework that applies to almost any task.',
 }
 
 export function FeaturedTemplateHero() {
@@ -23,10 +23,10 @@ export function FeaturedTemplateHero() {
       <div className="relative flex flex-wrap items-center gap-1.5">
         <span className="flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 font-mono text-[0.7rem] font-bold tracking-[0.03em] text-white uppercase backdrop-blur-sm">
           <Sparkles size={12} />
-          Nổi bật nhất
+          Most Popular
         </span>
         <span className="rounded-full bg-white/15 px-2.5 py-1 font-mono text-[0.7rem] font-bold tracking-[0.03em] text-white backdrop-blur-sm">
-          Chính thức
+          Official
         </span>
       </div>
 
@@ -42,7 +42,7 @@ export function FeaturedTemplateHero() {
         onClick={() => navigate(`/templates/${FEATURED_TEMPLATE.id}`, { viewTransition: true })}
         className="relative mt-1 flex w-fit cursor-pointer items-center gap-1.5 rounded-lg bg-white px-5 py-2.5 text-[0.9rem] font-bold text-[#3652E0] transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
-        Dùng ngay
+        Use now
         <ArrowRight size={16} />
       </button>
     </div>

@@ -36,8 +36,8 @@ const selectVar = makeVariable({
   isRequired: false,
   defaultValue: 'medium',
   options: [
-    { value: 'low', label: { en: 'Low', vi: 'Thấp' } },
-    { value: 'high', label: { en: 'High', vi: 'Cao' } },
+    { value: 'low', label: { en: 'Low', vi: 'Low' } },
+    { value: 'high', label: { en: 'High', vi: 'High' } },
   ],
   sortOrder: 3,
 })
@@ -182,11 +182,11 @@ describe('DynamicForm', () => {
       variables: [
         makeVariable({
           varKey: 'test',
-          helpText: { en: 'Some help', vi: 'Trợ giúp' },
+          helpText: { en: 'Some help', vi: 'Some help' },
         }),
       ],
     })
-    expect(screen.getByText('Trợ giúp')).toBeInTheDocument()
+    expect(screen.getByText('Some help')).toBeInTheDocument()
   })
 
   it('shows placeholder fallback for unknown input types', () => {

@@ -27,7 +27,7 @@ export function ChipFilterGroup({
             : 'border-[#DBDFD3] bg-white text-[#5B5F58] hover:border-[#8B8F86] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#A2A79C]'
         }`}
       >
-        Tất cả
+        All
       </button>
       {!loading &&
         items.map((item) => (

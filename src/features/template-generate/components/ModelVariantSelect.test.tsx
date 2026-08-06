@@ -12,7 +12,7 @@ describe('ModelVariantSelect', () => {
         onChange={vi.fn()}
       />,
     )
-    expect(screen.getByLabelText('Mô hình AI')).toBeInTheDocument()
+    expect(screen.getByLabelText('AI model')).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'gpt-4o' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'claude' })).toBeInTheDocument()
   })
@@ -45,7 +45,7 @@ describe('ModelVariantSelect', () => {
         onChange={onChange}
       />,
     )
-    await user.selectOptions(screen.getByLabelText('Mô hình AI'), 'claude')
+    await user.selectOptions(screen.getByLabelText('AI model'), 'claude')
     expect(onChange).toHaveBeenCalledWith('claude')
   })
 })

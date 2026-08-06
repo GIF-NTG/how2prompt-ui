@@ -26,8 +26,8 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
   return {
     id: 'id',
     slug: 'slug',
-    title: { en: 'Title', vi: 'Tiêu đề' },
-    description: { en: 'Description', vi: 'Mô tả' },
+    title: { en: 'Title', vi: 'Title' },
+    description: { en: 'Description', vi: 'Description' },
     coverImage: null,
     isOfficial: false,
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
@@ -81,7 +81,7 @@ describe('CatalogPage', () => {
 
     renderPage()
     expect(
-      screen.getByText('Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'),
+      screen.getByText('Find the right prompt template — log in to save your history'),
     ).toBeInTheDocument()
   })
 
@@ -95,14 +95,14 @@ describe('CatalogPage', () => {
     const user = userEvent.setup()
     renderPage()
 
-    expect(await screen.findByText('Khung Prompt Phổ quát')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Dùng ngay' }))
+    expect(await screen.findByText('Universal Prompt Framework')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Use now' }))
     expect(
       screen.getByText('Template detail page: c0000000-0000-0000-0000-000000000012'),
     ).toBeInTheDocument()
   })
 
-  it('shows "Xem thêm" while more pages remain, and hides it once exhausted', async () => {
+  it('shows "Load more" while more pages remain, and hides it once exhausted', async () => {
     mockedClient.getTemplates.mockResolvedValueOnce({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
       nextCursor: 'cursor-1',
@@ -112,7 +112,7 @@ describe('CatalogPage', () => {
     const user = userEvent.setup()
     renderPage()
 
-    const loadMoreButton = await screen.findByRole('button', { name: 'Xem thêm' })
+    const loadMoreButton = await screen.findByRole('button', { name: 'Load more' })
 
     mockedClient.getTemplates.mockResolvedValueOnce({
       items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Second', vi: 'Second' } })],
@@ -123,7 +123,7 @@ describe('CatalogPage', () => {
     await user.click(loadMoreButton)
 
     await waitFor(() =>
-      expect(screen.queryByRole('button', { name: 'Xem thêm' })).not.toBeInTheDocument(),
+      expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument(),
     )
   })
 
@@ -145,7 +145,7 @@ describe('CatalogPage', () => {
       hasMore: false,
     })
 
-    await user.click(screen.getByRole('button', { name: 'Xem thêm' }))
+    await user.click(screen.getByRole('button', { name: 'Load more' }))
 
     await waitFor(() => expect(screen.getByText('Second')).toBeInTheDocument())
     expect(screen.getByText('First')).toBeInTheDocument()
@@ -195,14 +195,14 @@ describe('CatalogPage', () => {
     await screen.findByText('First')
 
     mockedClient.getTemplates.mockResolvedValueOnce({
-      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest', vi: 'Newest' } })],
+      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest Template', vi: 'Newest Template' } })],
       nextCursor: null,
       hasMore: false,
     })
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp theo' }), 'newest')
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'newest')
 
-    await screen.findByText('Newest')
+    await screen.findByText('Newest Template')
     const lastCall = mockedClient.getTemplates.mock.calls.at(-1)?.[0]
     expect(lastCall).toMatchObject({ sort: 'newest' })
     expect(lastCall?.cursor).toBeUndefined()
@@ -240,7 +240,7 @@ describe('CatalogPage', () => {
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({ model: 'claude' }),
     )
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp theo' }), 'newest')
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'newest')
 
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
@@ -265,7 +265,7 @@ describe('CatalogPage', () => {
       },
     ])
     mockedClient.getTags.mockResolvedValue([
-      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
+      { id: 'tg1', slug: 'chi-tiet', name: 'Detailed', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
@@ -277,7 +277,7 @@ describe('CatalogPage', () => {
     renderPage()
     await screen.findByText('First')
 
-    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
+    await user.click(await screen.findByRole('button', { name: /Filters/ }))
     await user.click(await screen.findByRole('button', { name: 'Debugging' }))
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
@@ -285,9 +285,9 @@ describe('CatalogPage', () => {
         tags: undefined,
       }),
     )
-    expect(screen.getByRole('group', { name: 'Lọc theo chủ đề' })).toHaveTextContent('Debugging')
+    expect(screen.getByRole('group', { name: 'Filter by category' })).toHaveTextContent('Debugging')
 
-    await user.click(screen.getByRole('button', { name: 'Chi tiết' }))
+    await user.click(screen.getByRole('button', { name: 'Detailed' }))
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
         category: 'debugging',
@@ -295,9 +295,9 @@ describe('CatalogPage', () => {
       }),
     )
 
-    // clearing only the Category filter (its own "Tất cả") preserves the Tag filter
-    const categoryGroup = screen.getByRole('group', { name: 'Lọc theo chủ đề' })
-    await user.click(within(categoryGroup).getByRole('button', { name: 'Tất cả' }))
+    // clearing only the Category filter (its own "All") preserves the Tag filter
+    const categoryGroup = screen.getByRole('group', { name: 'Filter by category' })
+    await user.click(within(categoryGroup).getByRole('button', { name: 'All' }))
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({
         category: undefined,
@@ -321,7 +321,7 @@ describe('CatalogPage', () => {
       },
     ])
     mockedClient.getTags.mockResolvedValue([
-      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
+      { id: 'tg1', slug: 'chi-tiet', name: 'Detailed', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
@@ -338,14 +338,14 @@ describe('CatalogPage', () => {
         undefined,
       ),
     )
-    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
+    await user.click(await screen.findByRole('button', { name: /Filters/ }))
     const categoryButton = await screen.findByRole('button', { name: 'Debugging' })
-    const tagButton = screen.getByRole('button', { name: 'Chi tiết' })
+    const tagButton = screen.getByRole('button', { name: 'Detailed' })
     expect(categoryButton).toHaveAttribute('aria-pressed', 'true')
     expect(tagButton).toHaveAttribute('aria-pressed', 'true')
   })
 
-  it('"Xóa bộ lọc" clears both Category and Tag at once', async () => {
+  it('"Clear filters" clears both Category and Tag at once', async () => {
     mockedClient.getCategories.mockResolvedValue([
       {
         id: 'c1',
@@ -360,7 +360,7 @@ describe('CatalogPage', () => {
       },
     ])
     mockedClient.getTags.mockResolvedValue([
-      { id: 'tg1', slug: 'chi-tiet', name: 'Chi tiết', usageCount: 1 },
+      { id: 'tg1', slug: 'chi-tiet', name: 'Detailed', usageCount: 1 },
     ])
     mockedClient.getTemplates.mockResolvedValue({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'First', vi: 'First' } })],
@@ -377,8 +377,8 @@ describe('CatalogPage', () => {
         undefined,
       ),
     )
-    await user.click(await screen.findByRole('button', { name: /Bộ lọc/ }))
-    await user.click(await screen.findByRole('button', { name: 'Xóa bộ lọc' }))
+    await user.click(await screen.findByRole('button', { name: /Filters/ }))
+    await user.click(await screen.findByRole('button', { name: 'Clear filters' }))
 
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({

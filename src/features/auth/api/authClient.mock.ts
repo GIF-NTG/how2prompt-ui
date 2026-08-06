@@ -16,13 +16,13 @@ const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000
 // Demo credentials, seeded into the mock account store below.
 const DEMO_EMAIL = 'demo@how2prompt.dev'
 const DEMO_PASSWORD = 'demo1234'
-const DEMO_DISPLAY_NAME = 'Người dùng Demo'
+const DEMO_DISPLAY_NAME = 'Demo User'
 
 // Admin demo credentials — the only mock account with isAdmin: true, so Epic 5's
 // RequireAdmin guard and admin nav entry are exercisable without a real backend.
 const ADMIN_EMAIL = 'admin@how2prompt.dev'
 const ADMIN_PASSWORD = 'admin1234'
-const ADMIN_DISPLAY_NAME = 'Quản trị viên Demo'
+const ADMIN_DISPLAY_NAME = 'Demo Admin'
 
 interface MockAccountRecord {
   id: string
@@ -132,7 +132,7 @@ export function createMockAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'EMAIL_NOT_VERIFIED',
-            message: 'Vui lòng xác minh email trước khi đăng nhập.',
+            message: 'Please verify your email before logging in.',
           }
         }
         const session = createSession(account)
@@ -142,7 +142,7 @@ export function createMockAuthClient(): AuthClient {
       return {
         status: 'error',
         errorCode: 'INVALID_CREDENTIALS',
-        message: 'Email hoặc mật khẩu không chính xác',
+        message: 'Incorrect email or password',
       }
     },
     async register(displayName, email, password) {
@@ -150,7 +150,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'EMAIL_ALREADY_EXISTS',
-          message: 'Email này đã được đăng ký, hãy đăng nhập',
+          message: 'This email is already registered, please log in',
         }
       }
       mockAccounts.set(email, {
@@ -214,7 +214,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'RESET_TOKEN_EXPIRED',
-          message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+          message: 'This link has expired or has already been used.',
         }
       }
       const account = [...mockAccounts.values()].find((entry) => entry.password !== undefined)
@@ -228,7 +228,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'VERIFY_TOKEN_EXPIRED',
-          message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+          message: 'This link has expired or has already been used.',
         }
       }
       // The mock has no real token↔account mapping (it never issued a real token),
@@ -252,7 +252,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'RATE_LIMITED',
-          message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+          message: 'You just requested a resend — please wait a few minutes and try again.',
         }
       }
       if (account) account.lastVerificationSentAt = now
@@ -270,7 +270,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'TOKEN_EXPIRED',
-          message: 'Phiên đăng nhập đã hết hạn.',
+          message: 'Your session has expired.',
         }
       }
       return {
@@ -292,7 +292,7 @@ export function createMockAuthClient(): AuthClient {
         return {
           status: 'error',
           errorCode: 'TOKEN_EXPIRED',
-          message: 'Phiên đăng nhập đã hết hạn.',
+          message: 'Your session has expired.',
         }
       }
       if (input.username) {
@@ -303,7 +303,7 @@ export function createMockAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'USERNAME_TAKEN',
-            message: 'Tên người dùng này đã được sử dụng.',
+            message: 'This username is already taken.',
           }
         }
       }

@@ -24,7 +24,7 @@ function renderProfilePage() {
         <DisplayNameProbe />
         <Routes>
           <Route path="/profile" element={<ProfileSettingsPage />} />
-          <Route path="/login" element={<div>Trang đăng nhập</div>} />
+          <Route path="/login" element={<div>Login page</div>} />
         </Routes>
       </MemoryRouter>
     </AuthProvider>,
@@ -39,7 +39,7 @@ function renderProfilePageWithContext(value: AuthContextValue) {
       <MemoryRouter initialEntries={['/profile']}>
         <Routes>
           <Route path="/profile" element={<ProfileSettingsPage />} />
-          <Route path="/login" element={<div>Trang đăng nhập</div>} />
+          <Route path="/login" element={<div>Login page</div>} />
         </Routes>
       </MemoryRouter>
     </AuthContext.Provider>,
@@ -61,7 +61,7 @@ async function loginAsDemo() {
  *  demo account (mock state is shared/mutated across tests, only
  *  localStorage is reset in beforeEach). */
 async function findFullNameInputOnceLoaded() {
-  return screen.findByLabelText('Tên hiển thị')
+  return screen.findByLabelText('Display name')
 }
 
 describe('ProfileSettingsPage', () => {
@@ -71,7 +71,7 @@ describe('ProfileSettingsPage', () => {
 
   it('redirects to /login when logged out (Access control)', async () => {
     renderProfilePage()
-    await waitFor(() => expect(screen.getByText('Trang đăng nhập')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Login page')).toBeInTheDocument())
   })
 
   it('does NOT redirect while isRestoring is still true, even with no session yet (H1 — reload race)', async () => {
@@ -91,7 +91,7 @@ describe('ProfileSettingsPage', () => {
         profile: { fullName: '', username: null, bio: null, locale: 'vi' },
       }),
     })
-    expect(screen.queryByText('Trang đăng nhập')).not.toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
   })
 
   it('prefills the form with the current profile (Acceptance 1)', async () => {
@@ -111,11 +111,11 @@ describe('ProfileSettingsPage', () => {
 
     const fullNameInput = await findFullNameInputOnceLoaded()
     await user.clear(fullNameInput)
-    await user.type(fullNameInput, 'Tên Mới')
-    await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
+    await user.type(fullNameInput, 'New Name')
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() => expect(screen.getByRole('status')).toBeInTheDocument())
-    expect(screen.getByTestId('display-name')).toHaveTextContent('Tên Mới')
+    expect(screen.getByTestId('display-name')).toHaveTextContent('New Name')
   })
 
   it('shows an inline duplicate-username error without discarding other unsaved changes (Acceptance 3)', async () => {
@@ -127,12 +127,12 @@ describe('ProfileSettingsPage', () => {
     // directly (same technique as EmailVerificationBanner.test.tsx's
     // seedUnverifiedSession) instead of going through authClient.login, since this
     // test only cares about username-uniqueness validation, not the login/verify flow.
-    await authClient.register('Người Khác', 'other@example.com', 'password123')
+    await authClient.register('Another Person', 'other@example.com', 'password123')
     window.localStorage.setItem(
       SESSION_STORAGE_KEY,
       JSON.stringify({
         accountId: 'other@example.com',
-        displayName: 'Người Khác',
+        displayName: 'Another Person',
         email: 'other@example.com',
         token: 'seed-token',
         issuedAt: Date.now(),
@@ -142,7 +142,7 @@ describe('ProfileSettingsPage', () => {
     )
     const takenUsernameOutcome = await authClient.updateProfile(
       (await authClient.restoreSession())!.token,
-      { fullName: 'Người Khác', username: 'taken-name', bio: null, locale: 'vi' },
+      { fullName: 'Another Person', username: 'taken-name', bio: null, locale: 'vi' },
     )
     expect(takenUsernameOutcome.status).toBe('success')
     await authClient.logout()
@@ -152,16 +152,16 @@ describe('ProfileSettingsPage', () => {
 
     const fullNameInput = await findFullNameInputOnceLoaded()
     await user.clear(fullNameInput)
-    await user.type(fullNameInput, 'Tên Chưa Lưu')
-    const usernameInput = screen.getByLabelText('Tên người dùng (tuỳ chọn)')
+    await user.type(fullNameInput, 'Unsaved Name')
+    const usernameInput = screen.getByLabelText('Username (optional)')
     await user.type(usernameInput, 'taken-name')
-    await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() =>
-      expect(screen.getByText('Tên người dùng này đã được sử dụng.')).toBeInTheDocument(),
+      expect(screen.getByText('This username is already taken.')).toBeInTheDocument(),
     )
     // The full name change from this same edit must still be shown, not reset.
-    expect(screen.getByDisplayValue('Tên Chưa Lưu')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Unsaved Name')).toBeInTheDocument()
   })
 
   it('blocks submission with an inline error when full name exceeds the length limit (Acceptance 4)', async () => {
@@ -172,9 +172,9 @@ describe('ProfileSettingsPage', () => {
     const fullNameInput = await findFullNameInputOnceLoaded()
     await user.clear(fullNameInput)
     await user.type(fullNameInput, 'a'.repeat(151))
-    await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
-    expect(await screen.findByText('Tên hiển thị tối đa 150 ký tự.')).toBeInTheDocument()
+    expect(await screen.findByText('Display name must be at most 150 characters.')).toBeInTheDocument()
     // No success confirmation should appear — the request must never have been sent.
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
@@ -185,8 +185,8 @@ describe('ProfileSettingsPage', () => {
     renderProfilePage()
 
     await findFullNameInputOnceLoaded()
-    expect(screen.getByLabelText('Tên người dùng (tuỳ chọn)')).toHaveValue('')
-    await user.click(screen.getByRole('button', { name: 'Lưu thay đổi' }))
+    expect(screen.getByLabelText('Username (optional)')).toHaveValue('')
+    await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() => expect(screen.getByRole('status')).toBeInTheDocument())
   })

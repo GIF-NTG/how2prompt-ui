@@ -24,8 +24,8 @@ export function ReloadUnavailableBanner({ finalPrompt }: ReloadUnavailableBanner
       >
         <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
         <span>
-          Template gốc của prompt này không còn tồn tại, nên bạn không thể tải lại vào form. Nội
-          dung prompt đã tạo trước đây vẫn được lưu bên dưới.
+          This prompt&apos;s original template no longer exists, so it can&apos;t be reloaded into
+          the form. The previously generated prompt content is still saved below.
         </span>
       </div>
 
@@ -45,7 +45,7 @@ export function ReloadUnavailableBanner({ finalPrompt }: ReloadUnavailableBanner
         ) : (
           <Copy size={15} aria-hidden="true" />
         )}
-        Sao chép
+        Copy
       </button>
     </section>
   )

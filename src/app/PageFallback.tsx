@@ -3,7 +3,7 @@
 export function PageFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center">
-      <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+      <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
     </div>
   )
 }

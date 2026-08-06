@@ -38,7 +38,7 @@ export function GoogleSignInButton() {
         setErrorMessage(outcome.message)
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Không thể mở Google Sign-In.')
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to open Google Sign-In.')
     } finally {
       pendingRef.current = false
       setPending(false)
@@ -53,7 +53,7 @@ export function GoogleSignInButton() {
         disabled={pending}
         className="rounded-lg border border-[#DBDFD3] bg-white px-4 py-2 text-sm font-semibold text-[#1B1D1B] transition hover:bg-[#EAEDE6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8] dark:hover:bg-[#23282C]"
       >
-        {pending ? 'Đang mở Google…' : 'Đăng nhập bằng Google'}
+        {pending ? 'Opening Google…' : 'Sign in with Google'}
       </button>
       {errorMessage && (
         <p

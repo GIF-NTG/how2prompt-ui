@@ -97,7 +97,7 @@ export function createRealAuthClient(): AuthClient {
           accountCreated: false,
         }
       } catch (error) {
-        return toErrorOutcome(error, 'Không thể đăng nhập, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to log in, please try again.')
       }
     },
 
@@ -112,7 +112,7 @@ export function createRealAuthClient(): AuthClient {
         })
         return { status: 'success', session: null, accountCreated: true }
       } catch (error) {
-        return toErrorOutcome(error, 'Không thể tạo tài khoản, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to create account, please try again.')
       }
     },
 
@@ -148,7 +148,7 @@ export function createRealAuthClient(): AuthClient {
           accountCreated: false,
         }
       } catch (error) {
-        return toErrorOutcome(error, 'Không thể đăng nhập bằng Google.')
+        return toErrorOutcome(error, 'Unable to log in with Google.')
       }
     },
 
@@ -157,7 +157,7 @@ export function createRealAuthClient(): AuthClient {
         await apiFetch<void>('/auth/forgot-password', { method: 'POST', body: { email } })
         return { status: 'success' }
       } catch (error) {
-        return toErrorOutcome(error, 'Không thể gửi yêu cầu, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to send request, please try again.')
       }
     },
 
@@ -176,10 +176,10 @@ export function createRealAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'RESET_TOKEN_EXPIRED',
-            message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+            message: 'This link has expired or has already been used.',
           }
         }
-        return toErrorOutcome(error, 'Không thể đặt lại mật khẩu, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to reset password, please try again.')
       }
     },
 
@@ -195,10 +195,10 @@ export function createRealAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'VERIFY_TOKEN_EXPIRED',
-            message: 'Liên kết đã hết hạn hoặc đã được sử dụng.',
+            message: 'This link has expired or has already been used.',
           }
         }
-        return toErrorOutcome(error, 'Không thể xác minh email, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to verify email, please try again.')
       }
     },
 
@@ -215,10 +215,10 @@ export function createRealAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'RATE_LIMITED',
-            message: 'Bạn vừa yêu cầu gửi lại, vui lòng đợi vài phút rồi thử lại.',
+            message: 'You just requested a resend — please wait a few minutes and try again.',
           }
         }
-        return toErrorOutcome(error, 'Không thể gửi lại email xác minh, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to resend verification email, please try again.')
       }
     },
 
@@ -264,7 +264,7 @@ export function createRealAuthClient(): AuthClient {
           },
         }
       } catch (error) {
-        return toErrorOutcome(error, 'Không thể tải hồ sơ, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to load profile, please try again.')
       }
     },
 
@@ -291,10 +291,10 @@ export function createRealAuthClient(): AuthClient {
           return {
             status: 'error',
             errorCode: 'USERNAME_TAKEN',
-            message: 'Tên người dùng này đã được sử dụng.',
+            message: 'This username is already taken.',
           }
         }
-        return toErrorOutcome(error, 'Không thể cập nhật hồ sơ, vui lòng thử lại.')
+        return toErrorOutcome(error, 'Unable to update profile, please try again.')
       }
     },
   }

@@ -31,16 +31,16 @@ describe('GenerateActions', () => {
       <GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />,
     )
 
-    await user.click(screen.getByRole('button', { name: /tạo prompt/i }))
+    await user.click(screen.getByRole('button', { name: /generate prompt/i }))
     await waitFor(() => expect(onGenerate).toHaveBeenCalledTimes(1))
 
     rerender(<GenerateActions isValid onGenerate={onGenerate} finalPrompt="the final prompt" />)
 
-    const copyButton = screen.getByRole('button', { name: /sao chép/i })
+    const copyButton = screen.getByRole('button', { name: /copy/i })
     await user.click(copyButton)
 
     expect(writeText).toHaveBeenCalledWith('the final prompt')
-    expect(await screen.findByRole('status')).toHaveTextContent(/sao chép/i)
+    expect(await screen.findByRole('status')).toHaveTextContent(/copied/i)
   })
 
   it('shows the guest quota message when generation fails with GUEST_QUOTA_EXCEEDED', async () => {
@@ -50,9 +50,9 @@ describe('GenerateActions', () => {
       .mockRejectedValue(new ApiError('GUEST_QUOTA_EXCEEDED', 'quota exceeded', 429))
     render(<GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />)
 
-    await user.click(screen.getByRole('button', { name: /tạo prompt/i }))
+    await user.click(screen.getByRole('button', { name: /generate prompt/i }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/giới hạn/i)
+    expect(await screen.findByRole('alert')).toHaveTextContent(/limit/i)
   })
 
   it('shows a generic retry-able message on a non-quota failure and fabricates no result', async () => {
@@ -60,15 +60,15 @@ describe('GenerateActions', () => {
     const onGenerate = vi.fn().mockRejectedValue(new ApiError('INTERNAL_ERROR', 'boom', 500))
     render(<GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />)
 
-    await user.click(screen.getByRole('button', { name: /tạo prompt/i }))
+    await user.click(screen.getByRole('button', { name: /generate prompt/i }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/không thể tạo prompt/i)
-    expect(screen.queryByRole('button', { name: /sao chép/i })).not.toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent(/unable to generate/i)
+    expect(screen.queryByRole('button', { name: /copy/i })).not.toBeInTheDocument()
   })
 
   it('disables the Generate button while the form is invalid', () => {
     render(<GenerateActions isValid={false} onGenerate={vi.fn()} finalPrompt={null} />)
-    expect(screen.getByRole('button', { name: /tạo prompt/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /generate prompt/i })).toBeDisabled()
   })
 
   // C1 (analyze finding, FR-009): the FE must surface whatever generatedPromptId the

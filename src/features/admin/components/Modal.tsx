@@ -48,7 +48,7 @@ export function Modal({ title, onClose, children, wide = false }: ModalProps) {
             <button
               type="button"
               onClick={onClose}
-              aria-label="Đóng"
+              aria-label="Close"
               className="text-[#5B5F58] hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
             >
               <X size={18} />

@@ -21,13 +21,13 @@ export function DashboardPage() {
   return (
     <div className="flex h-[calc(100vh-5.5rem)] min-h-[32rem] flex-col gap-4">
       <AdminPageHeader
-        eyebrow="admin / tổng quan"
+        eyebrow="admin / overview"
         title="Dashboard"
         actions={<DateRangeFilter range={range} onChange={setRange} />}
       />
 
       {!dashboardStatsLoaded && !error ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
       ) : error ? (
         <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
           {error}

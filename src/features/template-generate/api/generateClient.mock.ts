@@ -11,7 +11,7 @@ export const MOCK_GENERATE_TRIGGERS = {
 } as const
 
 const MOCK_PROMPT_BODY =
-  'Với vai trò {{role}}, hãy debug đoạn log sau:\n\n{{log}}\n\nYêu cầu:\n1. Chỉ ra nguyên nhân gốc\n2. Gợi ý fix cụ thể\n3. Kiểm tra edge case liên quan'
+  'As a {{role}}, debug the following log:\n\n{{log}}\n\nRequirements:\n1. Identify the root cause\n2. Suggest a specific fix\n3. Check related edge cases'
 
 function substitutePlaceholders(template: string, inputValues: Record<string, unknown>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -32,12 +32,12 @@ export function createMockGenerateClient(accessToken?: string): GenerateClient {
       if (request.extraInstructions === MOCK_GENERATE_TRIGGERS.quotaExceeded) {
         throw new ApiError(
           'GUEST_QUOTA_EXCEEDED',
-          'Bạn đã đạt giới hạn tạo prompt miễn phí hôm nay.',
+          'You have reached today\'s free prompt generation limit.',
           429,
         )
       }
       if (request.extraInstructions === MOCK_GENERATE_TRIGGERS.genericFailure) {
-        throw new ApiError('INTERNAL_ERROR', 'Đã có lỗi xảy ra, vui lòng thử lại.', 500)
+        throw new ApiError('INTERNAL_ERROR', 'Something went wrong, please try again.', 500)
       }
 
       const rendered = substitutePlaceholders(MOCK_PROMPT_BODY, request.inputValues)

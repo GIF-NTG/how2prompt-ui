@@ -29,13 +29,13 @@ export function PreviewPanel({
   if (result) {
     return (
       <div className="flex animate-[fade-slide-up_250ms_ease] flex-col gap-2">
-        <h3 className="m-0 text-sm font-semibold text-[#14171A] dark:text-[#F3F5F0]">Kết quả</h3>
+        <h3 className="m-0 text-sm font-semibold text-[#14171A] dark:text-[#F3F5F0]">Result</h3>
         <pre className="m-0 whitespace-pre-wrap rounded-lg border border-[#E2E5DC] bg-[#F3F5F0] p-4 font-mono text-sm text-[#14171A] dark:border-[#2C3130] dark:bg-[#14171A] dark:text-[#F3F5F0]">
           {result.finalPrompt}
         </pre>
         <p className="m-0 text-xs text-[#6B7280] dark:text-[#9CA3AF]">
           ~{result.tokensEstimate} tokens
-          {result.remainingQuota !== null && ` · Còn ${result.remainingQuota} lượt tạo hôm nay`}
+          {result.remainingQuota !== null && ` · ${result.remainingQuota} generations left today`}
         </p>
       </div>
     )
@@ -43,7 +43,7 @@ export function PreviewPanel({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="m-0 text-sm font-semibold text-[#14171A] dark:text-[#F3F5F0]">Xem trước</h3>
+      <h3 className="m-0 text-sm font-semibold text-[#14171A] dark:text-[#F3F5F0]">Preview</h3>
       <pre className="m-0 whitespace-pre-wrap rounded-lg border border-[#E2E5DC] bg-[#F3F5F0] p-4 font-mono text-sm text-[#14171A] transition-colors duration-300 dark:border-[#2C3130] dark:bg-[#14171A] dark:text-[#F3F5F0]">
         {segments.map((segment, index) =>
           segment.type === 'placeholder' ? (
@@ -66,7 +66,7 @@ export function PreviewPanel({
         )}
       </pre>
       <p className="m-0 text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-        {text.length} ký tự · ~{tokensEstimate} tokens
+        {text.length} characters · ~{tokensEstimate} tokens
       </p>
     </div>
   )

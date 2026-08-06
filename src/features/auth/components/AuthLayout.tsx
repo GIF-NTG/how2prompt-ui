@@ -47,7 +47,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               </span>
 
               <h1 className="text-2xl leading-tight font-bold text-balance tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-                Đừng viết prompt từ đầu. Điền vào chỗ trống.
+                Don&apos;t write prompts from scratch. Fill in the blanks.
               </h1>
 
               <div
@@ -57,9 +57,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <span className="mb-2 block font-mono text-[0.68rem] tracking-wider text-[#8B8F86] uppercase dark:text-[#6D726A]">
                   raw_template preview
                 </span>
-                Với vai trò <span className={BLANK_TAG}>{'{role}'}</span>, hãy debug đoạn log sau
-                trong bối cảnh <span className={BLANK_TAG}>{'{context}'}</span>, tuân thủ ràng buộc{' '}
-                <span className={BLANK_TAG}>{'{constraints}'}</span>.
+                As a <span className={BLANK_TAG}>{'{role}'}</span>, debug the following log in the
+                context of <span className={BLANK_TAG}>{'{context}'}</span>, following the
+                constraint <span className={BLANK_TAG}>{'{constraints}'}</span>.
               </div>
 
               <ul className="flex flex-col gap-3 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
@@ -70,7 +70,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                     color="#0F9B8E"
                     className="mt-0.5 shrink-0"
                   />
-                  Tự động lưu lịch sử prompt vào tài khoản của bạn
+                  Automatically save your prompt history to your account
                 </li>
                 <li className="flex items-start gap-2.5">
                   <ArrowsClockwise
@@ -79,7 +79,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                     color="#C98A1F"
                     className="mt-0.5 shrink-0"
                   />
-                  Copy nhanh một prompt cũ, không cần điền lại
+                  Quickly copy an old prompt without filling it in again
                 </li>
                 <li className="flex items-start gap-2.5">
                   <ShieldCheck
@@ -88,7 +88,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                     color="#1F7FC9"
                     className="mt-0.5 shrink-0"
                   />
-                  Mật khẩu băm BCrypt, phiên đăng nhập qua access/refresh token
+                  BCrypt-hashed passwords, sessions via access/refresh tokens
                 </li>
               </ul>
             </section>
@@ -96,7 +96,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             <section className="flex flex-col gap-6 p-7">
               <div
                 role="tablist"
-                aria-label="Chuyển đổi đăng nhập / đăng ký"
+                aria-label="Switch between login and register"
                 className="flex gap-1 rounded-xl border border-[#DBDFD3] bg-[#EAEDE6] p-1 dark:border-[#2C3130] dark:bg-[#23282C]"
               >
                 <Link
@@ -110,7 +110,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                       : 'text-[#5B5F58] dark:text-[#A2A79C]',
                   ].join(' ')}
                 >
-                  Đăng nhập
+                  Log in
                 </Link>
                 <Link
                   to="/register"
@@ -123,7 +123,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                       : 'text-[#5B5F58] dark:text-[#A2A79C]',
                   ].join(' ')}
                 >
-                  Đăng ký
+                  Sign up
                 </Link>
               </div>
 

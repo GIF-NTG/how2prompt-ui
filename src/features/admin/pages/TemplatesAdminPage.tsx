@@ -86,45 +86,45 @@ export function TemplatesAdminPage() {
 
   return (
     <>
-      <AdminPageHeader eyebrow="admin / nội dung" title="Templates" />
+      <AdminPageHeader eyebrow="admin / content" title="Templates" />
 
       <AdminPanel
         title="Templates"
-        hint={`${templates.length} mục`}
+        hint={`${templates.length} items`}
         action={
           <button
             type="button"
             onClick={openCreateForm}
             className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
-            + Tạo template mới
+            + Create new template
           </button>
         }
       >
         {!templatesLoaded ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
         ) : error ? (
           <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
             {error}
           </p>
         ) : templates.length === 0 ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có template nào.</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">No templates yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
                   <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                    Tên
+                    Name
                   </th>
                   <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
                     Version
                   </th>
                   <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                    Trạng thái
+                    Status
                   </th>
                   <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                    Hành động
+                    Action
                   </th>
                 </tr>
               </thead>
@@ -146,7 +146,7 @@ export function TemplatesAdminPage() {
                             : 'rounded-full bg-[#F7ECD7] px-2 py-0.5 text-xs text-[#C98A1F] dark:bg-[#362C1A] dark:text-[#E0B25C]'
                         }
                       >
-                        {template.status === 'published' ? 'đã publish' : 'draft'}
+                        {template.status === 'published' ? 'published' : 'draft'}
                       </span>
                     </td>
                     <td className="px-3 py-2.5">
@@ -155,7 +155,7 @@ export function TemplatesAdminPage() {
                         onClick={() => openEditForm(template)}
                         className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
                       >
-                        Sửa
+                        Edit
                       </button>
                     </td>
                   </tr>
@@ -170,7 +170,7 @@ export function TemplatesAdminPage() {
                   disabled={loadingMore}
                   className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-semibold disabled:opacity-60 dark:border-[#2C3130]"
                 >
-                  {loadingMore ? 'Đang tải...' : 'Tải thêm'}
+                  {loadingMore ? 'Loading...' : 'Load more'}
                 </button>
               </div>
             )}
@@ -180,7 +180,7 @@ export function TemplatesAdminPage() {
 
       {formOpen && (
         <Modal
-          title={editingTemplate ? `Chỉnh sửa: ${editingTemplate.title.en}` : 'Tạo template mới'}
+          title={editingTemplate ? `Edit: ${editingTemplate.title.en}` : 'Create new template'}
           onClose={closeForm}
           wide
         >

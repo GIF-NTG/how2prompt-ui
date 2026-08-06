@@ -57,7 +57,7 @@ export function AdminLayout() {
           </div>
 
           <nav className="flex flex-col gap-0.5">
-            <NavGroupLabel>Tổng quan</NavGroupLabel>
+            <NavGroupLabel>Overview</NavGroupLabel>
             <NavLink
               to="/admin/dashboard"
               onMouseEnter={() => void adminDashboardChunk()}
@@ -72,7 +72,7 @@ export function AdminLayout() {
           </nav>
 
           <nav className="flex flex-col gap-0.5">
-            <NavGroupLabel>Nội dung</NavGroupLabel>
+            <NavGroupLabel>Content</NavGroupLabel>
             <NavLink
               to="/admin/ai-models"
               onMouseEnter={() => void adminAiModelsChunk()}
@@ -93,7 +93,7 @@ export function AdminLayout() {
               }
             >
               <FolderTree size={18} className="flex-shrink-0" />
-              Danh mục &amp; Tag
+              Categories &amp; Tags
             </NavLink>
             <NavLink
               to="/admin/templates"
@@ -126,14 +126,14 @@ export function AdminLayout() {
             )}
             <div className="flex items-center gap-2 px-1">
               <ThemeToggle />
-              <span className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">Đổi giao diện</span>
+              <span className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">Toggle theme</span>
             </div>
             <Link
               to="/"
               className="flex items-center gap-2.5 rounded-[10px] px-3 py-2 text-sm text-[#5B5F58] hover:bg-[#EAEDE6] hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:bg-[#23282C] dark:hover:text-[#ECEEE8]"
             >
               <ArrowLeft size={18} className="flex-shrink-0" />
-              Về trang chính
+              Back to home
             </Link>
           </div>
         </aside>

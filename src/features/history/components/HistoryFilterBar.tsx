@@ -39,12 +39,12 @@ export function HistoryFilterBar({
   return (
     <div className="flex flex-wrap items-center gap-3">
       <select
-        aria-label="Lọc theo template"
+        aria-label="Filter by template"
         value={filters.templateId}
         onChange={(e) => onTemplateChange(e.target.value)}
         className={SELECT_CLASSES}
       >
-        <option value="">Tất cả template</option>
+        <option value="">All templates</option>
         {templateOptions.map((t) => (
           <option key={t.id} value={t.id}>
             {t.title}
@@ -53,12 +53,12 @@ export function HistoryFilterBar({
       </select>
 
       <select
-        aria-label="Lọc theo model AI"
+        aria-label="Filter by AI model"
         value={filters.model}
         onChange={(e) => onModelChange(e.target.value)}
         className={SELECT_CLASSES}
       >
-        <option value="">Tất cả model AI</option>
+        <option value="">All AI models</option>
         {models.map((m) => (
           <option key={m.id} value={m.code}>
             {m.name}
@@ -67,10 +67,10 @@ export function HistoryFilterBar({
       </select>
 
       <label className="flex items-center gap-1.5 text-[0.8rem] text-[#5B5F58] dark:text-[#A2A79C]">
-        Từ
+        From
         <input
           type="date"
-          aria-label="Từ ngày"
+          aria-label="From date"
           value={filters.from}
           onChange={(e) => onFromChange(e.target.value)}
           className={DATE_CLASSES}
@@ -78,10 +78,10 @@ export function HistoryFilterBar({
       </label>
 
       <label className="flex items-center gap-1.5 text-[0.8rem] text-[#5B5F58] dark:text-[#A2A79C]">
-        Đến
+        To
         <input
           type="date"
-          aria-label="Đến ngày"
+          aria-label="To date"
           value={filters.to}
           onChange={(e) => onToChange(e.target.value)}
           className={DATE_CLASSES}

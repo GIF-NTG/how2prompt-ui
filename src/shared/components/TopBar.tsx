@@ -30,7 +30,7 @@ export function TopBar() {
                 : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
             }`}
           >
-            Thư viện
+            Library
           </Link>
           <Link
             to="/history"
@@ -42,7 +42,7 @@ export function TopBar() {
                 : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
             }`}
           >
-            Lịch sử
+            History
           </Link>
           {session?.isAdmin && (
             <Link
@@ -55,7 +55,7 @@ export function TopBar() {
                   : 'text-[#5B5F58] hover:text-[#1B1D1B] hover:border-b-[#8B8F86] dark:text-[#A2A79C] dark:hover:text-[#ECEEE8] dark:hover:border-b-[#6D726A]'
               }`}
             >
-              Quản trị
+              Admin
             </Link>
           )}
         </nav>
@@ -84,14 +84,14 @@ export function TopBar() {
                   onFocus={() => void profileChunk()}
                   className="rounded-lg px-3 py-2 text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
                 >
-                  Hồ sơ
+                  Profile
                 </Link>
                 <button
                   type="button"
                   onClick={() => void signOut()}
                   className="rounded-lg px-3 py-2 text-left text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
                 >
-                  Đăng xuất
+                  Sign out
                 </button>
               </div>
             </div>
@@ -101,7 +101,7 @@ export function TopBar() {
             to="/login"
             className="font-mono text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
           >
-            Đăng nhập
+            Log in
           </Link>
         )}
       </div>

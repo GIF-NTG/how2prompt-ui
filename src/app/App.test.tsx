@@ -12,7 +12,7 @@ describe('App routing', () => {
       // Lazily-loaded pages (see `App.tsx`) add a dynamic-import chunk fetch
       // on top of the redirect + render, which can exceed Vitest's default
       // 5s test timeout under a loaded test run — bump both.
-      await waitFor(() => expect(screen.getByText('Chào bạn quay lại')).toBeInTheDocument(), {
+      await waitFor(() => expect(screen.getByText('Welcome back')).toBeInTheDocument(), {
         timeout: 10000,
       })
     },

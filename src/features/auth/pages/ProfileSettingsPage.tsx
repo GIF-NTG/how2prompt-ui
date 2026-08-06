@@ -77,12 +77,12 @@ export function ProfileSettingsPage() {
     const isUsernameTooLong = trimmedUsername.length > USERNAME_MAX_LENGTH
 
     if (isFullNameEmpty) {
-      setFullNameError('Tên hiển thị không được để trống.')
+      setFullNameError('Display name cannot be empty.')
     } else if (isFullNameTooLong) {
-      setFullNameError(`Tên hiển thị tối đa ${FULL_NAME_MAX_LENGTH} ký tự.`)
+      setFullNameError(`Display name must be at most ${FULL_NAME_MAX_LENGTH} characters.`)
     }
     if (isUsernameTooLong) {
-      setUsernameError(`Tên người dùng tối đa ${USERNAME_MAX_LENGTH} ký tự.`)
+      setUsernameError(`Username must be at most ${USERNAME_MAX_LENGTH} characters.`)
     }
 
     if (isFullNameEmpty || isFullNameTooLong || isUsernameTooLong) return
@@ -101,7 +101,7 @@ export function ProfileSettingsPage() {
         setUsername(outcome.profile.username ?? '')
         setBio(outcome.profile.bio ?? '')
         setLocale(outcome.profile.locale)
-        setSuccessMessage('Đã lưu thay đổi.')
+        setSuccessMessage('Changes saved.')
       } else if (outcome.errorCode === 'USERNAME_TAKEN') {
         setUsernameError(outcome.message)
       } else {
@@ -117,21 +117,21 @@ export function ProfileSettingsPage() {
     <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
       <div className="flex animate-[fade-slide-up_450ms_ease] flex-col gap-2">
         <span className="before:mr-1.5 before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3652E0] font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF] dark:before:bg-[#8493FF]">
-          hồ sơ
+          profile
         </span>
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
-          Hồ sơ cá nhân
+          My Profile
         </h1>
         <p className="m-0 text-sm text-[#5B5F58] dark:text-[#A2A79C]">{session.email}</p>
       </div>
 
       <div className="rounded-card border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]">
         {loadingProfile ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải hồ sơ...</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading profile...</p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên hiển thị</span>
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Display name</span>
               <input
                 type="text"
                 value={fullName}
@@ -147,7 +147,7 @@ export function ProfileSettingsPage() {
 
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-[#5B5F58] dark:text-[#A2A79C]">
-                Tên người dùng (tuỳ chọn)
+                Username (optional)
               </span>
               <input
                 type="text"
@@ -163,7 +163,7 @@ export function ProfileSettingsPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Giới thiệu (tuỳ chọn)</span>
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Bio (optional)</span>
               <textarea
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
@@ -173,7 +173,7 @@ export function ProfileSettingsPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Ngôn ngữ</span>
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Language</span>
               <select
                 value={locale}
                 onChange={(event) => setLocale(event.target.value as 'en' | 'vi')}
@@ -207,7 +207,7 @@ export function ProfileSettingsPage() {
                 disabled={submitting}
                 className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
               >
-                Lưu thay đổi
+                Save changes
               </button>
             </div>
           </form>

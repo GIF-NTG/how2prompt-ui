@@ -28,7 +28,7 @@ export function HistoryPromptDetail({ finalPrompt, extraInstructions }: HistoryP
 
       {extraInstructions && (
         <p className="m-0 text-[0.8rem] text-[#5B5F58] dark:text-[#A2A79C]">
-          <span className="font-semibold">Hướng dẫn thêm:</span> {extraInstructions}
+          <span className="font-semibold">Additional instructions:</span> {extraInstructions}
         </p>
       )}
 
@@ -42,7 +42,7 @@ export function HistoryPromptDetail({ finalPrompt, extraInstructions }: HistoryP
         ) : (
           <Copy size={15} aria-hidden="true" />
         )}
-        Sao chép
+        Copy
       </button>
     </section>
   )

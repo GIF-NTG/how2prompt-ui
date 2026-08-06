@@ -89,7 +89,7 @@ export function HistoryList({
       {selected.size > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-card border border-[#DBDFD3] bg-[#EAEDE6] px-4 py-2.5 dark:border-[#2C3130] dark:bg-[#23282C]">
           <span className="text-[0.82rem] text-[#5B5F58] dark:text-[#A2A79C]">
-            Đã chọn {selected.size} mục
+            Selected {selected.size} items
           </span>
           <button
             type="button"
@@ -97,7 +97,7 @@ export function HistoryList({
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#C23A2E] px-3 py-1.5 text-[0.8rem] font-semibold text-[#C23A2E] transition-colors duration-150 hover:bg-[#FBE7E4] dark:border-[#FF7A6B] dark:text-[#FF7A6B] dark:hover:bg-[#3A2224]"
           >
             <Trash2 size={14} aria-hidden="true" />
-            Xoá đã chọn
+            Delete selected
           </button>
         </div>
       )}
@@ -119,7 +119,7 @@ export function HistoryList({
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    aria-label={`Chọn mục ${displayTitle}`}
+                    aria-label={`Select item ${displayTitle}`}
                     checked={selected.has(item.id)}
                     onChange={() => toggleSelected(item.id)}
                   />
@@ -147,13 +147,13 @@ export function HistoryList({
                   type="button"
                   title={
                     item.templateId
-                      ? 'Xem chi tiết prompt'
-                      : 'Template đã bị xoá — xem prompt đã lưu'
+                      ? 'View prompt details'
+                      : 'Template deleted — view saved prompt'
                   }
                   aria-label={
                     item.templateId
-                      ? `Xem chi tiết prompt ${displayTitle}`
-                      : `Xem prompt đã lưu (template của ${displayTitle} đã bị xoá)`
+                      ? `View prompt details for ${displayTitle}`
+                      : `View saved prompt (template for ${displayTitle} has been deleted)`
                   }
                   aria-expanded={expandedId === item.id}
                   onClick={() => void handleToggleDetail(item.id)}
@@ -165,8 +165,8 @@ export function HistoryList({
                 {item.templateId && (
                   <button
                     type="button"
-                    title="Tạo lại"
-                    aria-label={`Tạo lại ${displayTitle}`}
+                    title="Regenerate"
+                    aria-label={`Regenerate ${displayTitle}`}
                     onClick={() => navigate(`/templates/${item.templateId}?reload=${item.id}`)}
                     className={ICON_BUTTON_CLASSES}
                   >
@@ -176,8 +176,8 @@ export function HistoryList({
 
                 <button
                   type="button"
-                  title="Xoá"
-                  aria-label={`Xoá mục ${displayTitle}`}
+                  title="Delete"
+                  aria-label={`Delete item ${displayTitle}`}
                   onClick={() => setPendingDelete([item.id])}
                   className={`${ICON_BUTTON_CLASSES} hover:border-[#C23A2E] hover:text-[#C23A2E] dark:hover:border-[#FF7A6B] dark:hover:text-[#FF7A6B]`}
                 >
@@ -196,7 +196,7 @@ export function HistoryList({
                   >
                     {expandLoading ? (
                       <p className="m-0 text-[0.8rem] text-[#8B8F86] dark:text-[#6D726A]">
-                        Đang tải...
+                        Loading...
                       </p>
                     ) : (
                       expandedDetail &&
@@ -234,7 +234,7 @@ export function HistoryList({
           disabled={isLoadingMore}
           className="mt-1 self-center rounded-panel border border-[#DBDFD3] bg-transparent px-[1.3rem] py-[0.7rem] text-[0.92rem] font-semibold text-[#1B1D1B] transition-colors duration-150 hover:border-[#8B8F86] hover:bg-[#EAEDE6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-55 dark:border-[#2C3130] dark:text-[#ECEEE8] dark:hover:border-[#6D726A] dark:hover:bg-[#23282C]"
         >
-          {isLoadingMore ? 'Đang tải...' : 'Xem thêm'}
+          {isLoadingMore ? 'Loading...' : 'Load more'}
         </button>
       )}
     </div>

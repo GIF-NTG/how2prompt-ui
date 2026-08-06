@@ -53,7 +53,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setCategories(await taxonomyClient.listCategories())
       setCategoriesLoaded(true)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
+      setError(err instanceof ApiError ? err.message : 'Unable to load data, please try again.')
       throw err
     }
   }, [taxonomyClient])
@@ -63,7 +63,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setTags(await taxonomyClient.listTags())
       setTagsLoaded(true)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
+      setError(err instanceof ApiError ? err.message : 'Unable to load data, please try again.')
       throw err
     }
   }, [taxonomyClient])
@@ -73,7 +73,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setModels(await aiModelsClient.list())
       setModelsLoaded(true)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
+      setError(err instanceof ApiError ? err.message : 'Unable to load data, please try again.')
       throw err
     }
   }, [aiModelsClient])
@@ -83,7 +83,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setDashboardStats(await dashboardClient.getStats())
       setDashboardStatsLoaded(true)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
+      setError(err instanceof ApiError ? err.message : 'Unable to load data, please try again.')
       throw err
     }
   }, [dashboardClient])
@@ -96,7 +96,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setTemplatesHasMore(page.hasMore)
       setTemplatesLoaded(true)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải dữ liệu, vui lòng thử lại.')
+      setError(err instanceof ApiError ? err.message : 'Unable to load data, please try again.')
       throw err
     }
   }, [templatesAdminClient])
@@ -109,7 +109,9 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       setTemplatesCursor(page.nextCursor)
       setTemplatesHasMore(page.hasMore)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Không thể tải thêm template, vui lòng thử lại.')
+      setError(
+        err instanceof ApiError ? err.message : 'Unable to load more templates, please try again.',
+      )
       throw err
     }
   }, [templatesAdminClient, templatesCursor])

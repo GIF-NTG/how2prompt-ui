@@ -20,7 +20,7 @@ const mockedCreateAiModelsClient = vi.mocked(createAiModelsClient)
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
-  displayName: 'Quản trị viên Demo',
+  displayName: 'Demo Admin',
   email: 'admin@how2prompt.dev',
   token: 'admin-token',
   issuedAt: Date.now(),
@@ -69,7 +69,7 @@ const PARENT_CATEGORY = {
   templateCount: 0,
 }
 
-const SAMPLE_TAG = { id: 't1', slug: 'nhanh', name: 'Nhanh gọn', usageCount: 5 }
+const SAMPLE_TAG = { id: 't1', slug: 'nhanh', name: 'Quick', usageCount: 5 }
 
 describe('TaxonomyPage', () => {
   it('creates a new category via the modal form', async () => {
@@ -90,9 +90,9 @@ describe('TaxonomyPage', () => {
     renderPage()
     await screen.findByText('Marketing', { selector: 'span' })
 
-    await user.click(screen.getByRole('button', { name: '+ Thêm category' }))
-    await user.type(screen.getByLabelText('Tên category'), 'Social Media')
-    await user.click(screen.getByRole('button', { name: 'Tạo category' }))
+    await user.click(screen.getByRole('button', { name: '+ Add category' }))
+    await user.type(screen.getByLabelText('Category name'), 'Social Media')
+    await user.click(screen.getByRole('button', { name: 'Create category' }))
 
     await waitFor(() =>
       expect(createCategory).toHaveBeenCalledWith(
@@ -119,11 +119,11 @@ describe('TaxonomyPage', () => {
     renderPage()
     await screen.findByText('Marketing', { selector: 'span' })
 
-    await user.click(screen.getByRole('button', { name: '+ Thêm category' }))
-    await user.type(screen.getByLabelText('Tên category'), 'marketing')
-    await user.click(screen.getByRole('button', { name: 'Tạo category' }))
+    await user.click(screen.getByRole('button', { name: '+ Add category' }))
+    await user.type(screen.getByLabelText('Category name'), 'marketing')
+    await user.click(screen.getByRole('button', { name: 'Create category' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/đã tồn tại/i)
+    expect(await screen.findByRole('alert')).toHaveTextContent(/already exists/i)
     expect(createCategory).not.toHaveBeenCalled()
   })
 
@@ -145,9 +145,9 @@ describe('TaxonomyPage', () => {
     renderPage()
     await screen.findByText('Marketing', { selector: 'span' })
 
-    await user.click(screen.getByRole('button', { name: 'Xoá' }))
-    const dialog = await screen.findByRole('dialog', { name: 'Xác nhận' })
-    await user.click(within(dialog).getByRole('button', { name: 'Xoá' }))
+    await user.click(screen.getByRole('button', { name: 'Delete' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Confirm' })
+    await user.click(within(dialog).getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCategory).toHaveBeenCalledWith('c1'))
   })
@@ -167,10 +167,10 @@ describe('TaxonomyPage', () => {
     })
 
     renderPage()
-    expect(await screen.findByText('Nhanh gọn')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '+ Thêm tag' })).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: 'Sửa' }).length).toBeGreaterThan(0)
-    expect(screen.getAllByRole('button', { name: 'Xoá' }).length).toBeGreaterThan(0)
+    expect(await screen.findByText('Quick')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '+ Add tag' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Edit' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('button', { name: 'Delete' }).length).toBeGreaterThan(0)
   })
 
   it('creates a new tag via the modal form', async () => {
@@ -189,11 +189,11 @@ describe('TaxonomyPage', () => {
     })
 
     renderPage()
-    await screen.findByText('Chưa có tag nào.')
+    await screen.findByText('No tags yet.')
 
-    await user.click(screen.getByRole('button', { name: '+ Thêm tag' }))
-    await user.type(screen.getByLabelText('Tên tag'), 'Automation')
-    await user.click(screen.getByRole('button', { name: 'Tạo tag' }))
+    await user.click(screen.getByRole('button', { name: '+ Add tag' }))
+    await user.type(screen.getByLabelText('Tag name'), 'Automation')
+    await user.click(screen.getByRole('button', { name: 'Create tag' }))
 
     await waitFor(() =>
       expect(createTag).toHaveBeenCalledWith({ name: 'Automation', slug: 'automation' }),

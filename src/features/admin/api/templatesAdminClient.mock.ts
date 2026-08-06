@@ -102,7 +102,7 @@ export function createMockTemplatesAdminClient(): TemplatesAdminClient {
       if (!isValid) {
         throw new ApiError(
           'VALIDATION_ERROR',
-          `Thiếu khai báo biến cho placeholder: ${missingVarKeys.join(', ')}`,
+          `Missing variable declaration for placeholder(s): ${missingVarKeys.join(', ')}`,
           422,
           { missingVarKeys: missingVarKeys.join(', ') },
         )

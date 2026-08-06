@@ -7,9 +7,9 @@ export function NotFoundState() {
       <span className="font-mono text-[3rem] font-bold text-[#DBDFD3] dark:text-[#2C3130]">
         404
       </span>
-      <h2 className="m-0 text-[1.2rem] font-bold">Không tìm thấy mẫu</h2>
+      <h2 className="m-0 text-[1.2rem] font-bold">Template not found</h2>
       <p className="m-0 text-[0.88rem] text-[#5B5F58] dark:text-[#A2A79C]">
-        Mẫu bạn tìm không tồn tại hoặc đã bị xóa.
+        The template you&apos;re looking for doesn&apos;t exist or has been removed.
       </p>
       <Link
         to="/"
@@ -17,7 +17,7 @@ export function NotFoundState() {
         className="mt-2 inline-flex items-center gap-1 text-[0.88rem] text-[#3652E0] underline underline-offset-2 hover:text-[#2a3fb0] dark:text-[#8493FF] dark:hover:text-[#a3b0ff]"
       >
         <ArrowLeft size={14} />
-        Quay lại thư viện
+        Back to library
       </Link>
     </main>
   )

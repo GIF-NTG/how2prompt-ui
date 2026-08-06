@@ -20,7 +20,7 @@ const mockedCreateTaxonomyClient = vi.mocked(createTaxonomyClient)
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
-  displayName: 'Quản trị viên Demo',
+  displayName: 'Demo Admin',
   email: 'admin@how2prompt.dev',
   token: 'admin-token',
   issuedAt: Date.now(),
@@ -88,13 +88,13 @@ describe('AiModelsPage', () => {
     renderPage()
     await waitFor(() => expect(list).toHaveBeenCalledTimes(1))
 
-    await user.click(screen.getByRole('button', { name: '+ Thêm model' }))
-    const dialog = await screen.findByRole('dialog', { name: 'Thêm model mới' })
+    await user.click(screen.getByRole('button', { name: '+ Add model' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Add new model' })
 
     await user.type(within(dialog).getByPlaceholderText('claude-opus-4'), 'new-model')
-    await user.type(within(dialog).getByRole('textbox', { name: 'Tên hiển thị' }), 'New Model')
+    await user.type(within(dialog).getByRole('textbox', { name: 'Display name' }), 'New Model')
     await user.type(within(dialog).getByPlaceholderText('anthropic'), 'acme')
-    await user.click(within(dialog).getByRole('button', { name: 'Tạo model' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Create model' }))
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1))
     expect(await screen.findByText('new-model')).toBeInTheDocument()
@@ -121,12 +121,12 @@ describe('AiModelsPage', () => {
     renderPage()
     await screen.findByText('GPT-4o')
 
-    await user.click(screen.getByRole('button', { name: 'Sửa' }))
-    const dialog = await screen.findByRole('dialog', { name: 'Chỉnh sửa model' })
-    const nameInput = within(dialog).getByRole('textbox', { name: 'Tên hiển thị' })
+    await user.click(screen.getByRole('button', { name: 'Edit' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Edit model' })
+    const nameInput = within(dialog).getByRole('textbox', { name: 'Display name' })
     await user.clear(nameInput)
     await user.type(nameInput, 'GPT-4o Updated')
-    await user.click(within(dialog).getByRole('button', { name: 'Lưu thay đổi' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() => expect(update).toHaveBeenCalledWith('m1', expect.objectContaining({ name: 'GPT-4o Updated' })))
   })
@@ -151,11 +151,11 @@ describe('AiModelsPage', () => {
 
     renderPage()
     const row = (await screen.findByText('GPT-4o')).closest('tr')!
-    await user.click(within(row).getByRole('button', { name: 'Tắt' }))
+    await user.click(within(row).getByRole('button', { name: 'Disable' }))
 
     await waitFor(() =>
       expect(update).toHaveBeenCalledWith('m1', expect.objectContaining({ isActive: false })),
     )
-    expect(screen.queryByRole('button', { name: /xóa|delete/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument()
   })
 })

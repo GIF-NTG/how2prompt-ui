@@ -53,14 +53,14 @@ export function TemplateMeta({
   return (
     <div className="flex items-center gap-4">
       <span className="font-mono text-[0.7rem] text-[#8B8F86] dark:text-[#6D726A]">
-        {usageCount.toLocaleString()} lượt dùng
+        {usageCount.toLocaleString()} uses
       </span>
       {isSignedIn && (
         <button
           type="button"
           onClick={() => void handleToggle()}
           disabled={toggling}
-          aria-label={favorited ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
+          aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
           aria-pressed={favorited}
           className={`flex h-[1.9rem] w-[1.9rem] cursor-pointer items-center justify-center rounded-lg border transition-colors duration-150 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-60 ${
             favorited

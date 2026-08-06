@@ -11,7 +11,7 @@ export function SearchBox({ value, onChange }: SearchBoxProps) {
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Tìm theo tên hoặc mô tả…"
+        placeholder="Search by name or description…"
         className="flex-1 border-none bg-none font-[inherit] text-[0.92rem] text-[#1B1D1B] outline-none placeholder:text-[#8B8F86] dark:text-[#ECEEE8] dark:placeholder:text-[#6D726A]"
       />
     </div>

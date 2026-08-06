@@ -64,7 +64,7 @@ export function useTemplateDetail(id: string) {
           if (err instanceof ApiError && err.status === 404) {
             setNotFound(true)
           } else {
-            setError('Không thể tải thông tin mẫu, vui lòng thử lại sau.')
+            setError('Unable to load template details, please try again later.')
           }
         }
       } finally {

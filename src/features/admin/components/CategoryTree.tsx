@@ -85,11 +85,11 @@ function CategoryFormModal({
     event.preventDefault()
     setError(null)
     if (!name.trim()) {
-      setError('Vui lòng nhập tên category.')
+      setError('Please enter a category name.')
       return
     }
     if (!checkCategoryNameUnique(name, parentId, categories, editingCategory?.id)) {
-      setError('Đã tồn tại category cùng tên trong cùng nhóm cha.')
+      setError('A category with this name already exists under the same parent.')
       return
     }
     setSubmitting(true)
@@ -101,17 +101,17 @@ function CategoryFormModal({
       }
       onClose()
     } catch {
-      setError('Không thể lưu category, vui lòng thử lại.')
+      setError('Unable to save category, please try again.')
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Modal title={editingCategory ? 'Sửa category' : 'Thêm category mới'} onClose={onClose}>
+    <Modal title={editingCategory ? 'Edit category' : 'Add new category'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên category</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Category name</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -120,13 +120,13 @@ function CategoryFormModal({
           />
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Danh mục cha</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Parent category</span>
           <select
             value={parentId ?? ''}
             onChange={(e) => setParentId(e.target.value || null)}
             className={FIELD_CLASSES}
           >
-            <option value="">(Không có — cấp cao nhất)</option>
+            <option value="">(None — top level)</option>
             {parentOptions.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name.en}
@@ -145,14 +145,14 @@ function CategoryFormModal({
             onClick={onClose}
             className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
           >
-            Huỷ
+            Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
-            {editingCategory ? 'Lưu' : 'Tạo category'}
+            {editingCategory ? 'Save' : 'Create category'}
           </button>
         </div>
       </form>
@@ -181,7 +181,7 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
       await onDelete(deleteTarget.id)
       setDeleteTarget(null)
     } catch {
-      setDeleteError('Không thể xoá category, vui lòng thử lại.')
+      setDeleteError('Unable to delete category, please try again.')
     }
   }
 
@@ -193,28 +193,28 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
           onClick={() => setFormTarget('new')}
           className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
         >
-          + Thêm category
+          + Add category
         </button>
       </div>
 
       {flatCategories.length === 0 ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có category nào.</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">No categories yet.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[480px] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Tên
+                  Name
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
                   Slug
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Danh mục cha
+                  Parent Category
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Hành động
+                  Action
                 </th>
               </tr>
             </thead>
@@ -244,14 +244,14 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
                           onClick={() => setFormTarget(category)}
                           className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
                         >
-                          Sửa
+                          Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(category)}
                           className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
                         >
-                          Xoá
+                          Delete
                         </button>
                       </div>
                     </td>
@@ -276,7 +276,7 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
 
       {deleteTarget && (
         <ConfirmDialog
-          message={`Xoá category "${deleteTarget.name.en}"? Hành động này không thể hoàn tác.`}
+          message={`Delete category "${deleteTarget.name.en}"? This action cannot be undone.`}
           onConfirm={() => void handleConfirmDelete()}
           onCancel={() => {
             setDeleteTarget(null)

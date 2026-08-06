@@ -101,7 +101,7 @@ function SelectInput({
       onBlur={onBlur}
       className={`${inputBase} cursor-pointer ${hasError ? 'border-[#C23A2A] dark:border-[#FF7A6B]' : 'border-[#DBDFD3] dark:border-[#2C3130]'}`}
     >
-      <option value="">{getLocalizedText(variable.placeholder, locale) || '-- Chọn --'}</option>
+      <option value="">{getLocalizedText(variable.placeholder, locale) || '-- Select --'}</option>
       {variable.options.map((opt) => (
         <option key={opt.value} value={opt.value}>
           {getLocalizedText(opt.label, locale)}
@@ -299,7 +299,7 @@ export function FormField({
   variable,
   value,
   error,
-  locale = 'vi',
+  locale = 'en',
   onChange,
   onBlur,
 }: FormFieldProps) {

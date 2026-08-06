@@ -86,10 +86,10 @@ export function RegisterPage() {
     <AuthLayout>
       <div>
         <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-          Tạo tài khoản Member
+          Create a Member account
         </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-          Ba ô trống, một tài khoản để lưu toàn bộ lịch sử prompt.
+          Three blanks, one account to save your entire prompt history.
         </p>
       </div>
 
@@ -98,31 +98,31 @@ export function RegisterPage() {
         noValidate
         className="rounded-card border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
       >
-        Tôi tên là{' '}
+        My name is{' '}
         <InlineBlank
           ref={nameRef}
           type="text"
-          placeholder="tên hiển thị"
+          placeholder="display name"
           value={displayName}
           onChange={(event) => setDisplayName(event.target.value)}
           invalid={nameInvalid}
           autoComplete="name"
         />
-        , dùng email{' '}
+        , using email{' '}
         <InlineBlank
           ref={emailRef}
           type="email"
-          placeholder="ban@vidu.com"
+          placeholder="you@example.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           invalid={emailInvalid}
           autoComplete="email"
         />{' '}
-        và mật khẩu{' '}
+        and password{' '}
         <InlineBlank
           ref={passwordRef}
           type={passwordVisible ? 'text' : 'password'}
-          placeholder="tối thiểu 8 ký tự"
+          placeholder="at least 8 characters"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           invalid={passwordInvalid}
@@ -133,9 +133,9 @@ export function RegisterPage() {
           onClick={() => setPasswordVisible((visible) => !visible)}
           className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF]"
         >
-          {passwordVisible ? 'ẩn' : 'hiện'}
+          {passwordVisible ? 'hide' : 'show'}
         </button>{' '}
-        để mở tài khoản.
+        to open an account.
         {errorMessage && (
           <p
             role="alert"
@@ -150,26 +150,26 @@ export function RegisterPage() {
             disabled={submitting}
             className="rounded-lg bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
           >
-            Đăng ký →
+            Sign up →
           </button>
         </div>
       </form>
 
       <div className="flex items-center gap-3 text-xs text-[#8B8F86] dark:text-[#6D726A]">
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
-        hoặc
+        or
         <span className="h-px flex-1 bg-[#DBDFD3] dark:bg-[#2C3130]" />
       </div>
 
       <GoogleSignInButton />
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        Đã có tài khoản?{' '}
+        Already have an account?{' '}
         <Link
           to="/login"
           className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
         >
-          Đăng nhập
+          Log in
         </Link>
       </p>
     </AuthLayout>

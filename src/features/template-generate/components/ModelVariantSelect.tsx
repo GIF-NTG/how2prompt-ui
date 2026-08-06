@@ -19,7 +19,7 @@ export function ModelVariantSelect({
         htmlFor="model-variant-select"
         className="text-[0.82rem] font-medium text-[#4A4F4A] dark:text-[#A8ADA7]"
       >
-        Mô hình AI
+        AI model
       </label>
       <select
         id="model-variant-select"

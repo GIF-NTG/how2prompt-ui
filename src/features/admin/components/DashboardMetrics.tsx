@@ -24,8 +24,8 @@ function EmptyState({ children }: { children: string }) {
  *  budget: KPI row + a fixed-height chart/table/bars row + a compact
  *  horizontal funnel row, each panel scrolling internally rather than
  *  growing the page if its data set is unusually large.
- *  `promptsGeneratedPerDay` has no server-side date filter, so the "Prompt
- *  trong khoảng" tile and trend chart are both derived client-side via
+ *  `promptsGeneratedPerDay` has no server-side date filter, so the "Prompts
+ *  in range" tile and trend chart are both derived client-side via
  *  `range`. */
 export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
   const trendEntries = entriesInRange(stats.promptsGeneratedPerDay, range)
@@ -41,12 +41,12 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
         <KpiCard label="WAU" value={formatNumber(stats.wau)} icon={<TrendingUp size={16} />} />
         <KpiCard label="MAU" value={formatNumber(stats.mau)} icon={<CalendarDays size={16} />} />
         <KpiCard
-          label="Prompt trong khoảng"
+          label="Prompts in range"
           value={formatNumber(promptsInRange)}
           icon={<FileText size={16} />}
         />
         <KpiCard
-          label="Tổng prompt"
+          label="Total prompts"
           value={formatNumber(promptsTotal)}
           icon={<Layers size={16} />}
         />
@@ -54,8 +54,8 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-12">
         <AdminPanel
-          title="Prompt theo ngày"
-          hint="Trong khoảng đã chọn"
+          title="Prompts per day"
+          hint="In selected range"
           className="min-h-0 lg:col-span-5"
         >
           <div className="min-h-24 flex-1">
@@ -64,12 +64,12 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
         </AdminPanel>
 
         <AdminPanel
-          title="Template phổ biến nhất"
-          hint={`${stats.popularTemplates.length} mục`}
+          title="Most popular templates"
+          hint={`${stats.popularTemplates.length} items`}
           className="min-h-0 overflow-y-auto lg:col-span-4"
         >
           {stats.popularTemplates.length === 0 ? (
-            <EmptyState>Chưa có dữ liệu sử dụng template.</EmptyState>
+            <EmptyState>No template usage data yet.</EmptyState>
           ) : (
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -79,7 +79,7 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
                     Template
                   </th>
                   <th className="pb-2 text-left font-mono text-[0.68rem] uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                    Lượt dùng
+                    Uses
                   </th>
                 </tr>
               </thead>
@@ -104,11 +104,11 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
         </AdminPanel>
 
         <AdminPanel
-          title="Model AI dùng nhiều nhất"
+          title="Most used AI models"
           className="min-h-0 overflow-y-auto lg:col-span-3"
         >
           {stats.mostUsedModels.length === 0 ? (
-            <EmptyState>Chưa có dữ liệu sử dụng model.</EmptyState>
+            <EmptyState>No model usage data yet.</EmptyState>
           ) : (
             <div className="flex flex-col gap-3">
               {stats.mostUsedModels.map((model) => (
@@ -132,13 +132,13 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
         </AdminPanel>
       </div>
 
-      <AdminPanel title="Phễu chuyển đổi" hint="Đăng ký → xác thực email → tạo prompt">
+      <AdminPanel title="Conversion funnel" hint="Signup → verify email → generate prompt">
         <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-3">
           {(
             [
-              { label: 'Đăng ký', value: signups },
-              { label: 'Xác thực email', value: verifiedEmails },
-              { label: 'Tạo prompt', value: promptGenerations },
+              { label: 'Signups', value: signups },
+              { label: 'Verified emails', value: verifiedEmails },
+              { label: 'Prompt generations', value: promptGenerations },
             ] as const
           ).flatMap((step, index, steps) => {
             const pct = signups > 0 ? Math.round((step.value / signups) * 100) : 0

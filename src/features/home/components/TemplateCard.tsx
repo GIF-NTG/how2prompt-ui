@@ -74,7 +74,7 @@ export function TemplateCard({
         <div className="flex flex-wrap gap-1.5">
           {template.isOfficial && (
             <span className="rounded-md bg-[#E7EAFC] px-1.5 py-[0.12rem] font-mono text-[0.65rem] font-bold tracking-[0.03em] text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
-              Chính thức
+              Official
             </span>
           )}
         </div>
@@ -82,7 +82,7 @@ export function TemplateCard({
           <button
             type="button"
             onClick={handleFavorite}
-            aria-label={isFavorited ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
+            aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
             aria-pressed={isFavorited}
             className={`flex h-[1.7rem] w-[1.7rem] flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border transition-colors duration-150 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
               isFavorited
@@ -119,7 +119,7 @@ export function TemplateCard({
           ))}
         </div>
         <span className="whitespace-nowrap font-mono text-[0.7rem] text-[#8B8F86] dark:text-[#6D726A]">
-          {template.usageCount.toLocaleString()} lượt dùng
+          {template.usageCount.toLocaleString()} uses
         </span>
       </div>
     </div>

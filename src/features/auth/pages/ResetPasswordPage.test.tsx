@@ -26,33 +26,33 @@ describe('ResetPasswordPage', () => {
     const user = userEvent.setup()
     renderResetPasswordPage('valid-token')
 
-    await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhaumoi123')
-    await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
+    await user.type(screen.getByPlaceholderText('at least 8 characters'), 'newpassword123')
+    await user.click(screen.getByRole('button', { name: 'Reset password →' }))
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Đặt lại mật khẩu thành công')
+    expect(await screen.findByRole('status')).toHaveTextContent('Password reset successfully')
   })
 
   it('shows an expired-link message with a link back to /forgot-password for an expired/used token', async () => {
     const user = userEvent.setup()
     renderResetPasswordPage('expired-token')
 
-    await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhaumoi123')
-    await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
+    await user.type(screen.getByPlaceholderText('at least 8 characters'), 'newpassword123')
+    await user.click(screen.getByRole('button', { name: 'Reset password →' }))
 
     expect(
-      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+      await screen.findByText(/This link has expired or has already been used\./),
     ).toBeInTheDocument()
-    await user.click(screen.getByRole('link', { name: 'Yêu cầu liên kết mới' }))
-    expect(await screen.findByRole('heading', { name: 'Quên mật khẩu' })).toBeInTheDocument()
+    await user.click(screen.getByRole('link', { name: 'Request a new link' }))
+    expect(await screen.findByRole('heading', { name: 'Forgot password' })).toBeInTheDocument()
   })
 
   it('blocks submission for a password shorter than 8 characters and focuses it', async () => {
     const user = userEvent.setup()
     renderResetPasswordPage('valid-token')
 
-    const passwordInput = screen.getByPlaceholderText('tối thiểu 8 ký tự')
+    const passwordInput = screen.getByPlaceholderText('at least 8 characters')
     await user.type(passwordInput, 'short')
-    await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
+    await user.click(screen.getByRole('button', { name: 'Reset password →' }))
 
     expect(passwordInput).toHaveFocus()
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
@@ -62,11 +62,11 @@ describe('ResetPasswordPage', () => {
     const user = userEvent.setup()
     renderResetPasswordPage('expired-token')
 
-    await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhaumoi123')
-    await user.click(screen.getByRole('button', { name: 'Đặt lại mật khẩu →' }))
+    await user.type(screen.getByPlaceholderText('at least 8 characters'), 'newpassword123')
+    await user.click(screen.getByRole('button', { name: 'Reset password →' }))
 
     expect(
-      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+      await screen.findByText(/This link has expired or has already been used\./),
     ).toBeInTheDocument()
   })
 })

@@ -28,25 +28,25 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    await user.type(await screen.findByPlaceholderText('tên hiển thị'), 'Nguyễn Văn A')
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), `new-${Date.now()}@example.com`)
-    await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhau123')
-    await user.click(screen.getByRole('button', { name: 'Đăng ký →' }))
+    await user.type(await screen.findByPlaceholderText('display name'), 'John Doe')
+    await user.type(screen.getByPlaceholderText('you@example.com'), `new-${Date.now()}@example.com`)
+    await user.type(screen.getByPlaceholderText('at least 8 characters'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Sign up →' }))
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Đã tạo tài khoản thành công')
+    expect(await screen.findByRole('status')).toHaveTextContent('Account created successfully')
   })
 
-  it('shows a Vietnamese message when the email is already registered', async () => {
+  it('shows a message when the email is already registered', async () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    await user.type(await screen.findByPlaceholderText('tên hiển thị'), 'Người dùng Demo 2')
-    await user.type(screen.getByPlaceholderText('ban@vidu.com'), 'demo@how2prompt.dev')
-    await user.type(screen.getByPlaceholderText('tối thiểu 8 ký tự'), 'matkhau123')
-    await user.click(screen.getByRole('button', { name: 'Đăng ký →' }))
+    await user.type(await screen.findByPlaceholderText('display name'), 'Demo User 2')
+    await user.type(screen.getByPlaceholderText('you@example.com'), 'demo@how2prompt.dev')
+    await user.type(screen.getByPlaceholderText('at least 8 characters'), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Sign up →' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Email này đã được đăng ký, hãy đăng nhập',
+      'This email is already registered, please log in',
     )
   })
 
@@ -54,22 +54,22 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
-    const nameInput = await screen.findByPlaceholderText('tên hiển thị')
-    const emailInput = screen.getByPlaceholderText('ban@vidu.com')
-    const passwordInput = screen.getByPlaceholderText('tối thiểu 8 ký tự')
-    const submit = screen.getByRole('button', { name: 'Đăng ký →' })
+    const nameInput = await screen.findByPlaceholderText('display name')
+    const emailInput = screen.getByPlaceholderText('you@example.com')
+    const passwordInput = screen.getByPlaceholderText('at least 8 characters')
+    const submit = screen.getByRole('button', { name: 'Sign up →' })
 
     await user.click(submit)
     expect(nameInput).toHaveFocus()
 
-    await user.type(nameInput, 'Ai đó')
-    await user.type(emailInput, 'khong-hop-le')
-    await user.type(passwordInput, 'matkhau123')
+    await user.type(nameInput, 'Someone')
+    await user.type(emailInput, 'not-a-valid-email')
+    await user.type(passwordInput, 'password123')
     await user.click(submit)
     expect(emailInput).toHaveFocus()
 
     await user.clear(emailInput)
-    await user.type(emailInput, 'hople@example.com')
+    await user.type(emailInput, 'valid@example.com')
     await user.clear(passwordInput)
     await user.type(passwordInput, 'short')
     await user.click(submit)

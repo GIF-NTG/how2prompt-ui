@@ -20,7 +20,7 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
 
   if (models.length === 0) {
     return (
-      <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có AI model nào.</p>
+      <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">No AI models yet.</p>
     )
   }
 
@@ -33,19 +33,19 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
               Code
             </th>
             <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-              Tên
+              Name
             </th>
             <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
               Provider
             </th>
             <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-              Loại
+              Type
             </th>
             <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-              Trạng thái
+              Status
             </th>
             <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-              Hành động
+              Action
             </th>
           </tr>
         </thead>
@@ -64,7 +64,7 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
                         : 'rounded-full bg-[#F7ECD7] px-2 py-0.5 text-xs text-[#C98A1F] dark:bg-[#362C1A] dark:text-[#E0B25C]'
                     }
                   >
-                    {model.isActive ? 'Đang hoạt động' : 'Đã tắt'}
+                    {model.isActive ? 'Active' : 'Disabled'}
                   </span>
                 </td>
                 <td className="px-3 py-2.5">
@@ -74,14 +74,14 @@ export function AiModelTable({ models, onEdit, onToggleActive }: AiModelTablePro
                       onClick={() => onEdit(model)}
                       className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
                     >
-                      Sửa
+                      Edit
                     </button>
                     <button
                       type="button"
                       onClick={() => onToggleActive(model)}
                       className="text-xs text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
                     >
-                      {model.isActive ? 'Tắt' : 'Kích hoạt lại'}
+                      {model.isActive ? 'Disable' : 'Reactivate'}
                     </button>
                   </div>
                 </td>

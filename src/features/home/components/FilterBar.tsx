@@ -26,13 +26,13 @@ export function FilterBar({
       {search}
       <ModelFilter value={filters.model} onChange={onModelChange} />
       <select
-        aria-label="Sắp xếp theo"
+        aria-label="Sort by"
         value={filters.sort}
         onChange={(e) => onSortChange(e.target.value as CatalogSort)}
         className="font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
       >
-        <option value="popular">Phổ biến nhất</option>
-        <option value="newest">Mới nhất</option>
+        <option value="popular">Most popular</option>
+        <option value="newest">Newest</option>
       </select>
       <FilterPopover
         category={filters.category}

@@ -24,23 +24,23 @@ describe('VerifyEmailPage', () => {
   it('marks the account verified for a valid token (Scenario 4), with no active session (Edge Case)', async () => {
     renderVerifyEmailPage('valid-token')
 
-    expect(await screen.findByRole('status')).toHaveTextContent('đã được xác minh thành công')
+    expect(await screen.findByRole('status')).toHaveTextContent('has been verified successfully')
   })
 
   it('shows a clear expired-link message for an expired/already-used token (Scenario 5)', async () => {
     renderVerifyEmailPage('expired-token')
 
     expect(
-      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+      await screen.findByText(/This link has expired or has already been used\./),
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Quay lại trang chính' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go back to the homepage' })).toBeInTheDocument()
   })
 
   it('re-validates the token on every load, so reopening an already-used link via back navigation still shows the expired-link message (Edge Case)', async () => {
     renderVerifyEmailPage('expired-token')
 
     expect(
-      await screen.findByText(/Liên kết đã hết hạn hoặc đã được sử dụng\./),
+      await screen.findByText(/This link has expired or has already been used\./),
     ).toBeInTheDocument()
   })
 })

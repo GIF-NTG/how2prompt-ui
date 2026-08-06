@@ -14,12 +14,12 @@ let accountCounter = 0
 // mockAccounts is a module-level singleton that persists across tests in this file.
 async function seedUnverifiedSession() {
   const email = `verify-test-${accountCounter++}@example.com`
-  await authClient.register('Người kiểm thử', email, 'password123')
+  await authClient.register('Test User', email, 'password123')
 
   const issuedAt = Date.now()
   const session: Session = {
     accountId: email,
-    displayName: 'Người kiểm thử',
+    displayName: 'Test User',
     email,
     token: 'test-token',
     issuedAt,
@@ -47,7 +47,7 @@ describe('EmailVerificationBanner', () => {
     await seedUnverifiedSession()
     renderBanner()
 
-    expect(await screen.findByRole('button', { name: 'Gửi lại email' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Resend email' })).toBeInTheDocument()
   })
 
   it('shows a confirmation and disables the action with a 5-minute countdown after resending (Scenario 2)', async () => {
@@ -55,10 +55,10 @@ describe('EmailVerificationBanner', () => {
     await seedUnverifiedSession()
     renderBanner()
 
-    await user.click(await screen.findByRole('button', { name: 'Gửi lại email' }))
+    await user.click(await screen.findByRole('button', { name: 'Resend email' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent(
-      'Yêu cầu gửi lại email xác minh đã được tiếp nhận',
+      'Your request to resend the verification email has been received',
     )
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()
@@ -71,16 +71,16 @@ describe('EmailVerificationBanner', () => {
 
     // First tab/device: resend succeeds and starts the cooldown.
     const first = renderBanner()
-    await user.click(await within(first.container).findByRole('button', { name: 'Gửi lại email' }))
+    await user.click(await within(first.container).findByRole('button', { name: 'Resend email' }))
     await within(first.container).findByRole('status')
 
     // Second tab/device: a fresh component instance (own countdown state) racing
     // the same backend cooldown for the same account.
     const second = renderBanner()
-    await user.click(within(second.container).getByRole('button', { name: 'Gửi lại email' }))
+    await user.click(within(second.container).getByRole('button', { name: 'Resend email' }))
 
     expect(await within(second.container).findByRole('alert')).toHaveTextContent(
-      'vui lòng đợi vài phút rồi thử lại',
+      'please wait a few minutes and try again',
     )
   })
 })

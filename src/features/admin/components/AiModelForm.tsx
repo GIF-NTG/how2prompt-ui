@@ -61,7 +61,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
     const name = String(form.name || '').trim()
     const provider = String(form.provider || '').trim()
     if (!code || !name || !provider) {
-      setError('Vui lòng nhập đầy đủ code, name và provider.')
+      setError('Please fill in code, name, and provider.')
       return
     }
     setSubmitting(true)
@@ -69,7 +69,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
       await onSubmit(form)
       if (!editingModel) setForm(emptyForm())
     } catch {
-      setError('Không thể lưu model, vui lòng thử lại.')
+      setError('Unable to save model, please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -79,7 +79,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
       {editingModel && (
         <p className="m-0 text-xs text-[#5B5F58] dark:text-[#A2A79C]">
-          Đang sửa: <span className="font-semibold">{editingModel.name}</span>
+          Editing: <span className="font-semibold">{editingModel.name}</span>
         </p>
       )}
 
@@ -95,7 +95,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           />
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên hiển thị</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Display name</span>
           <input
             type="text"
             value={form.name}
@@ -114,7 +114,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           />
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Loại model</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Model type</span>
           <select
             value={form.modelType}
             onChange={(e) =>
@@ -130,7 +130,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Icon URL (tuỳ chọn)</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Icon URL (optional)</span>
           <input
             type="text"
             value={form.iconUrl ?? ''}
@@ -139,7 +139,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           />
         </label>
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Thứ tự hiển thị</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Sort order</span>
           <input
             type="number"
             value={form.sortOrder}
@@ -150,7 +150,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
       </div>
 
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Mô tả (tuỳ chọn)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Description (optional)</span>
         <textarea
           value={form.description ?? ''}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value || null }))}
@@ -165,7 +165,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           checked={form.isActive}
           onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
         />
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Đang hoạt động (isActive)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Active (isActive)</span>
       </label>
 
       {error && (
@@ -180,7 +180,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           disabled={submitting}
           className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
         >
-          {editingModel ? 'Lưu thay đổi' : 'Tạo model'}
+          {editingModel ? 'Save changes' : 'Create model'}
         </button>
         {editingModel && (
           <button
@@ -188,7 +188,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
             onClick={onCancelEdit}
             className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
           >
-            Huỷ
+            Cancel
           </button>
         )}
       </div>

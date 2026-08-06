@@ -36,7 +36,7 @@ const DEBUG_TEMPLATE: TemplateDetail = {
     id: 'ver-t1-1',
     version: 1,
     promptBody:
-      'Với vai trò {{role}}, hãy debug đoạn log sau:\n\n{{log}}\n\nYêu cầu:\n1. Chỉ ra nguyên nhân gốc\n2. Gợi ý fix cụ thể\n3. Kiểm tra edge case liên quan',
+      'As a {{role}}, debug the following log:\n\n{{log}}\n\nRequirements:\n1. Identify the root cause\n2. Suggest a specific fix\n3. Check related edge cases',
     guide: {
       en: 'Fill in your role (e.g., "Backend Developer") and paste the error log. The template will generate a structured debugging analysis with root cause identification and fix suggestions.',
       vi: 'Điền vai trò của bạn (ví dụ: "Backend Developer") và dán log lỗi. Mô hình sẽ tạo ra phân tích debug có cấu trúc với xác định nguyên nhân gốc và gợi ý sửa lỗi.',
@@ -188,7 +188,7 @@ const REWRITE_TEMPLATE: TemplateDetail = {
     id: 'ver-t2-1',
     version: 1,
     promptBody:
-      'Viết lại đoạn văn sau theo giọng điệu {{tone}}, độ dài khoảng {{length}} từ:\n\n{{content}}',
+      'Rewrite the following paragraph in a {{tone}} tone, about {{length}} words long:\n\n{{content}}',
     guide: {
       en: 'Paste the original paragraph, pick a target tone and an approximate word count.',
       vi: 'Dán đoạn văn gốc, chọn giọng điệu mong muốn và độ dài xấp xỉ.',
@@ -302,7 +302,7 @@ const MARKETING_TEMPLATE: TemplateDetail = {
     id: 'ver-t3-1',
     version: 1,
     promptBody:
-      'Viết mô tả sản phẩm cho {{productName}}, nhấn mạnh các tính năng: {{features}}. Đối tượng khách hàng: {{audience}}.',
+      'Write a product description for {{productName}}, highlighting these features: {{features}}. Target audience: {{audience}}.',
     guide: {
       en: 'Provide the product name, its key features and the target audience.',
       vi: 'Cung cấp tên sản phẩm, các tính năng nổi bật và đối tượng khách hàng.',
@@ -406,7 +406,7 @@ const CODE_REVIEW_TEMPLATE: TemplateDetail = {
     id: 'ver-t4-1',
     version: 1,
     promptBody:
-      'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n{{diff}}\n\nMức độ nghiêm ngặt: {{strictness}}',
+      'Review the following diff against a security and performance checklist:\n\n{{diff}}\n\nStrictness level: {{strictness}}',
     guide: {
       en: 'Paste the diff/PR content and pick a strictness level.',
       vi: 'Dán nội dung diff/PR và chọn mức độ nghiêm ngặt.',
@@ -472,8 +472,8 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
   isOfficial: false,
   author: {
     id: 'u1',
-    fullName: 'Nguyễn Văn A',
-    username: 'nguyenvana',
+    fullName: 'John Doe',
+    username: 'johndoe',
     avatarUrl: null,
     type: 'user',
   },
@@ -499,7 +499,7 @@ const MEETING_SUMMARY_TEMPLATE: TemplateDetail = {
   currentVersion: {
     id: 'ver-t5-1',
     version: 1,
-    promptBody: 'Tóm tắt ghi chú cuộc họp sau thành các mục chính và việc cần làm:\n\n{{notes}}',
+    promptBody: 'Summarize the following meeting notes into key points and action items:\n\n{{notes}}',
     guide: {
       en: 'Paste the raw meeting notes.',
       vi: 'Dán ghi chú cuộc họp thô.',
@@ -552,7 +552,7 @@ export function createMockTemplateDetailClient(): TemplateDetailClient {
     async getDetail(id) {
       const template = MOCK_TEMPLATES_BY_ID.get(id)
       if (!template) {
-        throw new ApiError('TEMPLATE_NOT_FOUND', 'Không tìm thấy mẫu.', 404)
+        throw new ApiError('TEMPLATE_NOT_FOUND', 'Template not found.', 404)
       }
       return { ...template, isFavorited: favorites.has(template.id) }
     },

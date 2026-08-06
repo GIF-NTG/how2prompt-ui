@@ -42,14 +42,14 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
     event.preventDefault()
     setError(null)
     if (!name.trim() || !slug.trim()) {
-      setError('Vui lòng nhập tên và slug.')
+      setError('Please enter a name and slug.')
       return
     }
     const duplicate = existingTags.some(
       (t) => t.id !== editingTag?.id && t.slug.toLowerCase() === slug.trim().toLowerCase(),
     )
     if (duplicate) {
-      setError('Đã tồn tại tag cùng slug.')
+      setError('A tag with this slug already exists.')
       return
     }
     setSubmitting(true)
@@ -61,17 +61,17 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
       }
       onClose()
     } catch {
-      setError('Không thể lưu tag, vui lòng thử lại.')
+      setError('Unable to save tag, please try again.')
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Modal title={editingTag ? 'Sửa tag' : 'Thêm tag mới'} onClose={onClose}>
+    <Modal title={editingTag ? 'Edit tag' : 'Add new tag'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tên tag</span>
+          <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tag name</span>
           <input
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
@@ -101,14 +101,14 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
             onClick={onClose}
             className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
           >
-            Huỷ
+            Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
-            {editingTag ? 'Lưu' : 'Tạo tag'}
+            {editingTag ? 'Save' : 'Create tag'}
           </button>
         </div>
       </form>
@@ -140,7 +140,7 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
       await onDelete(deleteTarget.id)
       setDeleteTarget(null)
     } catch {
-      setDeleteError('Không thể xoá tag, vui lòng thử lại.')
+      setDeleteError('Unable to delete tag, please try again.')
     }
   }
 
@@ -152,28 +152,28 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
           onClick={() => setFormTarget('new')}
           className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
         >
-          + Thêm tag
+          + Add tag
         </button>
       </div>
 
       {tags.length === 0 ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Chưa có tag nào.</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">No tags yet.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[420px] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-[#DBDFD3] dark:border-[#2C3130]">
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Tên
+                  Name
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
                   Slug
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Số lần dùng
+                  Usage count
                 </th>
                 <th className="px-3 pb-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.05em] text-[#8B8F86] dark:text-[#6D726A]">
-                  Hành động
+                  Action
                 </th>
               </tr>
             </thead>
@@ -194,14 +194,14 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
                         onClick={() => setFormTarget(tag)}
                         className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
                       >
-                        Sửa
+                        Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(tag)}
                         className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
                       >
-                        Xoá
+                        Delete
                       </button>
                     </div>
                   </td>
@@ -225,7 +225,7 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
 
       {deleteTarget && (
         <ConfirmDialog
-          message={`Xoá tag "${deleteTarget.name}"? Hành động này không thể hoàn tác.`}
+          message={`Delete tag "${deleteTarget.name}"? This action cannot be undone.`}
           onConfirm={() => void handleConfirmDelete()}
           onCancel={() => {
             setDeleteTarget(null)

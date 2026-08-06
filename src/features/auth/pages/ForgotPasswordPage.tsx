@@ -56,10 +56,10 @@ export function ForgotPasswordPage() {
     <AuthLayout>
       <div>
         <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-          Quên mật khẩu
+          Forgot password
         </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-          Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
+          Enter your registered email and we&apos;ll send you a password reset link.
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function ForgotPasswordPage() {
           role="status"
           className="rounded-lg border border-[#2E7D4F]/30 bg-[#E4F3EA] px-4 py-2 text-sm text-[#2E7D4F] dark:border-[#6FCF9A]/30 dark:bg-[#1E3327] dark:text-[#6FCF9A]"
         >
-          Nếu email này tồn tại trong hệ thống, một liên kết đặt lại mật khẩu đã được gửi tới.
+          If this email exists in our system, a password reset link has been sent to it.
         </p>
       ) : (
         <form
@@ -76,11 +76,11 @@ export function ForgotPasswordPage() {
           noValidate
           className="rounded-card border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
         >
-          Gửi liên kết đặt lại mật khẩu tới email{' '}
+          Send a password reset link to email{' '}
           <InlineBlank
             ref={emailRef}
             type="email"
-            placeholder="ban@vidu.com"
+            placeholder="you@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             invalid={emailInvalid}
@@ -101,19 +101,19 @@ export function ForgotPasswordPage() {
               disabled={submitting}
               className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
             >
-              Gửi liên kết →
+              Send link →
             </button>
           </div>
         </form>
       )}
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        Nhớ ra mật khẩu rồi?{' '}
+        Remembered your password?{' '}
         <Link
           to="/login"
           className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"
         >
-          Đăng nhập
+          Log in
         </Link>
       </p>
     </AuthLayout>

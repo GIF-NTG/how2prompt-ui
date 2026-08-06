@@ -7,7 +7,7 @@ import type { Session } from '@/features/auth/api/types'
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
-  displayName: 'Quản trị viên Demo',
+  displayName: 'Demo Admin',
   email: 'admin@how2prompt.dev',
   token: 'admin-token',
   issuedAt: Date.now(),

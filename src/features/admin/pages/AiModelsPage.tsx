@@ -44,23 +44,23 @@ export function AiModelsPage() {
 
   return (
     <>
-      <AdminPageHeader eyebrow="admin / nội dung" title="AI Models" />
+      <AdminPageHeader eyebrow="admin / content" title="AI Models" />
 
       <AdminPanel
-        title="Danh sách model"
-        hint={`${models.length} model`}
+        title="Model list"
+        hint={`${models.length} models`}
         action={
           <button
             type="button"
             onClick={() => setFormTarget('new')}
             className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
-            + Thêm model
+            + Add model
           </button>
         }
       >
         {!modelsLoaded && !error ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
         ) : error ? (
           <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
             {error}
@@ -76,7 +76,7 @@ export function AiModelsPage() {
 
       {formTarget && (
         <Modal
-          title={formTarget === 'new' ? 'Thêm model mới' : 'Chỉnh sửa model'}
+          title={formTarget === 'new' ? 'Add new model' : 'Edit model'}
           onClose={() => setFormTarget(null)}
         >
           <AiModelForm

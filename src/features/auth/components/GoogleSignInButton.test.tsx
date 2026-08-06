@@ -19,7 +19,7 @@ function renderButton() {
       <MemoryRouter initialEntries={['/login']}>
         <Routes>
           <Route path="/login" element={<GoogleSignInButton />} />
-          <Route path="/" element={<div>Trang chủ</div>} />
+          <Route path="/" element={<div>Home page</div>} />
         </Routes>
       </MemoryRouter>
     </AuthProvider>,
@@ -41,9 +41,9 @@ describe('GoogleSignInButton', () => {
     const user = userEvent.setup()
     renderButton()
 
-    await user.click(screen.getByRole('button', { name: 'Đăng nhập bằng Google' }))
+    await user.click(screen.getByRole('button', { name: 'Sign in with Google' }))
 
-    await screen.findByText('Trang chủ')
+    await screen.findByText('Home page')
     expect(await authClient.restoreSession()).not.toBeNull()
   })
 
@@ -71,7 +71,7 @@ describe('GoogleSignInButton', () => {
     const user = userEvent.setup()
     renderButton()
 
-    await user.click(screen.getByRole('button', { name: 'Đăng nhập bằng Google' }))
+    await user.click(screen.getByRole('button', { name: 'Sign in with Google' }))
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(await authClient.restoreSession()).toBeNull()

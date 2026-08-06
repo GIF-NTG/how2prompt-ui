@@ -48,17 +48,16 @@ let scriptLoadPromise: Promise<void> | null = null
 
 const NOT_DISPLAYED_HINTS: Record<NotDisplayedReason, string> = {
   unregistered_origin:
-    'Origin này (vd http://localhost:5173) chưa được thêm vào "Authorized JavaScript origins" của OAuth Client trên Google Cloud Console.',
-  invalid_client: 'VITE_GOOGLE_CLIENT_ID không hợp lệ hoặc không tồn tại.',
-  missing_client_id: 'Thiếu client_id khi gọi initialize().',
-  secure_http_required: 'Cần chạy trên HTTPS (hoặc localhost) — Google từ chối HTTP thường.',
+    'This origin (e.g. http://localhost:5173) has not been added to "Authorized JavaScript origins" for the OAuth Client in Google Cloud Console.',
+  invalid_client: 'VITE_GOOGLE_CLIENT_ID is invalid or does not exist.',
+  missing_client_id: 'Missing client_id when calling initialize().',
+  secure_http_required: 'Must run over HTTPS (or localhost) — Google rejects plain HTTP.',
   opt_out_or_no_session:
-    'Trình duyệt không có phiên Google nào đang đăng nhập, hoặc người dùng đã opt-out.',
-  browser_not_supported: 'Trình duyệt này không được Google Identity Services hỗ trợ.',
+    'The browser has no signed-in Google session, or the user has opted out.',
+  browser_not_supported: 'This browser is not supported by Google Identity Services.',
   suppressed_by_user:
-    'Người dùng đã từ chối One Tap nhiều lần trước đó nên Google tạm ẩn (cooldown).',
-  unknown_reason:
-    'Không rõ nguyên nhân — thử kiểm tra console của trình duyệt để biết thêm chi tiết.',
+    'The user previously dismissed One Tap multiple times, so Google is temporarily suppressing it (cooldown).',
+  unknown_reason: 'Unknown reason — check the browser console for more details.',
 }
 
 function loadGoogleIdentityScript(): Promise<void> {
@@ -111,7 +110,7 @@ function decodeCredential(credential: string): GoogleCredential {
 export async function requestGoogleCredential(): Promise<GoogleCredential | null> {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   if (!clientId) {
-    throw new Error('VITE_GOOGLE_CLIENT_ID chưa được cấu hình (xem .env.example).')
+    throw new Error('VITE_GOOGLE_CLIENT_ID has not been configured (see .env.example).')
   }
 
   await loadGoogleIdentityScript()
@@ -125,12 +124,12 @@ export async function requestGoogleCredential(): Promise<GoogleCredential | null
       if (notification.isNotDisplayed()) {
         const reason = notification.getNotDisplayedReason()
         reject(
-          new Error(`Google không hiện được popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`),
+          new Error(`Google could not display the popup (${reason}). ${NOT_DISPLAYED_HINTS[reason]}`),
         )
         return
       }
       if (notification.isSkippedMoment() && notification.getSkippedReason() !== 'user_cancel') {
-        reject(new Error(`Google bỏ qua popup (${notification.getSkippedReason()}).`))
+        reject(new Error(`Google skipped the popup (${notification.getSkippedReason()}).`))
         return
       }
       if (notification.isDismissedMoment() || notification.isSkippedMoment()) {

@@ -77,17 +77,17 @@ export function TaxonomyPage() {
 
   return (
     <>
-      <AdminPageHeader eyebrow="admin / nội dung" title="Danh mục & Tag" />
+      <AdminPageHeader eyebrow="admin / content" title="Categories & Tags" />
 
       {loading && !error ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Đang tải...</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
       ) : error ? (
         <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
           {error}
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.65fr_1fr]">
-          <AdminPanel title="Categories" hint={`${categories.length} category`}>
+          <AdminPanel title="Categories" hint={`${categories.length} categories`}>
             <CategoryTree
               categories={categories}
               onCreate={handleCreateCategory}
@@ -95,7 +95,7 @@ export function TaxonomyPage() {
               onDelete={handleDeleteCategory}
             />
           </AdminPanel>
-          <AdminPanel title="Tags" hint={`${tags.length} tag`}>
+          <AdminPanel title="Tags" hint={`${tags.length} tags`}>
             <TagTable
               tags={tags}
               onCreate={handleCreateTag}

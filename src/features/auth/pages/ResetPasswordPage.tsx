@@ -58,18 +58,18 @@ export function ResetPasswordPage() {
     <AuthLayout>
       <div>
         <h2 className="text-xl font-bold tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-          Đặt lại mật khẩu
+          Reset password
         </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-          Nhập mật khẩu mới cho tài khoản của bạn.
+          Enter a new password for your account.
         </p>
       </div>
 
       {linkExpired ? (
         <div className="rounded-lg border border-[#C23A2E]/40 bg-[#FBE7E4] px-4 py-3 text-sm leading-normal text-[#C23A2E] dark:border-[#FF7A6B]/40 dark:bg-[#3A2224] dark:text-[#FF7A6B]">
-          Liên kết đã hết hạn hoặc đã được sử dụng.{' '}
+          This link has expired or has already been used.{' '}
           <Link to="/forgot-password" className="underline underline-offset-2">
-            Yêu cầu liên kết mới
+            Request a new link
           </Link>
           .
         </div>
@@ -79,11 +79,11 @@ export function ResetPasswordPage() {
           noValidate
           className="rounded-card border border-[#DBDFD3] bg-[#EAEDE6] p-6 text-lg leading-loose text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#23282C] dark:text-[#ECEEE8]"
         >
-          Mật khẩu mới{' '}
+          New password{' '}
           <InlineBlank
             ref={passwordRef}
             type={passwordVisible ? 'text' : 'password'}
-            placeholder="tối thiểu 8 ký tự"
+            placeholder="at least 8 characters"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             invalid={passwordInvalid}
@@ -94,7 +94,7 @@ export function ResetPasswordPage() {
             onClick={() => setPasswordVisible((visible) => !visible)}
             className="font-mono text-xs text-[#3652E0] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF]"
           >
-            {passwordVisible ? 'ẩn' : 'hiện'}
+            {passwordVisible ? 'hide' : 'show'}
           </button>
           .
           {errorMessage && (
@@ -111,7 +111,7 @@ export function ResetPasswordPage() {
               disabled={submitting}
               className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
             >
-              Đặt lại mật khẩu →
+              Reset password →
             </button>
           </div>
         </form>

@@ -13,7 +13,7 @@ export function PromptsTrendChart({ entries }: PromptsTrendChartProps) {
   if (entries.length === 0) {
     return (
       <p className="m-0 text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        Không có dữ liệu trong khoảng đã chọn.
+        No data in the selected range.
       </p>
     )
   }

@@ -81,14 +81,14 @@ export function TemplateEditorForm({
     event.preventDefault()
     setError(null)
     if (!form.title.en.trim() || !form.promptBody.trim()) {
-      setError('Vui lòng nhập tiêu đề và nội dung prompt.')
+      setError('Please enter a title and prompt content.')
       return
     }
     setSubmitting(true)
     try {
       await onSaveDraft(form)
     } catch {
-      setError('Không thể lưu draft, vui lòng thử lại.')
+      setError('Unable to save draft, please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -97,13 +97,13 @@ export function TemplateEditorForm({
   async function handlePublish() {
     setError(null)
     if (!form.title.en.trim() || !form.promptBody.trim()) {
-      setError('Vui lòng nhập tiêu đề và nội dung prompt.')
+      setError('Please enter a title and prompt content.')
       return
     }
     const { isValid, missingVarKeys } = validatePlaceholders(form.promptBody, form.variables)
     if (!isValid) {
       setError(
-        `Không thể publish: placeholder {{${missingVarKeys.join('}}, {{')}}} chưa có variable tương ứng.`,
+        `Unable to publish: placeholder {{${missingVarKeys.join('}}, {{')}}} has no matching variable.`,
       )
       return
     }
@@ -111,7 +111,7 @@ export function TemplateEditorForm({
     try {
       await onPublish(form)
     } catch {
-      setError('Không thể publish, vui lòng thử lại.')
+      setError('Unable to publish, please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -124,7 +124,7 @@ export function TemplateEditorForm({
       className="flex flex-col gap-4"
     >
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tiêu đề (EN)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Title (EN)</span>
         <input
           value={form.title.en}
           onChange={(e) => setForm((f) => ({ ...f, title: { ...f.title, en: e.target.value } }))}
@@ -133,7 +133,7 @@ export function TemplateEditorForm({
       </label>
 
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Mô tả (EN)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Description (EN)</span>
         <textarea
           value={form.description.en}
           onChange={(e) =>
@@ -164,7 +164,7 @@ export function TemplateEditorForm({
 
       <fieldset className="flex flex-col gap-1">
         <legend className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">
-          Tags (chỉ chọn từ danh sách có sẵn — xem taxonomy)
+          Tags (select only from the existing list — see taxonomy)
         </legend>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
@@ -183,7 +183,7 @@ export function TemplateEditorForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-1">
-        <legend className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">AI Models hỗ trợ</legend>
+        <legend className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">Supported AI Models</legend>
         <div className="flex flex-wrap gap-2">
           {models.map((model) => (
             <label key={model.code} className="flex items-center gap-1 text-xs">
@@ -205,15 +205,15 @@ export function TemplateEditorForm({
           role="status"
           className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-3 py-2 text-xs text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262C4A] dark:text-[#8493FF]"
         >
-          Backend chưa hỗ trợ sửa prompt body / guide / example output /
-          variables / variants của template đã tạo — chỉ tiêu đề, mô tả,
-          categories, tags và AI models bên dưới được lưu khi Lưu Draft.
+          The backend doesn&apos;t support editing the prompt body / guide / example output /
+          variables / variants of an existing template — only the title, description,
+          categories, tags, and AI models below are saved when you Save Draft.
         </p>
       )}
 
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">
-          Prompt body (dùng {'{{varKey}}'} cho mỗi placeholder)
+          Prompt body (use {'{{varKey}}'} for each placeholder)
         </span>
         <textarea
           value={form.promptBody}
@@ -225,7 +225,7 @@ export function TemplateEditorForm({
       </label>
 
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Guide (EN, tuỳ chọn)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Guide (EN, optional)</span>
         <textarea
           value={form.guide.en}
           onChange={(e) => setForm((f) => ({ ...f, guide: { ...f.guide, en: e.target.value } }))}
@@ -236,7 +236,7 @@ export function TemplateEditorForm({
       </label>
 
       <label className="flex flex-col gap-1 text-xs">
-        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Example output (tuỳ chọn)</span>
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">Example output (optional)</span>
         <textarea
           value={form.exampleOutput ?? ''}
           onChange={(e) => setForm((f) => ({ ...f, exampleOutput: e.target.value || null }))}
@@ -264,7 +264,7 @@ export function TemplateEditorForm({
           disabled={submitting}
           className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-bold disabled:opacity-60 dark:border-[#2C3130]"
         >
-          Lưu Draft
+          Save Draft
         </button>
         <button
           type="button"

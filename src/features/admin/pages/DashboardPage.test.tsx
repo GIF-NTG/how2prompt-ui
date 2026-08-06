@@ -14,7 +14,7 @@ const mockedCreateDashboardClient = vi.mocked(createDashboardClient)
 
 const ADMIN_SESSION: Session = {
   accountId: 'admin-account',
-  displayName: 'Quản trị viên Demo',
+  displayName: 'Demo Admin',
   email: 'admin@how2prompt.dev',
   token: 'admin-token',
   issuedAt: Date.now(),
@@ -69,7 +69,7 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Debug')).toBeInTheDocument()
     expect(screen.getByText('gpt-4o')).toBeInTheDocument()
     expect(getStats).toHaveBeenCalledTimes(1)
-    expect(screen.getByRole('button', { name: '30 ngày' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: '30 days' })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
@@ -84,9 +84,9 @@ describe('DashboardPage', () => {
     await screen.findByText('10')
     const initialCallCount = getStats.mock.calls.length
 
-    await user.click(screen.getByRole('button', { name: '7 ngày' }))
+    await user.click(screen.getByRole('button', { name: '7 days' }))
 
-    expect(screen.getByRole('button', { name: '7 ngày' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: '7 days' })).toHaveAttribute('aria-pressed', 'true')
     expect(getStats.mock.calls.length).toBe(initialCallCount)
   })
 
@@ -98,10 +98,10 @@ describe('DashboardPage', () => {
     renderPage()
     await screen.findByText('10')
 
-    await user.click(screen.getByRole('button', { name: 'Tuỳ chỉnh' }))
-    fireEvent.change(screen.getByLabelText('Từ ngày'), { target: { value: '2026-07-01' } })
+    await user.click(screen.getByRole('button', { name: 'Custom' }))
+    fireEvent.change(screen.getByLabelText('From date'), { target: { value: '2026-07-01' } })
 
-    await waitFor(() => expect(screen.getByLabelText('Từ ngày')).toHaveValue('2026-07-01'))
+    await waitFor(() => expect(screen.getByLabelText('From date')).toHaveValue('2026-07-01'))
     expect(getStats).toHaveBeenCalledTimes(1)
   })
 

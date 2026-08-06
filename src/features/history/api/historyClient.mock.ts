@@ -42,13 +42,13 @@ const store: HistoryDetail[] = [
     templateId: TEMPLATE_SLUGS.debug,
     templateTitle: { en: 'Debug effectively', vi: 'Debug lỗi hiệu quả' },
     aiModelCode: 'gpt-4o',
-    promptSnippet: 'Với vai trò Backend Developer, hãy debug đoạn log sau...',
+    promptSnippet: 'As a Backend Developer, debug the following log...',
     createdAt: daysAgo(0),
     templateVersionId: 'ver-t1-1',
     inputValues: { role: 'Backend Developer', log: 'TypeError: Cannot read property...' },
     extraInstructions: null,
     finalPrompt:
-      'Với vai trò Backend Developer, hãy debug đoạn log sau:\n\nTypeError: Cannot read property...',
+      'As a Backend Developer, debug the following log:\n\nTypeError: Cannot read property...',
   },
   {
     id: 'h2',
@@ -58,13 +58,13 @@ const store: HistoryDetail[] = [
     templateId: null,
     templateTitle: { en: 'Removed template', vi: 'Mẫu đã bị xoá' },
     aiModelCode: 'claude',
-    promptSnippet: 'Đây là prompt đã tạo từ một template hiện không còn tồn tại...',
+    promptSnippet: 'This is a prompt generated from a template that no longer exists...',
     createdAt: daysAgo(1),
     templateVersionId: null,
     inputValues: { role: 'QA Engineer', log: '500 Internal Server Error' },
-    extraInstructions: 'Ưu tiên phân tích race condition',
+    extraInstructions: 'Prioritize race condition analysis',
     finalPrompt:
-      'Đây là prompt đã tạo từ một template hiện không còn tồn tại, nhưng nội dung vẫn được lưu lại để bạn xem/copy.',
+      'This is a prompt generated from a template that no longer exists, but the content is still saved for you to view/copy.',
   },
   {
     id: 'h3',
@@ -87,12 +87,12 @@ const store: HistoryDetail[] = [
     templateId: TEMPLATE_SLUGS.rewrite,
     templateTitle: { en: 'Rewrite content style', vi: 'Sửa văn phong nội dung' },
     aiModelCode: 'gpt-4o',
-    promptSnippet: 'Viết lại đoạn văn sau theo giọng điệu chuyên nghiệp...',
+    promptSnippet: 'Rewrite the following paragraph in a professional tone...',
     createdAt: daysAgo(3),
     templateVersionId: 'ver-t2-1',
-    inputValues: { content: 'Sản phẩm này khá ổn.', tone: 'chuyen-nghiep', length: 150 },
+    inputValues: { content: 'This product is pretty good.', tone: 'chuyen-nghiep', length: 150 },
     extraInstructions: null,
-    finalPrompt: 'Viết lại đoạn văn sau theo giọng điệu chuyên nghiệp, độ dài khoảng 150 từ...',
+    finalPrompt: 'Rewrite the following paragraph in a professional tone, about 150 words long...',
   },
   {
     id: 'h5',
@@ -100,17 +100,17 @@ const store: HistoryDetail[] = [
     templateId: TEMPLATE_SLUGS.marketing,
     templateTitle: { en: 'Marketing product description', vi: 'Mô tả sản phẩm marketing' },
     aiModelCode: 'gemini',
-    promptSnippet: 'Viết mô tả sản phẩm cho SmartWatch X1...',
+    promptSnippet: 'Write a product description for SmartWatch X1...',
     createdAt: daysAgo(4),
     templateVersionId: 'ver-t3-1',
     inputValues: {
       productName: 'SmartWatch X1',
-      features: 'GPS, đo nhịp tim',
-      audience: 'Người đi làm trẻ',
+      features: 'GPS, heart rate monitor',
+      audience: 'Young professionals',
     },
     extraInstructions: null,
     finalPrompt:
-      'Viết mô tả sản phẩm cho SmartWatch X1, nhấn mạnh các tính năng: GPS, đo nhịp tim...',
+      'Write a product description for SmartWatch X1, highlighting these features: GPS, heart rate monitor...',
   },
   {
     id: 'h6',
@@ -118,13 +118,13 @@ const store: HistoryDetail[] = [
     templateId: TEMPLATE_SLUGS.codeReview,
     templateTitle: { en: 'Code review checklist', vi: 'Kiểm tra code review' },
     aiModelCode: 'claude',
-    promptSnippet: 'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng...',
+    promptSnippet: 'Review the following diff against a security and performance checklist...',
     createdAt: daysAgo(5),
     templateVersionId: 'ver-t4-1',
     inputValues: { diff: '+ const user = req.user;', strictness: 'strict' },
     extraInstructions: null,
     finalPrompt:
-      'Rà soát đoạn diff sau theo checklist bảo mật và hiệu năng:\n\n+ const user = req.user;',
+      'Review the following diff against a security and performance checklist:\n\n+ const user = req.user;',
   },
   {
     id: 'h7',
@@ -132,12 +132,12 @@ const store: HistoryDetail[] = [
     templateId: TEMPLATE_SLUGS.meeting,
     templateTitle: { en: 'Summarize meeting notes', vi: 'Tóm tắt cuộc họp' },
     aiModelCode: 'gpt-4o',
-    promptSnippet: 'Tóm tắt ghi chú cuộc họp sau thành các mục chính...',
+    promptSnippet: 'Summarize the following meeting notes into key points...',
     createdAt: daysAgo(6),
     templateVersionId: 'ver-t5-1',
-    inputValues: { notes: 'Họp sprint planning, chốt scope tuần này.' },
+    inputValues: { notes: "Sprint planning meeting, finalize this week's scope." },
     extraInstructions: null,
-    finalPrompt: 'Tóm tắt ghi chú cuộc họp sau thành các mục chính và việc cần làm...',
+    finalPrompt: 'Summarize the following meeting notes into key points and action items...',
   },
 ]
 
@@ -177,12 +177,12 @@ for (let i = 0; i < 15; i++) {
     templateId: slug,
     templateTitle: CYCLE_TITLES[slug],
     aiModelCode: CYCLE_MODELS[i % CYCLE_MODELS.length],
-    promptSnippet: `Prompt đã tạo lần ${8 + i}...`,
+    promptSnippet: `Generated prompt #${8 + i}...`,
     createdAt: daysAgo(7 + i),
     templateVersionId: CYCLE_VERSION_IDS[slug],
     inputValues: { note: `filler #${i}` },
     extraInstructions: null,
-    finalPrompt: `Nội dung prompt đầy đủ cho mục lịch sử #${8 + i}.`,
+    finalPrompt: `Full prompt content for history item #${8 + i}.`,
   })
 }
 
@@ -226,7 +226,7 @@ export function createMockHistoryClient(): HistoryClient {
     async get(id) {
       const entry = store.find((e) => e.id === id)
       if (!entry) {
-        throw new ApiError('NOT_FOUND', 'Không tìm thấy prompt trong lịch sử.', 404)
+        throw new ApiError('NOT_FOUND', 'Prompt not found in history.', 404)
       }
       return entry
     },

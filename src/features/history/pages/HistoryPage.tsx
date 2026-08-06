@@ -40,7 +40,7 @@ export function HistoryPage() {
     setError(null)
     ensureHistory(queryKey)
       .catch(() => {
-        if (!cancelled) setError('Không thể tải lịch sử, vui lòng thử lại sau.')
+        if (!cancelled) setError('Unable to load history, please try again later.')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -56,7 +56,7 @@ export function HistoryPage() {
     try {
       await loadMoreHistory()
     } catch {
-      setError('Không thể tải thêm lịch sử, vui lòng thử lại sau.')
+      setError('Unable to load more history, please try again later.')
     } finally {
       setIsLoadingMore(false)
     }
@@ -93,10 +93,10 @@ export function HistoryPage() {
     <main className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 px-5 pb-16 pt-2 sm:px-[clamp(1.25rem,4vw,3rem)]">
       <div className="flex animate-[fade-slide-up_450ms_ease] flex-col gap-2">
         <span className="before:mr-1.5 before:inline-block before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3652E0] font-mono text-[0.72rem] uppercase tracking-[0.08em] text-[#3652E0] dark:text-[#8493FF] dark:before:bg-[#8493FF]">
-          lịch sử
+          history
         </span>
         <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
-          Lịch sử prompt đã tạo
+          Generated Prompt History
         </h1>
       </div>
 

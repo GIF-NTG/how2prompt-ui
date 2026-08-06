@@ -58,7 +58,7 @@ export function CatalogPage() {
     void ensureTrending(session?.token)
     ensureTemplates(templatesParams, session?.token)
       .catch(() => {
-        if (!cancelled) setError('Không thể tải thư viện mẫu, vui lòng thử lại sau.')
+        if (!cancelled) setError('Unable to load the template library, please try again later.')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -75,7 +75,7 @@ export function CatalogPage() {
     try {
       await loadMoreTemplates()
     } catch {
-      setError('Không thể tải thêm mẫu, vui lòng thử lại sau.')
+      setError('Unable to load more templates, please try again later.')
     } finally {
       setIsLoadingMore(false)
     }
@@ -89,8 +89,8 @@ export function CatalogPage() {
   )
 
   const greeting = session
-    ? `Chào ${session.displayName}, tìm mẫu prompt phù hợp`
-    : 'Tìm mẫu prompt phù hợp — đăng nhập để lưu lịch sử'
+    ? `Hi ${session.displayName}, find the right prompt template`
+    : 'Find the right prompt template — log in to save your history'
 
   if (error) {
     return (
@@ -139,16 +139,16 @@ export function CatalogPage() {
       ) : (
         <>
           <TemplateRail
-            title="Nổi bật"
-            subtitle="chọn bởi Admin"
+            title="Featured"
+            subtitle="curated by Admin"
             templates={featured}
             isSignedIn={!!session}
             onTemplateClick={handleTemplateClick}
           />
 
           <TemplateRail
-            title="Thịnh hành 7 ngày qua"
-            subtitle={trending.length > 0 ? `${trending.length} mẫu` : undefined}
+            title="Trending this week"
+            subtitle={trending.length > 0 ? `${trending.length} templates` : undefined}
             templates={trending}
             isSignedIn={!!session}
             onTemplateClick={handleTemplateClick}

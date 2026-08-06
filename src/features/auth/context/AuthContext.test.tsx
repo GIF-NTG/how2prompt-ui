@@ -12,7 +12,7 @@ function buildSession(overrides: Partial<Session> = {}): Session {
   const issuedAt = Date.now()
   return {
     accountId: 'test-account',
-    displayName: 'Người kiểm thử',
+    displayName: 'Test User',
     email: 'test@example.com',
     token: 'test-token',
     issuedAt,
@@ -46,7 +46,7 @@ describe('AuthProvider / useAuth session restore', () => {
 
     renderProbe()
 
-    expect(await screen.findByText('signed-in:Người kiểm thử')).toBeInTheDocument()
+    expect(await screen.findByText('signed-in:Test User')).toBeInTheDocument()
   })
 
   it('clears and ignores an expired stored session on mount', async () => {

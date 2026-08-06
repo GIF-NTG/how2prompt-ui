@@ -13,14 +13,14 @@ export function ConfirmDialog({
   message,
   onConfirm,
   onCancel,
-  confirmLabel = 'Xoá',
+  confirmLabel = 'Delete',
 }: ConfirmDialogProps) {
   return (
     <AnimatePresence>
       <motion.div
         role="dialog"
         aria-modal="true"
-        aria-label="Xác nhận"
+        aria-label="Confirm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -41,7 +41,7 @@ export function ConfirmDialog({
               onClick={onCancel}
               className="cursor-pointer rounded-md border border-[#DBDFD3] px-4 py-2 text-[0.85rem] font-semibold text-[#1B1D1B] transition-colors duration-150 hover:border-[#8B8F86] dark:border-[#2C3130] dark:text-[#ECEEE8]"
             >
-              Huỷ
+              Cancel
             </button>
             <button
               type="button"
