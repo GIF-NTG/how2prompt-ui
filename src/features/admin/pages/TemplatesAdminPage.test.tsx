@@ -82,6 +82,7 @@ describe('TemplatesAdminPage', () => {
       create,
       update: vi.fn(),
       publish,
+      delete: vi.fn(),
     })
 
     renderPage()
@@ -134,6 +135,7 @@ describe('TemplatesAdminPage', () => {
       create,
       update: vi.fn(),
       publish,
+      delete: vi.fn(),
     })
 
     renderPage()
@@ -179,7 +181,7 @@ describe('TemplatesAdminPage', () => {
       ...published,
       currentVersion: { ...published.currentVersion, id: 'tpl1-v2', versionNumber: 2 },
     })
-    mockedCreateTemplatesAdminClient.mockReturnValue({ list, create: vi.fn(), update, publish: vi.fn() })
+    mockedCreateTemplatesAdminClient.mockReturnValue({ list, create: vi.fn(), update, publish: vi.fn(), delete: vi.fn() })
 
     const user = userEvent.setup()
     renderPage()
@@ -200,6 +202,7 @@ describe('TemplatesAdminPage', () => {
       create: vi.fn(),
       update: vi.fn(),
       publish: vi.fn(),
+      delete: vi.fn(),
     })
 
     renderPage()
@@ -245,6 +248,7 @@ describe('TemplatesAdminPage', () => {
       create: vi.fn(),
       update: vi.fn(),
       publish: vi.fn(),
+      delete: vi.fn(),
     })
 
     renderPage()
@@ -266,6 +270,7 @@ describe('TemplatesAdminPage', () => {
       create: vi.fn(),
       update: vi.fn(),
       publish: vi.fn(),
+      delete: vi.fn(),
     })
 
     const authValue = makeAuthValue()

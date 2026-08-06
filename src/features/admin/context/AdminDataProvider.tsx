@@ -116,6 +116,21 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     }
   }, [templatesAdminClient, templatesCursor])
 
+  const deleteTemplate = useCallback(
+    async (id: string) => {
+      try {
+        await templatesAdminClient.delete(id)
+        setTemplates((prev) => prev.filter((t) => t.id !== id))
+      } catch (err) {
+        setError(
+          err instanceof ApiError ? err.message : 'Unable to delete template, please try again.',
+        )
+        throw err
+      }
+    },
+    [templatesAdminClient],
+  )
+
   const ensureCategories = useCallback(() => {
     if (categoriesLoaded) return Promise.resolve()
     if (!categoriesInFlight.current) {
@@ -196,6 +211,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       refetchDashboardStats,
       refetchTemplates,
       loadMoreTemplates,
+      deleteTemplate,
     }),
     [
       categories,
@@ -226,6 +242,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
       refetchDashboardStats,
       refetchTemplates,
       loadMoreTemplates,
+      deleteTemplate,
     ],
   )
 

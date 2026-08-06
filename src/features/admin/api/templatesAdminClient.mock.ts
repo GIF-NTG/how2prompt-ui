@@ -112,5 +112,15 @@ export function createMockTemplatesAdminClient(): TemplatesAdminClient {
       syncPublicCatalog(published)
       return published
     },
+
+    async delete(id) {
+      if (!store.delete(id)) {
+        throw new ApiError('NOT_FOUND', `Template ${id} not found`, 404)
+      }
+      const publicIndex = MOCK_TEMPLATES.findIndex((t) => t.id === id)
+      if (publicIndex !== -1) {
+        MOCK_TEMPLATES.splice(publicIndex, 1)
+      }
+    },
   }
 }

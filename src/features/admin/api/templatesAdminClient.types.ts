@@ -66,4 +66,5 @@ export interface TemplatesAdminClient {
    *  matching declared variable — callers should run
    *  `validatePlaceholders` first for immediate feedback (FR-011). */
   publish(id: string): Promise<AdminTemplate>
+  delete(id: string): Promise<void>
 }

@@ -5,6 +5,7 @@ import { AdminPageHeader } from '../components/AdminPageHeader'
 import { AdminPanel } from '../components/AdminPanel'
 import { TemplateEditorForm } from '../components/TemplateEditorForm'
 import { Modal } from '../components/Modal'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 export function TemplatesAdminPage() {
   // Categories/tags/AI models/templates are shared, lazily-fetched, cross-page
@@ -27,6 +28,7 @@ export function TemplatesAdminPage() {
     ensureTemplates,
     refetchTemplates,
     loadMoreTemplates,
+    deleteTemplate,
   } = useAdminData()
 
   useEffect(() => {
@@ -39,6 +41,8 @@ export function TemplatesAdminPage() {
   const [editingTemplate, setEditingTemplate] = useState<AdminTemplate | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<AdminTemplate | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   async function handleLoadMore() {
     setLoadingMore(true)
@@ -82,6 +86,17 @@ export function TemplatesAdminPage() {
     await templatesAdminClient.publish(target.id)
     closeForm()
     await refetchTemplates()
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return
+    try {
+      await deleteTemplate(deleteTarget.id)
+      setDeleteTarget(null)
+      setDeleteError(null)
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Unable to delete template.')
+    }
   }
 
   return (
@@ -150,13 +165,25 @@ export function TemplatesAdminPage() {
                       </span>
                     </td>
                     <td className="px-3 py-2.5">
-                      <button
-                        type="button"
-                        onClick={() => openEditForm(template)}
-                        className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
-                      >
-                        Edit
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => openEditForm(template)}
+                          className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteTarget(template)
+                            setDeleteError(null)
+                          }}
+                          className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -177,6 +204,22 @@ export function TemplatesAdminPage() {
           </div>
         )}
       </AdminPanel>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={`Delete template "${deleteTarget.title.en}"? This action cannot be undone.`}
+          onConfirm={() => void handleConfirmDelete()}
+          onCancel={() => {
+            setDeleteTarget(null)
+            setDeleteError(null)
+          }}
+        />
+      )}
+      {deleteError && (
+        <p role="alert" className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]">
+          {deleteError}
+        </p>
+      )}
 
       {formOpen && (
         <Modal

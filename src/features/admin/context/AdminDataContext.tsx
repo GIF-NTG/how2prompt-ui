@@ -39,6 +39,7 @@ export interface AdminDataContextValue {
   refetchTemplates: () => Promise<void>
   /** Appends the next cursor page onto the cached list. */
   loadMoreTemplates: () => Promise<void>
+  deleteTemplate: (id: string) => Promise<void>
 }
 
 export const AdminDataContext = createContext<AdminDataContextValue | null>(null)

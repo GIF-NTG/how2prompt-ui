@@ -272,5 +272,9 @@ export function createRealTemplatesAdminClient(accessToken?: string): TemplatesA
       })
       return fetchDetail(id, accessToken)
     },
+
+    async delete(id) {
+      await apiFetch(`/admin/templates/${id}`, { method: 'DELETE', accessToken })
+    },
   }
 }
