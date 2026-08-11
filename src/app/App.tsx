@@ -50,6 +50,11 @@ const TemplateDetailPage = lazy(() =>
   })),
 )
 const HistoryPage = lazy(() => historyChunk().then((m) => ({ default: m.HistoryPage })))
+const RegenerateHistoryPage = lazy(() =>
+  import('@/features/history/pages/RegenerateHistoryPage').then((m) => ({
+    default: m.RegenerateHistoryPage,
+  })),
+)
 const FavoritesPage = lazy(() => favoritesChunk().then((m) => ({ default: m.FavoritesPage })))
 const AiModelsPage = lazy(() => adminAiModelsChunk().then((m) => ({ default: m.AiModelsPage })))
 const TaxonomyPage = lazy(() => adminTaxonomyChunk().then((m) => ({ default: m.TaxonomyPage })))
@@ -84,6 +89,10 @@ export function App() {
                   <Route index element={<CatalogPage />} />
                   <Route path="templates/:id" element={<TemplateDetailPage />} />
                   <Route path="history" element={<HistoryPage />} />
+                  <Route
+                    path="history/:historyId/regenerate"
+                    element={<RegenerateHistoryPage />}
+                  />
                   <Route path="favorites" element={<FavoritesPage />} />
                   <Route path="profile" element={<ProfileSettingsPage />} />
                 </Route>

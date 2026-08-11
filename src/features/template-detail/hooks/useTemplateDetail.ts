@@ -29,6 +29,18 @@ export function useTemplateDetail(id: string) {
   const { session } = useAuth()
 
   useEffect(() => {
+    // Guards callers that only learn the real id asynchronously (e.g.
+    // RegenerateHistoryPage, which starts with `entry` unloaded and passes
+    // `entry?.templateId ?? ''` until it resolves) — fetching `/templates/`
+    // with an empty id 404s against the real backend instead of just no-op'ing.
+    if (!id) {
+      setTemplate(null)
+      setIsLoading(true)
+      setError(null)
+      setNotFound(false)
+      return
+    }
+
     let cancelled = false
     const key = cacheKey(id, session?.token)
 
