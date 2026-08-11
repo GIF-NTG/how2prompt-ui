@@ -142,7 +142,7 @@ export function CatalogPage() {
         className="animate-[fade-slide-up_450ms_ease_backwards]"
         style={{ animationDelay: '60ms' }}
       >
-        <FeaturedTemplateHero />
+        <FeaturedTemplateHero template={featured[0] ?? null} />
       </div>
 
       <div
@@ -168,14 +168,6 @@ export function CatalogPage() {
         <EmptyState />
       ) : (
         <>
-          <TemplateRail
-            title="Featured"
-            subtitle="curated by Admin"
-            templates={featured}
-            isSignedIn={!!session}
-            onTemplateClick={handleTemplateClick}
-          />
-
           {/* Hidden while any filter is active — a "trending this week" rail
               next to a narrowed grid reads as unrelated noise, not a suggestion. */}
           {!hasActiveFilters && (

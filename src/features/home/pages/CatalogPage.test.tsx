@@ -30,6 +30,7 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
     description: { en: 'Description', vi: 'Description' },
     coverImage: null,
     isOfficial: false,
+    isFeatured: false,
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: [],
     tags: [],
@@ -85,21 +86,39 @@ describe('CatalogPage', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the featured hero and navigates to its fixed template on click', async () => {
+  it('renders the featured hero for the first isFeatured template and navigates to it on click', async () => {
     mockedClient.getTemplates.mockResolvedValue({
       items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
       nextCursor: null,
       hasMore: false,
     })
+    mockedClient.getFeatured.mockResolvedValue([
+      makeTemplate({
+        id: 'featured-1',
+        slug: 'featured-1',
+        title: { en: 'Universal Prompt Framework', vi: 'Universal Prompt Framework' },
+      }),
+    ])
 
     const user = userEvent.setup()
     renderPage()
 
     expect(await screen.findByText('Universal Prompt Framework')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Use now' }))
-    expect(
-      screen.getByText('Template detail page: c0000000-0000-0000-0000-000000000012'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Template detail page: featured-1')).toBeInTheDocument()
+  })
+
+  it('renders no featured hero when no template is currently featured', async () => {
+    mockedClient.getTemplates.mockResolvedValue({
+      items: [makeTemplate({ id: 't1', slug: 't1', title: { en: 'A', vi: 'A' } })],
+      nextCursor: null,
+      hasMore: false,
+    })
+
+    renderPage()
+
+    await screen.findByText('Find the right prompt template — log in to save your history')
+    expect(screen.queryByRole('button', { name: 'Use now' })).not.toBeInTheDocument()
   })
 
   it('shows "Load more" while more pages remain, and hides it once exhausted', async () => {

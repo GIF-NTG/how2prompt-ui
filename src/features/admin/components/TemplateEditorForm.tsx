@@ -13,6 +13,7 @@ function emptyForm(): TemplateUpsert {
     title: { en: '' },
     description: { en: '' },
     coverImage: null,
+    isFeatured: false,
     categoryIds: [],
     tagSlugs: [],
     modelCodes: [],
@@ -57,6 +58,7 @@ export function TemplateEditorForm({
         title: editingTemplate.title,
         description: editingTemplate.description,
         coverImage: editingTemplate.coverImage,
+        isFeatured: editingTemplate.isFeatured,
         categoryIds: editingTemplate.categoryIds,
         tagSlugs: editingTemplate.tagSlugs,
         modelCodes: editingTemplate.modelCodes,
@@ -142,6 +144,17 @@ export function TemplateEditorForm({
           rows={2}
           className={FIELD_CLASSES}
         />
+      </label>
+
+      <label className="flex items-center gap-2 text-xs">
+        <input
+          type="checkbox"
+          checked={form.isFeatured}
+          onChange={(e) => setForm((f) => ({ ...f, isFeatured: e.target.checked }))}
+        />
+        <span className="text-[#5B5F58] dark:text-[#A2A79C]">
+          Featured (shown in the homepage Featured carousel)
+        </span>
       </label>
 
       <fieldset className="flex flex-col gap-1">

@@ -13,6 +13,7 @@ export interface TemplateUpsert {
   title: I18nString
   description: I18nString
   coverImage: string | null
+  isFeatured: boolean
   categoryIds: string[]
   tagSlugs: string[]
   modelCodes: string[]
@@ -40,6 +41,7 @@ export interface AdminTemplate {
   title: I18nString
   description: I18nString
   coverImage: string | null
+  isFeatured: boolean
   categoryIds: string[]
   tagSlugs: string[]
   modelCodes: string[]

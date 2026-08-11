@@ -116,6 +116,7 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     },
     coverImage: null,
     isOfficial: true,
+    isFeatured: true,
     author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[0]],
     tags: [MOCK_TAGS[0], MOCK_TAGS[1]],
@@ -135,6 +136,7 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     },
     coverImage: null,
     isOfficial: true,
+    isFeatured: false,
     author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[2]],
     tags: [MOCK_TAGS[2]],
@@ -154,6 +156,7 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     },
     coverImage: null,
     isOfficial: true,
+    isFeatured: true,
     author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[3]],
     tags: [MOCK_TAGS[3], MOCK_TAGS[2]],
@@ -173,6 +176,7 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     },
     coverImage: null,
     isOfficial: true,
+    isFeatured: false,
     author: { id: null, fullName: 'Admin', username: 'admin', avatarUrl: null, type: 'admin' },
     categories: [MOCK_CATEGORIES[1]],
     tags: [MOCK_TAGS[0]],
@@ -192,6 +196,7 @@ export const MOCK_TEMPLATES: TemplateListItem[] = [
     },
     coverImage: null,
     isOfficial: false,
+    isFeatured: false,
     author: {
       id: 'u1',
       fullName: 'John Doe',
@@ -260,7 +265,7 @@ export function createMockTemplateClient(): TemplateClient {
     },
 
     async getFeatured() {
-      return MOCK_TEMPLATES.filter((t) => t.isOfficial).map((t) => ({
+      return MOCK_TEMPLATES.filter((t) => t.isFeatured).map((t) => ({
         ...t,
         isFavorited: favorites.has(t.id),
       }))

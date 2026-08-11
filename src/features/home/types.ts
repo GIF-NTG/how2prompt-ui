@@ -47,6 +47,7 @@ export interface TemplateListItem {
   description: I18nString
   coverImage: string | null
   isOfficial: boolean
+  isFeatured: boolean
   author: AuthorBrief
   categories: Category[]
   tags: Tag[]

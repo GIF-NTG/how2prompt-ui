@@ -1126,6 +1126,7 @@ components:
         description: { $ref: '#/components/schemas/I18nString' }
         coverImage: { type: string, nullable: true }
         isOfficial: { type: boolean }
+        isFeatured: { type: boolean, description: 'true nếu admin đã gắn Featured' }
         author:
           $ref: '#/components/schemas/AuthorBrief'
         categories:
@@ -1222,6 +1223,9 @@ components:
         title: { $ref: '#/components/schemas/I18nString' }
         description: { $ref: '#/components/schemas/I18nString' }
         coverImage: { type: string }
+        isFeatured:
+          type: boolean
+          description: 'Gắn/bỏ gắn Featured (US-6.1) — backend set/clear templates.featured_at'
         categoryIds:
           type: array
           items: { type: string, format: uuid }

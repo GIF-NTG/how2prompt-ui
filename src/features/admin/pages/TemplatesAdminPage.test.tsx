@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { TemplatesAdminPage } from './TemplatesAdminPage'
@@ -111,6 +111,7 @@ describe('TemplatesAdminPage', () => {
       title: { en: 'My Template' },
       description: { en: '' },
       coverImage: null,
+      isFeatured: false,
       categoryIds: [],
       tagSlugs: [],
       modelCodes: [],
@@ -160,6 +161,7 @@ describe('TemplatesAdminPage', () => {
       title: { en: 'Published Template' },
       description: { en: '' },
       coverImage: null,
+      isFeatured: false,
       categoryIds: [],
       tagSlugs: [],
       modelCodes: [],
@@ -222,6 +224,7 @@ describe('TemplatesAdminPage', () => {
       title: { en: 'Template One' },
       description: { en: '' },
       coverImage: null,
+      isFeatured: false,
       categoryIds: [],
       tagSlugs: [],
       modelCodes: [],
@@ -303,5 +306,154 @@ describe('TemplatesAdminPage', () => {
     await screen.findByText('No templates yet.')
 
     expect(list).toHaveBeenCalledTimes(1)
+  })
+
+  it('sends isFeatured: true when Featured is toggled on and saved (US1)', async () => {
+    const user = userEvent.setup()
+    setupCommonMocks()
+    const created = {
+      id: 'tpl1',
+      title: { en: 'My Template' },
+      description: { en: '' },
+      coverImage: null,
+      isFeatured: true,
+      categoryIds: [],
+      tagSlugs: [],
+      modelCodes: [],
+      isOfficial: false,
+      status: 'draft' as const,
+      currentVersion: {
+        id: 'tpl1-v1',
+        versionNumber: 1,
+        promptBody: '',
+        systemPrompt: null,
+        exampleOutput: null,
+        guide: { en: '' },
+        variables: [],
+        variants: [],
+      },
+    }
+    const create = vi.fn().mockResolvedValue(created)
+    mockedCreateTemplatesAdminClient.mockReturnValue({
+      list: vi.fn().mockResolvedValue({ items: [], nextCursor: null, hasMore: false }),
+      create,
+      update: vi.fn(),
+      publish: vi.fn(),
+      delete: vi.fn(),
+    })
+
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: '+ Create new template' }))
+    await screen.findByRole('dialog', { name: 'Create new template' })
+
+    await user.type(screen.getByRole('textbox', { name: 'Title (EN)' }), 'My Template')
+    await user.type(screen.getByRole('textbox', { name: /Prompt body/ }), 'Hello world')
+    await user.click(screen.getByRole('checkbox', { name: /Featured/ }))
+    await user.click(screen.getByRole('button', { name: 'Save Draft' }))
+
+    await waitFor(() =>
+      expect(create).toHaveBeenCalledWith(expect.objectContaining({ isFeatured: true })),
+    )
+  })
+
+  it('pre-checks Featured on edit and sends isFeatured: false when toggled off, without bumping the version (US2)', async () => {
+    setupCommonMocks()
+    const featured = {
+      id: 'tpl1',
+      title: { en: 'Featured Template' },
+      description: { en: '' },
+      coverImage: null,
+      isFeatured: true,
+      categoryIds: [],
+      tagSlugs: [],
+      modelCodes: [],
+      isOfficial: true,
+      status: 'published' as const,
+      currentVersion: {
+        id: 'tpl1-v1',
+        versionNumber: 1,
+        promptBody: 'Hello world',
+        systemPrompt: null,
+        exampleOutput: null,
+        guide: { en: '' },
+        variables: [],
+        variants: [],
+      },
+    }
+    const list = vi.fn().mockResolvedValue({ items: [featured], nextCursor: null, hasMore: false })
+    const update = vi.fn().mockResolvedValue({ ...featured, isFeatured: false })
+    mockedCreateTemplatesAdminClient.mockReturnValue({
+      list,
+      create: vi.fn(),
+      update,
+      publish: vi.fn(),
+      delete: vi.fn(),
+    })
+
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('Featured Template')
+
+    await user.click(screen.getByRole('button', { name: 'Edit' }))
+    await screen.findByRole('dialog', { name: 'Edit: Featured Template' })
+    expect(screen.getByRole('checkbox', { name: /Featured/ })).toBeChecked()
+
+    await user.click(screen.getByRole('checkbox', { name: /Featured/ }))
+    await user.click(screen.getByRole('button', { name: 'Save Draft' }))
+
+    await waitFor(() =>
+      expect(update).toHaveBeenCalledWith(
+        'tpl1',
+        expect.objectContaining({ isFeatured: false }),
+      ),
+    )
+    // FR-006: toggling Featured alone MUST NOT create a new template version.
+    const [, sentInput] = update.mock.calls[0] as [string, { promptBody: string }]
+    expect(sentInput.promptBody).toBe(featured.currentVersion.promptBody)
+  })
+
+  it('shows a Featured badge only for templates marked isFeatured (US3)', async () => {
+    setupCommonMocks()
+    const base = {
+      title: { en: '' },
+      description: { en: '' },
+      coverImage: null,
+      categoryIds: [],
+      tagSlugs: [],
+      modelCodes: [],
+      isOfficial: true,
+      status: 'published' as const,
+      currentVersion: {
+        id: 'v1',
+        versionNumber: 1,
+        promptBody: '',
+        systemPrompt: null,
+        exampleOutput: null,
+        guide: { en: '' },
+        variables: [],
+        variants: [],
+      },
+    }
+    const featured = { ...base, id: 'tpl1', title: { en: 'Featured One' }, isFeatured: true }
+    const notFeatured = { ...base, id: 'tpl2', title: { en: 'Regular One' }, isFeatured: false }
+    const list = vi
+      .fn()
+      .mockResolvedValue({ items: [featured, notFeatured], nextCursor: null, hasMore: false })
+    mockedCreateTemplatesAdminClient.mockReturnValue({
+      list,
+      create: vi.fn(),
+      update: vi.fn(),
+      publish: vi.fn(),
+      delete: vi.fn(),
+    })
+
+    renderPage()
+    await screen.findByText('Featured One')
+    const rows = screen.getAllByRole('row')
+    const featuredRow = rows.find((row) => row.textContent?.includes('Featured One'))
+    const notFeaturedRow = rows.find((row) => row.textContent?.includes('Regular One'))
+
+    expect(featuredRow && within(featuredRow).getByText('Featured')).toBeInTheDocument()
+    expect(notFeaturedRow && within(notFeaturedRow).queryByText('Featured')).not.toBeInTheDocument()
   })
 })

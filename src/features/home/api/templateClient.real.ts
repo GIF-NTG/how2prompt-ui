@@ -49,6 +49,7 @@ export interface RawTemplateListItem {
   descriptionI18n: I18nString
   coverImage: string | null
   official: boolean
+  isFeatured?: boolean
   categories: RawCategory[]
   tags: Tag[]
   // Despite the name, the backend actually sends full model objects here
@@ -71,6 +72,7 @@ export function mapTemplateListItem(raw: RawTemplateListItem): TemplateListItem 
     description: raw.descriptionI18n,
     coverImage: raw.coverImage,
     isOfficial: raw.official,
+    isFeatured: raw.isFeatured ?? false,
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: (raw.categories ?? []).map(mapCategory),
     tags: raw.tags ?? [],

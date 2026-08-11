@@ -47,6 +47,7 @@ function makeTemplate(overrides: Partial<TemplateListItem>): TemplateListItem {
     description: { en: 'Description', vi: 'Mô tả' },
     coverImage: null,
     isOfficial: false,
+    isFeatured: false,
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: [],
     tags: [],

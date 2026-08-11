@@ -64,6 +64,7 @@ interface RawTemplateVersion {
 interface RawTemplateDetail extends RawTemplateListItem {
   currentVersion: RawTemplateVersion
   status?: 'draft' | 'published'
+  isFeatured?: boolean
 }
 
 function mapTemplateVariable(raw: RawTemplateVariable): TemplateVariable {
@@ -102,6 +103,7 @@ function mapAdminTemplate(raw: RawTemplateDetail): AdminTemplate {
     title: raw.titleI18n,
     description: raw.descriptionI18n,
     coverImage: raw.coverImage,
+    isFeatured: raw.isFeatured ?? false,
     categoryIds: (raw.categories ?? []).map((c) => c.id),
     tagSlugs: (raw.tags ?? []).map((t) => t.slug),
     modelCodes: (raw.models ?? []).map((m) => (typeof m === 'string' ? m : m.code)),
@@ -160,6 +162,7 @@ async function patchMetadata(
       titleI18n: input.title,
       descriptionI18n: input.description,
       coverImage: input.coverImage ?? undefined,
+      isFeatured: input.isFeatured,
       categoryIds: input.categoryIds,
       tagIds,
       modelIds,

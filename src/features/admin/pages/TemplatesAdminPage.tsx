@@ -154,15 +154,22 @@ export function TemplatesAdminPage() {
                       v{template.currentVersion.versionNumber}
                     </td>
                     <td className="px-3 py-2.5">
-                      <span
-                        className={
-                          template.status === 'published'
-                            ? 'rounded-full bg-[#E4F3EA] px-2 py-0.5 text-xs text-[#2E7D4F] dark:bg-[#1E3327] dark:text-[#6FCF9A]'
-                            : 'rounded-full bg-[#F7ECD7] px-2 py-0.5 text-xs text-[#C98A1F] dark:bg-[#362C1A] dark:text-[#E0B25C]'
-                        }
-                      >
-                        {template.status === 'published' ? 'published' : 'draft'}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={
+                            template.status === 'published'
+                              ? 'rounded-full bg-[#E4F3EA] px-2 py-0.5 text-xs text-[#2E7D4F] dark:bg-[#1E3327] dark:text-[#6FCF9A]'
+                              : 'rounded-full bg-[#F7ECD7] px-2 py-0.5 text-xs text-[#C98A1F] dark:bg-[#362C1A] dark:text-[#E0B25C]'
+                          }
+                        >
+                          {template.status === 'published' ? 'published' : 'draft'}
+                        </span>
+                        {template.isFeatured && (
+                          <span className="rounded-full bg-[#E7EAFC] px-2 py-0.5 text-xs text-[#3652E0] dark:bg-[#262C4A] dark:text-[#8493FF]">
+                            Featured
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-3">
