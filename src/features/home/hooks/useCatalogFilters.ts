@@ -9,6 +9,7 @@ export interface CatalogFilterState {
   model: string
   search: string
   sort: CatalogSort
+  favoritesOnly: boolean
 }
 
 export function useCatalogFilters() {
@@ -19,6 +20,7 @@ export function useCatalogFilters() {
   const model = searchParams.get('model') ?? ''
   const search = searchParams.get('q') ?? ''
   const sort: CatalogSort = searchParams.get('sort') === 'newest' ? 'newest' : 'popular'
+  const favoritesOnly = searchParams.get('favorite') === '1'
 
   const setCategory = useCallback(
     (slug: string) => {
@@ -110,6 +112,24 @@ export function useCatalogFilters() {
     [setSearchParams],
   )
 
+  const setFavoritesOnly = useCallback(
+    (value: boolean) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          if (value) {
+            next.set('favorite', '1')
+          } else {
+            next.delete('favorite')
+          }
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setSearchParams],
+  )
+
   const resetFilters = useCallback(() => {
     setSearchParams({}, { replace: true })
   }, [setSearchParams])
@@ -132,12 +152,13 @@ export function useCatalogFilters() {
   }, [setSearchParams])
 
   return {
-    filters: { category, tag, model, search, sort } as CatalogFilterState,
+    filters: { category, tag, model, search, sort, favoritesOnly } as CatalogFilterState,
     setCategory,
     setTag,
     setModel,
     setSearch,
     setSort,
+    setFavoritesOnly,
     resetFilters,
     clearCategoryAndTag,
   }

@@ -6,6 +6,8 @@ import { ChipFilterGroup } from './ChipFilterGroup'
 
 interface FilterPopoverProps {
   category: string
+  /** Comma-joined tag slugs (e.g. "quick,creative") — the filter supports
+   *  selecting multiple tags, combined with OR semantics server/mock-side. */
   tag: string
   onCategoryChange: (slug: string) => void
   onTagChange: (slug: string) => void
@@ -64,7 +66,16 @@ export function FilterPopover({
 
   if (!loading && categoryItems.length === 0 && tagItems.length === 0) return null
 
-  const activeCount = (category ? 1 : 0) + (tag ? 1 : 0)
+  const tagSlugs = tag ? tag.split(',').filter(Boolean) : []
+
+  function handleToggleTag(slug: string) {
+    const next = tagSlugs.includes(slug)
+      ? tagSlugs.filter((s) => s !== slug)
+      : [...tagSlugs, slug]
+    onTagChange(next.join(','))
+  }
+
+  const activeCount = (category ? 1 : 0) + tagSlugs.length
 
   return (
     <div className="relative" ref={rootRef}>
@@ -111,9 +122,11 @@ export function FilterPopover({
               </span>
               <ChipFilterGroup
                 items={tagItems}
-                value={tag}
-                onChange={onTagChange}
+                value={tagSlugs}
+                onChange={handleToggleTag}
+                onClear={() => onTagChange('')}
                 ariaLabel="Filter by tag"
+                multiple
               />
             </div>
           )}

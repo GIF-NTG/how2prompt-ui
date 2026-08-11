@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
+import { useFavorites } from '@/features/history/context/useFavorites'
 import { useHomeData } from '@/features/home/context/useHomeData'
 import { useCatalogFilters } from '@/features/home/hooks/useCatalogFilters'
 import { useDebounce } from '@/shared/hooks/useDebounce'
@@ -15,8 +16,17 @@ import { EmptyState } from '@/features/home/components/EmptyState'
 export function CatalogPage() {
   const navigate = useNavigate()
   const { session } = useAuth()
-  const { filters, setCategory, setTag, setModel, setSearch, setSort, clearCategoryAndTag } =
-    useCatalogFilters()
+  const { isFavorited } = useFavorites()
+  const {
+    filters,
+    setCategory,
+    setTag,
+    setModel,
+    setSearch,
+    setSort,
+    setFavoritesOnly,
+    clearCategoryAndTag,
+  } = useCatalogFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
   // Featured/trending/templates are shared, lazily-fetched, cross-page state
   // (see HomeDataProvider) — `ensureX()` only re-fetches templates when the
@@ -68,6 +78,24 @@ export function CatalogPage() {
       cancelled = true
     }
   }, [templatesParams, session?.token, ensureFeatured, ensureTrending, ensureTemplates])
+
+  // Favorite state lives client-side (see FavoritesProvider — the backend
+  // doesn't support filtering the list by favorite), so this narrows the
+  // already-fetched page rather than being sent as a query param.
+  const displayedTemplates = useMemo(
+    () => (filters.favoritesOnly ? templates.filter((t) => isFavorited(t.id)) : templates),
+    [templates, filters.favoritesOnly, isFavorited],
+  )
+
+  // Any narrowing filter (not sort, which just reorders) makes "Trending
+  // this week" read as unrelated noise next to the already-filtered grid.
+  const hasActiveFilters = Boolean(
+    debouncedSearch ||
+      filters.category ||
+      filters.tag ||
+      filters.model ||
+      filters.favoritesOnly,
+  )
 
   const handleLoadMore = useCallback(async () => {
     if (!templatesCursor) return
@@ -127,14 +155,16 @@ export function CatalogPage() {
           onCategoryChange={setCategory}
           onTagChange={setTag}
           onSortChange={setSort}
+          onFavoritesOnlyChange={setFavoritesOnly}
           onClearCategoryAndTag={clearCategoryAndTag}
+          isSignedIn={!!session}
           search={<SearchBox value={filters.search} onChange={setSearch} />}
         />
       </div>
 
       {loading && !error ? (
         <TemplateGridSkeleton />
-      ) : templates.length === 0 ? (
+      ) : displayedTemplates.length === 0 ? (
         <EmptyState />
       ) : (
         <>
@@ -146,16 +176,20 @@ export function CatalogPage() {
             onTemplateClick={handleTemplateClick}
           />
 
-          <TemplateRail
-            title="Trending this week"
-            subtitle={trending.length > 0 ? `${trending.length} templates` : undefined}
-            templates={trending}
-            isSignedIn={!!session}
-            onTemplateClick={handleTemplateClick}
-          />
+          {/* Hidden while any filter is active — a "trending this week" rail
+              next to a narrowed grid reads as unrelated noise, not a suggestion. */}
+          {!hasActiveFilters && (
+            <TemplateRail
+              title="Trending this week"
+              subtitle={trending.length > 0 ? `${trending.length} templates` : undefined}
+              templates={trending}
+              isSignedIn={!!session}
+              onTemplateClick={handleTemplateClick}
+            />
+          )}
 
           <TemplateGrid
-            templates={templates}
+            templates={displayedTemplates}
             isSignedIn={!!session}
             onTemplateClick={handleTemplateClick}
             hasNext={templatesHasMore}
