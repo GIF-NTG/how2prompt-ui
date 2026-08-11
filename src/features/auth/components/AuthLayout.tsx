@@ -1,23 +1,17 @@
 import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowsClockwise, Bookmark, ShieldCheck } from '@phosphor-icons/react'
 import { GuestContinueLink } from './GuestContinueLink'
 import { BraceField } from '@/shared/components/BraceField'
-
-const BLANK_TAG =
-  'rounded bg-[#E7EAFC] px-1.5 py-0.5 font-mono text-[0.88em] text-[#3652E0] dark:bg-[#262B4A] dark:text-[#8493FF]'
 
 interface AuthLayoutProps {
   children: ReactNode
 }
 
 /**
- * Shared shell for the Login/Register views, matching the approved auth
- * mockup 1:1: top bar with brand + guest-continue, a two-column panel
- * (product context on the left, the actual form on the right via
- * `children`), and Login/Register tabs that navigate between the two real
- * routes (client-side, no full reload — FR-001) while looking like the
- * mockup's in-place tabs.
+ * Shared shell for the Login/Register views: top bar with brand +
+ * guest-continue, a single centered form panel (via `children`), and
+ * Login/Register tabs that navigate between the two real routes
+ * (client-side, no full reload — FR-001).
  */
 export function AuthLayout({ children }: AuthLayoutProps) {
   const location = useLocation()
@@ -39,60 +33,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </div>
 
         <main className="flex flex-1 items-center justify-center px-4 pb-12">
-          <div className="grid w-full max-w-[1000px] overflow-hidden rounded-[20px] border border-[#DBDFD3] bg-white shadow-xl dark:border-[#2C3130] dark:bg-[#1C2024] md:grid-cols-[0.92fr_1fr]">
-            <section className="flex flex-col justify-center gap-7 border-b border-[#DBDFD3] bg-[#EAEDE6] p-7 dark:border-[#2C3130] dark:bg-[#23282C] md:border-r md:border-b-0">
-              <span className="inline-flex items-center gap-1.5 font-mono text-[0.7rem] tracking-wider text-[#3652E0] uppercase dark:text-[#8493FF]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#3652E0] dark:bg-[#8493FF]" />
-                api/auth
-              </span>
-
-              <h1 className="text-2xl leading-tight font-bold text-balance tracking-tight text-[#1B1D1B] dark:text-[#ECEEE8]">
-                Don&apos;t write prompts from scratch. Fill in the blanks.
-              </h1>
-
-              <div
-                aria-hidden
-                className="rounded-card border border-[#DBDFD3] bg-white p-5 text-sm leading-relaxed text-[#1B1D1B] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
-              >
-                <span className="mb-2 block font-mono text-[0.68rem] tracking-wider text-[#8B8F86] uppercase dark:text-[#6D726A]">
-                  raw_template preview
-                </span>
-                As a <span className={BLANK_TAG}>{'{role}'}</span>, debug the following log in the
-                context of <span className={BLANK_TAG}>{'{context}'}</span>, following the
-                constraint <span className={BLANK_TAG}>{'{constraints}'}</span>.
-              </div>
-
-              <ul className="flex flex-col gap-3 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-                <li className="flex items-start gap-2.5">
-                  <Bookmark
-                    size={18}
-                    weight="duotone"
-                    color="#0F9B8E"
-                    className="mt-0.5 shrink-0"
-                  />
-                  Automatically save your prompt history to your account
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <ArrowsClockwise
-                    size={18}
-                    weight="duotone"
-                    color="#C98A1F"
-                    className="mt-0.5 shrink-0"
-                  />
-                  Quickly copy an old prompt without filling it in again
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <ShieldCheck
-                    size={18}
-                    weight="duotone"
-                    color="#1F7FC9"
-                    className="mt-0.5 shrink-0"
-                  />
-                  BCrypt-hashed passwords, sessions via access/refresh tokens
-                </li>
-              </ul>
-            </section>
-
+          <div className="grid w-full max-w-[460px] overflow-hidden rounded-[20px] border border-[#DBDFD3] bg-white shadow-xl dark:border-[#2C3130] dark:bg-[#1C2024]">
             <section className="flex flex-col gap-6 p-7">
               <div
                 role="tablist"
