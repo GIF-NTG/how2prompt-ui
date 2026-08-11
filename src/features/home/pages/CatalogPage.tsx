@@ -168,6 +168,14 @@ export function CatalogPage() {
         <EmptyState />
       ) : (
         <>
+          <TemplateRail
+            title="Featured"
+            subtitle="curated by Admin"
+            templates={featured}
+            isSignedIn={!!session}
+            onTemplateClick={handleTemplateClick}
+          />
+
           {/* Hidden while any filter is active — a "trending this week" rail
               next to a narrowed grid reads as unrelated noise, not a suggestion. */}
           {!hasActiveFilters && (
