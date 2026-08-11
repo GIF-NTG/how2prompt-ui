@@ -49,7 +49,14 @@ export interface RawTemplateListItem {
   descriptionI18n: I18nString
   coverImage: string | null
   official: boolean
-  isFeatured?: boolean
+  // The backend's read side never sends `isFeatured` (only `PATCH
+  // /admin/templates/{id}`'s request body accepts that name, verified
+  // against the live `/v3/api-docs`) — every read response (list, summary,
+  // detail) instead sends `featuredAt: string | null`, non-null once an
+  // Admin has featured the template. Derived to a boolean below rather than
+  // propagated as a raw timestamp, since nothing in the FE needs the "since
+  // when" value (see specs/013-us6.1-admin-mark-featured/data-model.md).
+  featuredAt?: string | null
   categories: RawCategory[]
   tags: Tag[]
   // Despite the name, the backend actually sends full model objects here
@@ -72,7 +79,7 @@ export function mapTemplateListItem(raw: RawTemplateListItem): TemplateListItem 
     description: raw.descriptionI18n,
     coverImage: raw.coverImage,
     isOfficial: raw.official,
-    isFeatured: raw.isFeatured ?? false,
+    isFeatured: Boolean(raw.featuredAt),
     author: { id: null, fullName: null, username: null, avatarUrl: null, type: 'admin' },
     categories: (raw.categories ?? []).map(mapCategory),
     tags: raw.tags ?? [],

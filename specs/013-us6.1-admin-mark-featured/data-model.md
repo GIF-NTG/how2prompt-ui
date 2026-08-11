@@ -19,10 +19,11 @@ Existing fields unchanged. New field:
 - **`AdminTemplate`** (`templatesAdminClient.types.ts`): add `isFeatured: boolean`
   — read back after create/update/list, drives the list badge (FR-005).
 - **`RawTemplateDetail`** (`templatesAdminClient.real.ts`, extends
-  `RawTemplateListItem` from the home feature): add optional `isFeatured?: boolean`
-  to tolerate the field being absent from a given backend response; mapped via
-  `raw.isFeatured ?? false` in `mapAdminTemplate` (same defensive pattern as
-  `isFavorited`).
+  `RawTemplateListItem` from the home feature): add optional
+  `featuredAt?: string | null` — the real backend's read side never sends
+  `isFeatured` (verified against the live `/v3/api-docs`), only this timestamp;
+  mapped via `Boolean(raw.featuredAt)` in `mapAdminTemplate` and
+  `mapTemplateListItem`.
 
 ### State transitions
 

@@ -2,10 +2,26 @@
 
 ## Decision 1: Wire field name for the Featured flag
 
-**Decision**: Use `isFeatured` as the JSON field name both in the `PATCH
-/admin/templates/{id}` request body and when reading it back from
-`GET /templates/{id}` / `GET /admin/templates` responses, with a defensive
-`?? false` default if the field is absent from a response.
+**Update (post-implementation, verified against the live backend's
+`/v3/api-docs`)**: the initial decision below was half right. `isFeatured` is
+correct for the **write** side (`PATCH /admin/templates/{id}`'s
+`UpdateTemplateRequest.isFeatured: boolean`, confirmed against the live schema).
+The **read** side never sends `isFeatured` — every read response
+(`TemplateResponse`, `TemplateSummaryResponse`, `TemplateDetailResponse`) sends
+`featuredAt: string | null` instead (non-null once featured), matching US-6.1's
+own DB description ("sets `featured_at = NOW()`"). The original `raw.isFeatured
+?? false` read mapping silently always evaluated to `false` against the real
+backend — a template correctly saved as featured (write worked) would still
+render "not featured" on next read (list badge, re-opened edit form checkbox).
+Fixed by deriving `isFeatured: Boolean(raw.featuredAt)` in both
+`templateClient.real.ts`'s `mapTemplateListItem` and
+`templatesAdminClient.real.ts`'s `mapAdminTemplate`, instead of reading a field
+that never arrives. The mock client was unaffected (its store round-trips
+`isFeatured` directly, no separate read/write field-name split).
+
+**Original decision** (write-side conclusion still stands): use `isFeatured` as
+the JSON field name in the `PATCH /admin/templates/{id}` request body, with a
+defensive default when deriving it back from a read response.
 
 **Rationale**: US-6.1's own "Technical Implementation Details" section (the most
 authoritative source available — closer to backend intent than
