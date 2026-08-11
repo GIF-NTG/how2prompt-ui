@@ -2,6 +2,7 @@ import { ApiError } from '@/shared/utils/httpClient'
 import type { HistoryClient } from './historyClient.types'
 import type { HistoryDetail, HistoryListItem } from '../types'
 import { MOCK_TEMPLATES, favorites } from '@/features/home/api/templateClient.mock'
+import { toRangeEndIso, toRangeStartIso } from '../utils/dateRange'
 
 function toListItem(entry: HistoryDetail): HistoryListItem {
   return {
@@ -15,18 +16,17 @@ function toListItem(entry: HistoryDetail): HistoryListItem {
   }
 }
 
-/** Mock `templateId`s are the *slugs* already used by
- *  `templateDetailClient.mock.ts`'s slug-keyed map, not the numeric-looking
- *  `t1`/`t2` ids from `templateClient.mock.ts` — this mirrors how "Re-run"
- *  navigates to `/templates/:slug` in this app (the real backend's
- *  `/templates/{id}` contract takes a real uuid instead; the mock and real
- *  clients each stay internally consistent with their own template store). */
+/** `templateId` must be the `id` `templateDetailClient.mock.ts` looks its
+ *  `MOCK_TEMPLATES_BY_ID` map up by (`t1`..`t5`), matching
+ *  `templateClient.mock.ts`'s `MOCK_TEMPLATES` ids — `/templates/:id`
+ *  routes on that id, not the slug, so a history entry's `templateId` has
+ *  to agree with it for "View template" / regenerate navigation to resolve. */
 const TEMPLATE_SLUGS = {
-  debug: 'debug-loi-hieu-qua',
-  rewrite: 'sua-van-phong-noi-dung',
-  marketing: 'mo-ta-san-pham-marketing',
-  codeReview: 'kiem-tra-code-review',
-  meeting: 'tom-tat-cuoc-hop',
+  debug: 't1',
+  rewrite: 't2',
+  marketing: 't3',
+  codeReview: 't4',
+  meeting: 't5',
 } as const
 
 function daysAgo(days: number): string {
@@ -199,8 +199,8 @@ function matchesFilters(
 ): boolean {
   if (filters.templateId && entry.templateId !== filters.templateId) return false
   if (filters.model && entry.aiModelCode !== filters.model) return false
-  if (filters.from && entry.createdAt < filters.from) return false
-  if (filters.to && entry.createdAt > filters.to) return false
+  if (filters.from && entry.createdAt < toRangeStartIso(filters.from)) return false
+  if (filters.to && entry.createdAt > toRangeEndIso(filters.to)) return false
   return true
 }
 

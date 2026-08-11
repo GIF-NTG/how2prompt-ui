@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { HistoryPage } from './HistoryPage'
 import { HistoryDataProvider } from '../context/HistoryDataProvider'
+import { HomeDataProvider } from '@/features/home/context/HomeDataProvider'
 import { AuthContext, type AuthContextValue } from '@/features/auth/context/AuthContext'
 import type { Session } from '@/features/auth/api/types'
 import { createHistoryClient } from '../api/historyClient'
@@ -50,14 +51,16 @@ function makeAuthValue(overrides: Partial<AuthContextValue>): AuthContextValue {
 function renderHistoryPage(authValue: AuthContextValue, initialEntries = ['/history']) {
   return render(
     <AuthContext.Provider value={authValue}>
-      <HistoryDataProvider>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Routes>
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/login" element={<div>Login page</div>} />
-          </Routes>
-        </MemoryRouter>
-      </HistoryDataProvider>
+      <HomeDataProvider>
+        <HistoryDataProvider>
+          <MemoryRouter initialEntries={initialEntries}>
+            <Routes>
+              <Route path="/history" element={<HistoryPage />} />
+              <Route path="/login" element={<div>Login page</div>} />
+            </Routes>
+          </MemoryRouter>
+        </HistoryDataProvider>
+      </HomeDataProvider>
     </AuthContext.Provider>,
   )
 }
@@ -99,13 +102,15 @@ describe('HistoryPage', () => {
 
     const { rerender } = render(
       <AuthContext.Provider value={authValue}>
-        <HistoryDataProvider>
-          <MemoryRouter initialEntries={['/history']}>
-            <Routes>
-              <Route path="/history" element={<HistoryPage />} />
-            </Routes>
-          </MemoryRouter>
-        </HistoryDataProvider>
+        <HomeDataProvider>
+          <HistoryDataProvider>
+            <MemoryRouter initialEntries={['/history']}>
+              <Routes>
+                <Route path="/history" element={<HistoryPage />} />
+              </Routes>
+            </MemoryRouter>
+          </HistoryDataProvider>
+        </HomeDataProvider>
       </AuthContext.Provider>,
     )
     await screen.findByText('Generated Prompt History')
@@ -116,20 +121,24 @@ describe('HistoryPage', () => {
     // HistoryDataProvider itself stays mounted across the navigation.
     rerender(
       <AuthContext.Provider value={authValue}>
-        <HistoryDataProvider>
-          <p>Elsewhere</p>
-        </HistoryDataProvider>
+        <HomeDataProvider>
+          <HistoryDataProvider>
+            <p>Elsewhere</p>
+          </HistoryDataProvider>
+        </HomeDataProvider>
       </AuthContext.Provider>,
     )
     rerender(
       <AuthContext.Provider value={authValue}>
-        <HistoryDataProvider>
-          <MemoryRouter initialEntries={['/history']}>
-            <Routes>
-              <Route path="/history" element={<HistoryPage />} />
-            </Routes>
-          </MemoryRouter>
-        </HistoryDataProvider>
+        <HomeDataProvider>
+          <HistoryDataProvider>
+            <MemoryRouter initialEntries={['/history']}>
+              <Routes>
+                <Route path="/history" element={<HistoryPage />} />
+              </Routes>
+            </MemoryRouter>
+          </HistoryDataProvider>
+        </HomeDataProvider>
       </AuthContext.Provider>,
     )
     await screen.findByText('Generated Prompt History')

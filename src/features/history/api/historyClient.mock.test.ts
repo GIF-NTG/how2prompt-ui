@@ -54,14 +54,25 @@ describe('createMockHistoryClient().list', () => {
   it('filters by date range', async () => {
     const client = createMockHistoryClient()
     const all = await client.list({}, null, 50)
-    const midpoint = [...all.items].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[
+    // `from`/`to` are plain YYYY-MM-DD values, as produced by the
+    // `<input type="date">` filter — not full ISO timestamps.
+    const midpointDate = [...all.items].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[
       Math.floor(all.items.length / 2)
-    ].createdAt
+    ].createdAt.slice(0, 10)
 
-    const filtered = await client.list({ from: midpoint }, null, 50)
+    const filtered = await client.list({ from: midpointDate }, null, 50)
     for (const item of filtered.items) {
-      expect(item.createdAt >= midpoint).toBe(true)
+      expect(item.createdAt.slice(0, 10) >= midpointDate).toBe(true)
     }
+  })
+
+  it('includes entries created on the "to" date itself (inclusive upper bound)', async () => {
+    const client = createMockHistoryClient()
+    const { items } = await client.list({}, null, 50)
+    const targetDate = items[0].createdAt.slice(0, 10)
+
+    const filtered = await client.list({ to: targetDate }, null, 50)
+    expect(filtered.items.some((item) => item.createdAt.slice(0, 10) === targetDate)).toBe(true)
   })
 
   it('returns an empty-filtered result distinct from empty history when nothing matches', async () => {
