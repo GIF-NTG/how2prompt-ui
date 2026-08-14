@@ -77,7 +77,7 @@ export function GenerateActions({ isValid, finalPrompt, onGenerate }: GenerateAc
           className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-4 py-2 text-sm font-medium text-white transition-transform duration-150 active:scale-[0.97] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
         >
           <Sparkles size={15} aria-hidden="true" />
-          {isGenerating ? 'Generating...' : 'Generate prompt'}
+          {isGenerating ? 'Generating…' : 'Generate prompt'}
         </button>
         {finalPrompt && (
           <button

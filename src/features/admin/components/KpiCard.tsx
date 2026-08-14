@@ -16,7 +16,10 @@ export function KpiCard({ label, value, icon }: KpiCardProps) {
         <span className="font-mono text-[0.68rem] uppercase tracking-[0.06em] text-[#8B8F86] dark:text-[#6D726A]">
           {label}
         </span>
-        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#EAEDE6] text-[#8B8F86] dark:bg-[#23282C] dark:text-[#6D726A]">
+        <span
+          aria-hidden="true"
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#EAEDE6] text-[#8B8F86] dark:bg-[#23282C] dark:text-[#6D726A]"
+        >
           {icon}
         </span>
       </div>

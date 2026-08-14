@@ -117,7 +117,7 @@ export function TemplatesAdminPage() {
         }
       >
         {!templatesLoaded ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading…</p>
         ) : error ? (
           <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
             {error}
@@ -176,7 +176,7 @@ export function TemplatesAdminPage() {
                         <button
                           type="button"
                           onClick={() => openEditForm(template)}
-                          className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                          className="text-xs text-[#3652E0] underline underline-offset-2 hover:text-[#26399E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF] dark:hover:text-[#AEBBFF]"
                         >
                           Edit
                         </button>
@@ -186,7 +186,7 @@ export function TemplatesAdminPage() {
                             setDeleteTarget(template)
                             setDeleteError(null)
                           }}
-                          className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
+                          className="text-xs text-[#C23A2E] underline underline-offset-2 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#FF7A6B]"
                         >
                           Delete
                         </button>
@@ -204,7 +204,7 @@ export function TemplatesAdminPage() {
                   disabled={loadingMore}
                   className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-semibold disabled:opacity-60 dark:border-[#2C3130]"
                 >
-                  {loadingMore ? 'Loading...' : 'Load more'}
+                  {loadingMore ? 'Loading…' : 'Load more'}
                 </button>
               </div>
             )}

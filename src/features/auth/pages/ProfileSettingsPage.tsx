@@ -6,9 +6,8 @@ const FULL_NAME_MAX_LENGTH = 150
 const USERNAME_MAX_LENGTH = 50
 
 const FIELD_CLASSES =
-  'rounded-lg border bg-transparent px-3 py-2 text-base text-[#1B1D1B] focus:outline-none dark:text-[#ECEEE8]'
-const FIELD_BORDER =
-  'border-[#DBDFD3] focus:border-[#3652E0] dark:border-[#2C3130] dark:focus:border-[#8493FF]'
+  'rounded-lg border bg-transparent px-3 py-2 text-base text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:focus-visible:outline-[#8493FF]'
+const FIELD_BORDER = 'border-[#DBDFD3] dark:border-[#2C3130]'
 const FIELD_BORDER_INVALID = 'border-[#C23A2E] dark:border-[#FF7A6B]'
 
 /**
@@ -33,6 +32,8 @@ export function ProfileSettingsPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const submittingRef = useRef(false)
+  const fullNameRef = useRef<HTMLInputElement>(null)
+  const usernameRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!session) return
@@ -85,7 +86,14 @@ export function ProfileSettingsPage() {
       setUsernameError(`Username must be at most ${USERNAME_MAX_LENGTH} characters.`)
     }
 
-    if (isFullNameEmpty || isFullNameTooLong || isUsernameTooLong) return
+    if (isFullNameEmpty || isFullNameTooLong) {
+      fullNameRef.current?.focus()
+      return
+    }
+    if (isUsernameTooLong) {
+      usernameRef.current?.focus()
+      return
+    }
 
     submittingRef.current = true
     setSubmitting(true)
@@ -127,13 +135,16 @@ export function ProfileSettingsPage() {
 
       <div className="rounded-card border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]">
         {loadingProfile ? (
-          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading profile...</p>
+          <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading profile…</p>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-[#5B5F58] dark:text-[#A2A79C]">Display name</span>
               <input
+                ref={fullNameRef}
                 type="text"
+                name="fullName"
+                autoComplete="name"
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
                 className={`${FIELD_CLASSES} ${fullNameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
@@ -146,11 +157,12 @@ export function ProfileSettingsPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="text-[#5B5F58] dark:text-[#A2A79C]">
-                Username (optional)
-              </span>
+              <span className="text-[#5B5F58] dark:text-[#A2A79C]">Username (optional)</span>
               <input
+                ref={usernameRef}
                 type="text"
+                name="username"
+                autoComplete="username"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 className={`${FIELD_CLASSES} ${usernameError ? FIELD_BORDER_INVALID : FIELD_BORDER}`}
@@ -165,6 +177,8 @@ export function ProfileSettingsPage() {
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-[#5B5F58] dark:text-[#A2A79C]">Bio (optional)</span>
               <textarea
+                name="bio"
+                autoComplete="off"
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
                 rows={3}
@@ -175,6 +189,7 @@ export function ProfileSettingsPage() {
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-[#5B5F58] dark:text-[#A2A79C]">Language</span>
               <select
+                name="locale"
                 value={locale}
                 onChange={(event) => setLocale(event.target.value as 'en' | 'vi')}
                 className={`${FIELD_CLASSES} ${FIELD_BORDER}`}
@@ -207,7 +222,7 @@ export function ProfileSettingsPage() {
                 disabled={submitting}
                 className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
               >
-                Save changes
+                {submitting ? 'Saving…' : 'Save changes'}
               </button>
             </div>
           </form>

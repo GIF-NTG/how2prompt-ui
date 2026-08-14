@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
 
 interface ModalProps {
@@ -21,6 +21,8 @@ export function Modal({ title, onClose, children, wide = false }: ModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <AnimatePresence>
       <motion.div
@@ -28,20 +30,20 @@ export function Modal({ title, onClose, children, wide = false }: ModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.15 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
         onClick={onClose}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8"
+        className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/40 px-4 py-8"
       >
         <motion.div
           role="dialog"
           aria-modal="true"
           aria-label={title}
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.96 }}
-          transition={{ duration: 0.18 }}
+          exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.96 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
           onClick={(e) => e.stopPropagation()}
-          className={`flex max-h-[85vh] w-full flex-col gap-4 overflow-y-auto rounded-panel border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024] ${wide ? 'max-w-2xl' : 'max-w-md'}`}
+          className={`flex max-h-[85vh] w-full flex-col gap-4 overflow-y-auto overscroll-contain rounded-panel border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024] ${wide ? 'max-w-2xl' : 'max-w-md'}`}
         >
           <div className="flex items-center justify-between gap-4">
             <h2 className="m-0 text-base font-bold text-[#1B1D1B] dark:text-[#ECEEE8]">{title}</h2>

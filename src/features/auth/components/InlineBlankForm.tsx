@@ -42,10 +42,10 @@ export const InlineBlank = forwardRef<HTMLInputElement, InlineBlankProps>(functi
         'mx-1 inline-block min-w-[2ch] max-w-full overflow-hidden text-ellipsis rounded-none border-0 border-b-2 bg-transparent px-0.5 align-baseline',
         'font-mono text-[0.95em] leading-tight text-[#1B1D1B] dark:text-[#ECEEE8]',
         'placeholder:text-[#8B8F86] dark:placeholder:text-[#6D726A]',
-        'focus:outline-none',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:focus-visible:outline-[#8493FF]',
         invalid
           ? 'border-[#C23A2E] dark:border-[#FF7A6B]'
-          : 'border-[#8B8F86] focus:border-[#3652E0] dark:border-[#6D726A] dark:focus:border-[#8493FF]',
+          : 'border-[#8B8F86] focus-visible:border-[#3652E0] dark:border-[#6D726A] dark:focus-visible:border-[#8493FF]',
       ].join(' ')}
     />
   )

@@ -66,7 +66,7 @@ export function AdminLayout() {
                 `${NAV_ITEM_BASE} ${isActive ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`
               }
             >
-              <LayoutDashboard size={18} className="flex-shrink-0" />
+              <LayoutDashboard aria-hidden="true" size={18} className="flex-shrink-0" />
               Dashboard
             </NavLink>
           </nav>
@@ -81,7 +81,7 @@ export function AdminLayout() {
                 `${NAV_ITEM_BASE} ${isActive ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`
               }
             >
-              <Cpu size={18} className="flex-shrink-0" />
+              <Cpu aria-hidden="true" size={18} className="flex-shrink-0" />
               AI Models
             </NavLink>
             <NavLink
@@ -92,7 +92,7 @@ export function AdminLayout() {
                 `${NAV_ITEM_BASE} ${isActive ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`
               }
             >
-              <FolderTree size={18} className="flex-shrink-0" />
+              <FolderTree aria-hidden="true" size={18} className="flex-shrink-0" />
               Categories &amp; Tags
             </NavLink>
             <NavLink
@@ -103,7 +103,7 @@ export function AdminLayout() {
                 `${NAV_ITEM_BASE} ${isActive ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE}`
               }
             >
-              <FileText size={18} className="flex-shrink-0" />
+              <FileText aria-hidden="true" size={18} className="flex-shrink-0" />
               Templates
             </NavLink>
           </nav>
@@ -132,7 +132,7 @@ export function AdminLayout() {
               to="/"
               className="flex items-center gap-2.5 rounded-[10px] px-3 py-2 text-sm text-[#5B5F58] hover:bg-[#EAEDE6] hover:text-[#1B1D1B] dark:text-[#A2A79C] dark:hover:bg-[#23282C] dark:hover:text-[#ECEEE8]"
             >
-              <ArrowLeft size={18} className="flex-shrink-0" />
+              <ArrowLeft aria-hidden="true" size={18} className="flex-shrink-0" />
               Back to home
             </Link>
           </div>

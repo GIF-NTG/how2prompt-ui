@@ -25,9 +25,11 @@ export function PromptsTrendChart({ entries }: PromptsTrendChartProps) {
       {entries.map(([date, count]) => (
         <div
           key={date}
-          className="group relative flex h-full flex-1 flex-col items-center justify-end"
+          tabIndex={0}
+          aria-label={`${formatDayLabel(date)}: ${count} prompts`}
+          className="group relative flex h-full flex-1 flex-col items-center justify-end focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0]"
         >
-          <span className="pointer-events-none absolute -top-6 hidden whitespace-nowrap rounded-md bg-[#1B1D1B] px-1.5 py-0.5 font-mono text-[0.65rem] text-[#F3F5F0] group-hover:block dark:bg-[#ECEEE8] dark:text-[#14171A]">
+          <span className="pointer-events-none absolute -top-6 hidden whitespace-nowrap rounded-md bg-[#1B1D1B] px-1.5 py-0.5 font-mono text-[0.65rem] text-[#F3F5F0] group-hover:block group-focus:block dark:bg-[#ECEEE8] dark:text-[#14171A]">
             {formatDayLabel(date)} · {count}
           </span>
           <div

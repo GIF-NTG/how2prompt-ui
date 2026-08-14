@@ -1,9 +1,8 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react'
 
 const FIELD_CLASSES =
-  'w-full rounded-lg border bg-transparent px-3 py-2 text-base text-[#1B1D1B] focus:outline-none dark:text-[#ECEEE8]'
-const FIELD_BORDER =
-  'border-[#DBDFD3] focus:border-[#3652E0] dark:border-[#2C3130] dark:focus:border-[#8493FF]'
+  'w-full rounded-lg border bg-transparent px-3 py-2 text-base text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:focus-visible:outline-[#8493FF]'
+const FIELD_BORDER = 'border-[#DBDFD3] dark:border-[#2C3130]'
 const FIELD_BORDER_INVALID = 'border-[#C23A2E] dark:border-[#FF7A6B]'
 
 interface AuthTextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'className'> {

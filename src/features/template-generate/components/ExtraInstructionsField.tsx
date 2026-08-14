@@ -16,7 +16,7 @@ export function ExtraInstructionsField({ value, onChange }: ExtraInstructionsFie
         id="extra-instructions"
         name="extra-instructions"
         value={value}
-        placeholder="Add any specific instructions if needed (optional)..."
+        placeholder="Add any specific instructions if needed (optional)…"
         rows={3}
         onChange={(e) => onChange(e.target.value)}
         className="w-full resize-y rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"

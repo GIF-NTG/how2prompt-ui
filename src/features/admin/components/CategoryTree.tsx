@@ -76,7 +76,8 @@ function CategoryFormModal({
   const [submitting, setSubmitting] = useState(false)
 
   const excludedIds = useMemo(
-    () => (editingCategory ? collectDescendantIds(editingCategory.id, categories) : new Set<string>()),
+    () =>
+      editingCategory ? collectDescendantIds(editingCategory.id, categories) : new Set<string>(),
     [editingCategory, categories],
   )
   const parentOptions = categories.filter((c) => !excludedIds.has(c.id))
@@ -113,6 +114,8 @@ function CategoryFormModal({
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Category name</span>
           <input
+            name="categoryName"
+            autoComplete="off"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={FIELD_CLASSES}
@@ -143,14 +146,14 @@ function CategoryFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
+            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm transition-colors duration-150 hover:border-[#8B8F86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:hover:border-[#6D726A]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
             {editingCategory ? 'Save' : 'Create category'}
           </button>
@@ -242,14 +245,14 @@ export function CategoryTree({ categories, onCreate, onUpdate, onDelete }: Categ
                         <button
                           type="button"
                           onClick={() => setFormTarget(category)}
-                          className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                          className="text-xs text-[#3652E0] underline underline-offset-2 hover:text-[#26399E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF] dark:hover:text-[#AEBBFF]"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(category)}
-                          className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
+                          className="text-xs text-[#C23A2E] underline underline-offset-2 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#FF7A6B]"
                         >
                           Delete
                         </button>

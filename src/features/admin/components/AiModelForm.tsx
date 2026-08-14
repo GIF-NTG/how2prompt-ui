@@ -88,6 +88,8 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Code</span>
           <input
             type="text"
+            name="code"
+            autoComplete="off"
             value={form.code}
             onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
             className={FIELD_CLASSES}
@@ -98,6 +100,8 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Display name</span>
           <input
             type="text"
+            name="name"
+            autoComplete="off"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             className={FIELD_CLASSES}
@@ -107,6 +111,8 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Provider</span>
           <input
             type="text"
+            name="provider"
+            autoComplete="off"
             value={form.provider}
             onChange={(e) => setForm((f) => ({ ...f, provider: e.target.value }))}
             className={FIELD_CLASSES}
@@ -132,7 +138,10 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Icon URL (optional)</span>
           <input
-            type="text"
+            type="url"
+            name="iconUrl"
+            autoComplete="off"
+            placeholder="https://…"
             value={form.iconUrl ?? ''}
             onChange={(e) => setForm((f) => ({ ...f, iconUrl: e.target.value || null }))}
             className={FIELD_CLASSES}
@@ -142,6 +151,8 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Sort order</span>
           <input
             type="number"
+            name="sortOrder"
+            inputMode="numeric"
             value={form.sortOrder}
             onChange={(e) => setForm((f) => ({ ...f, sortOrder: Number(e.target.value) }))}
             className={FIELD_CLASSES}
@@ -186,7 +197,7 @@ export function AiModelForm({ editingModel, onSubmit, onCancelEdit }: AiModelFor
           <button
             type="button"
             onClick={onCancelEdit}
-            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
+            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm transition-colors duration-150 hover:border-[#8B8F86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:hover:border-[#6D726A]"
           >
             Cancel
           </button>

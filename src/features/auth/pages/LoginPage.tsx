@@ -213,7 +213,7 @@ export function LoginPage() {
           disabled={submitting}
           className="rounded-lg bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
         >
-          Log in →
+          {submitting ? 'Logging in…' : 'Log in →'}
         </button>
       </form>
 
@@ -235,7 +235,7 @@ export function LoginPage() {
       <GoogleSignInButton />
 
       <p className="text-center text-sm text-[#8B8F86] dark:text-[#6D726A]">
-        Don&apos;t have an account?{' '}
+        Don’t have an account?{' '}
         <Link
           to="/register"
           className="text-[#5B5F58] underline underline-offset-2 dark:text-[#A2A79C]"

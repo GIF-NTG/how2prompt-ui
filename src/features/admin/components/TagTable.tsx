@@ -26,7 +26,13 @@ interface TagFormModalProps {
   onUpdate: (id: string, input: TagUpsert) => Promise<void>
 }
 
-function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }: TagFormModalProps) {
+function TagFormModal({
+  editingTag,
+  existingTags,
+  onClose,
+  onCreate,
+  onUpdate,
+}: TagFormModalProps) {
   const [name, setName] = useState(editingTag?.name ?? '')
   const [slug, setSlug] = useState(editingTag?.slug ?? '')
   const [slugTouched, setSlugTouched] = useState(Boolean(editingTag))
@@ -73,6 +79,8 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Tag name</span>
           <input
+            name="tagName"
+            autoComplete="off"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
             className={FIELD_CLASSES}
@@ -82,6 +90,8 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
         <label className="flex flex-col gap-1 text-xs">
           <span className="text-[#5B5F58] dark:text-[#A2A79C]">Slug</span>
           <input
+            name="tagSlug"
+            autoComplete="off"
             value={slug}
             onChange={(e) => {
               setSlugTouched(true)
@@ -99,14 +109,14 @@ function TagFormModal({ editingTag, existingTags, onClose, onCreate, onUpdate }:
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm dark:border-[#2C3130]"
+            className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm transition-colors duration-150 hover:border-[#8B8F86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:border-[#2C3130] dark:hover:border-[#6D726A]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+            className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
           >
             {editingTag ? 'Save' : 'Create tag'}
           </button>
@@ -179,7 +189,10 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
             </thead>
             <tbody>
               {pageItems.map((tag) => (
-                <tr key={tag.id} className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]">
+                <tr
+                  key={tag.id}
+                  className="border-b border-[#DBDFD3] last:border-0 dark:border-[#2C3130]"
+                >
                   <td className="px-3 py-2.5">{tag.name}</td>
                   <td className="px-3 py-2.5 font-mono text-xs text-[#5B5F58] dark:text-[#A2A79C]">
                     {tag.slug}
@@ -192,14 +205,14 @@ export function TagTable({ tags, onCreate, onUpdate, onDelete }: TagTableProps) 
                       <button
                         type="button"
                         onClick={() => setFormTarget(tag)}
-                        className="text-xs text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+                        className="text-xs text-[#3652E0] underline underline-offset-2 hover:text-[#26399E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#8493FF] dark:hover:text-[#AEBBFF]"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(tag)}
-                        className="text-xs text-[#C23A2E] underline underline-offset-2 dark:text-[#FF7A6B]"
+                        className="text-xs text-[#C23A2E] underline underline-offset-2 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#FF7A6B]"
                       >
                         Delete
                       </button>

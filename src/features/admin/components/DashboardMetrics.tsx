@@ -92,7 +92,9 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
                     <td className="py-2 font-mono text-[#8B8F86] dark:text-[#6D726A]">
                       {index + 1}
                     </td>
-                    <td className="py-2 font-semibold">{getI18nValue(item.titleI18n)}</td>
+                    <td className="max-w-0 py-2 font-semibold">
+                      <span className="block truncate">{getI18nValue(item.titleI18n)}</span>
+                    </td>
                     <td className="py-2 font-mono font-semibold">
                       {formatNumber(item.usageCount)}
                     </td>
@@ -103,10 +105,7 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
           )}
         </AdminPanel>
 
-        <AdminPanel
-          title="Most used AI models"
-          className="min-h-0 overflow-y-auto lg:col-span-3"
-        >
+        <AdminPanel title="Most used AI models" className="min-h-0 overflow-y-auto lg:col-span-3">
           {stats.mostUsedModels.length === 0 ? (
             <EmptyState>No model usage data yet.</EmptyState>
           ) : (
@@ -165,6 +164,7 @@ export function DashboardMetrics({ stats, range }: DashboardMetricsProps) {
               card,
               <ArrowRight
                 key={`${step.label}-arrow`}
+                aria-hidden="true"
                 size={18}
                 className="flex-shrink-0 text-[#8B8F86] dark:text-[#6D726A]"
               />,

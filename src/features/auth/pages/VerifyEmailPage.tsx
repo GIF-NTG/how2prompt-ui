@@ -46,7 +46,7 @@ export function VerifyEmailPage() {
       </div>
 
       {state === 'verifying' && (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Verifying your email...</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Verifying your email…</p>
       )}
 
       {state === 'success' && (

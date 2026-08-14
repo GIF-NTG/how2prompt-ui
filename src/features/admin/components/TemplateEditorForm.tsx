@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { AiModel } from '../api/aiModelsClient.types'
 import type { Category, Tag } from '../api/taxonomyClient.types'
 import type { TemplateUpsert, AdminTemplate } from '../api/templatesAdminClient.types'
@@ -51,6 +51,8 @@ export function TemplateEditorForm({
   const [form, setForm] = useState<TemplateUpsert>(emptyForm())
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const titleRef = useRef<HTMLInputElement>(null)
+  const promptBodyRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (editingTemplate) {
@@ -82,8 +84,14 @@ export function TemplateEditorForm({
   async function handleSaveDraft(event: FormEvent) {
     event.preventDefault()
     setError(null)
-    if (!form.title.en.trim() || !form.promptBody.trim()) {
+    if (!form.title.en.trim()) {
       setError('Please enter a title and prompt content.')
+      titleRef.current?.focus()
+      return
+    }
+    if (!form.promptBody.trim()) {
+      setError('Please enter a title and prompt content.')
+      promptBodyRef.current?.focus()
       return
     }
     setSubmitting(true)
@@ -98,8 +106,14 @@ export function TemplateEditorForm({
 
   async function handlePublish() {
     setError(null)
-    if (!form.title.en.trim() || !form.promptBody.trim()) {
+    if (!form.title.en.trim()) {
       setError('Please enter a title and prompt content.')
+      titleRef.current?.focus()
+      return
+    }
+    if (!form.promptBody.trim()) {
+      setError('Please enter a title and prompt content.')
+      promptBodyRef.current?.focus()
       return
     }
     const { isValid, missingVarKeys } = validatePlaceholders(form.promptBody, form.variables)
@@ -107,6 +121,7 @@ export function TemplateEditorForm({
       setError(
         `Unable to publish: placeholder {{${missingVarKeys.join('}}, {{')}}} has no matching variable.`,
       )
+      promptBodyRef.current?.focus()
       return
     }
     setSubmitting(true)
@@ -120,14 +135,13 @@ export function TemplateEditorForm({
   }
 
   return (
-    <form
-      onSubmit={handleSaveDraft}
-      noValidate
-      className="flex flex-col gap-4"
-    >
+    <form onSubmit={handleSaveDraft} noValidate className="flex flex-col gap-4">
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">Title (EN)</span>
         <input
+          ref={titleRef}
+          name="templateTitle"
+          autoComplete="off"
           value={form.title.en}
           onChange={(e) => setForm((f) => ({ ...f, title: { ...f.title, en: e.target.value } }))}
           className={FIELD_CLASSES}
@@ -137,6 +151,8 @@ export function TemplateEditorForm({
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">Description (EN)</span>
         <textarea
+          name="templateDescription"
+          autoComplete="off"
           value={form.description.en}
           onChange={(e) =>
             setForm((f) => ({ ...f, description: { ...f.description, en: e.target.value } }))
@@ -218,9 +234,9 @@ export function TemplateEditorForm({
           role="status"
           className="rounded-lg border border-[#3652E0]/30 bg-[#E7EAFC] px-3 py-2 text-xs text-[#3652E0] dark:border-[#8493FF]/30 dark:bg-[#262C4A] dark:text-[#8493FF]"
         >
-          The backend doesn&apos;t support editing the prompt body / guide / example output /
-          variables / variants of an existing template — only the title, description,
-          categories, tags, and AI models below are saved when you Save Draft.
+          The backend doesn’t support editing the prompt body / guide / example output / variables /
+          variants of an existing template — only the title, description, categories, tags, and AI
+          models below are saved when you Save Draft.
         </p>
       )}
 
@@ -229,6 +245,9 @@ export function TemplateEditorForm({
           Prompt body (use {'{{varKey}}'} for each placeholder)
         </span>
         <textarea
+          ref={promptBodyRef}
+          name="promptBody"
+          autoComplete="off"
           value={form.promptBody}
           onChange={(e) => setForm((f) => ({ ...f, promptBody: e.target.value }))}
           readOnly={Boolean(editingTemplate)}
@@ -240,6 +259,8 @@ export function TemplateEditorForm({
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">Guide (EN, optional)</span>
         <textarea
+          name="templateGuide"
+          autoComplete="off"
           value={form.guide.en}
           onChange={(e) => setForm((f) => ({ ...f, guide: { ...f.guide, en: e.target.value } }))}
           readOnly={Boolean(editingTemplate)}
@@ -251,6 +272,8 @@ export function TemplateEditorForm({
       <label className="flex flex-col gap-1 text-xs">
         <span className="text-[#5B5F58] dark:text-[#A2A79C]">Example output (optional)</span>
         <textarea
+          name="exampleOutput"
+          autoComplete="off"
           value={form.exampleOutput ?? ''}
           onChange={(e) => setForm((f) => ({ ...f, exampleOutput: e.target.value || null }))}
           readOnly={Boolean(editingTemplate)}
@@ -275,17 +298,17 @@ export function TemplateEditorForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-bold disabled:opacity-60 dark:border-[#2C3130]"
+          className="rounded-lg border border-[#DBDFD3] px-4 py-2 text-sm font-bold transition-colors duration-150 hover:border-[#8B8F86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:border-[#2C3130] dark:hover:border-[#6D726A]"
         >
-          Save Draft
+          {submitting ? 'Saving…' : 'Save Draft'}
         </button>
         <button
           type="button"
           disabled={submitting}
           onClick={() => void handlePublish()}
-          className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
+          className="rounded-lg bg-[#3652E0] px-4 py-2 text-sm font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
         >
-          Publish
+          {submitting ? 'Publishing…' : 'Publish'}
         </button>
       </div>
     </form>

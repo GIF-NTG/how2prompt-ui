@@ -153,7 +153,7 @@ export function RegisterPage() {
           disabled={submitting}
           className="rounded-lg bg-gradient-to-r from-[#3652E0] to-[#5D6EF5] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:from-[#8493FF] dark:to-[#A6B4FF] dark:text-[#14171A]"
         >
-          Sign up →
+          {submitting ? 'Signing up…' : 'Sign up →'}
         </button>
       </form>
 

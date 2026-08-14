@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 interface ConfirmDialogProps {
   message: string
@@ -15,6 +15,7 @@ export function ConfirmDialog({
   onCancel,
   confirmLabel = 'Delete',
 }: ConfirmDialogProps) {
+  const shouldReduceMotion = useReducedMotion()
   return (
     <AnimatePresence>
       <motion.div
@@ -24,14 +25,14 @@ export function ConfirmDialog({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.15 }}
-        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4"
+        transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
+        className="fixed inset-0 z-[60] flex items-center justify-center overscroll-contain bg-black/40 px-4"
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
+          initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.94 }}
-          transition={{ duration: 0.18 }}
+          exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.94 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
           className="flex w-full max-w-sm flex-col gap-4 rounded-panel border border-[#DBDFD3] bg-white p-5 dark:border-[#2C3130] dark:bg-[#1C2024]"
         >
           <p className="m-0 text-[0.9rem] text-[#1B1D1B] dark:text-[#ECEEE8]">{message}</p>

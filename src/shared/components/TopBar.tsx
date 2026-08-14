@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { ThemeToggle } from './ThemeToggle'
@@ -7,6 +8,24 @@ import { adminAiModelsChunk, historyChunk, profileChunk } from '@/app/routeChunk
 export function TopBar() {
   const { session, signOut } = useAuth()
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onPointerDown = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen])
 
   return (
     <div className="mx-auto flex w-full max-w-[1120px] flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-[clamp(1.25rem,4vw,3rem)]">
@@ -63,9 +82,12 @@ export function TopBar() {
         <ThemeToggle />
 
         {session ? (
-          <div className="group relative">
+          <div className="relative" ref={menuRef}>
             <button
               type="button"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
               className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2.5 transition-colors duration-150 hover:bg-[#E7E9E2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:hover:bg-[#1C2024]"
             >
               <span
@@ -76,25 +98,33 @@ export function TopBar() {
               <span className="text-[0.9rem] font-semibold">{session.displayName}</span>
             </button>
 
-            <div className="invisible absolute right-0 top-full z-20 w-40 pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="flex flex-col gap-0.5 rounded-xl border border-[#DBDFD3] bg-white p-1.5 shadow-lg dark:border-[#2C3130] dark:bg-[#1C2024]">
-                <Link
-                  to="/profile"
-                  onMouseEnter={() => void profileChunk()}
-                  onFocus={() => void profileChunk()}
-                  className="rounded-lg px-3 py-2 text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
-                >
-                  Profile
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => void signOut()}
-                  className="rounded-lg px-3 py-2 text-left text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
-                >
-                  Sign out
-                </button>
+            {menuOpen && (
+              <div role="menu" className="absolute right-0 top-full z-20 w-40 pt-2">
+                <div className="flex flex-col gap-0.5 rounded-xl border border-[#DBDFD3] bg-white p-1.5 shadow-lg dark:border-[#2C3130] dark:bg-[#1C2024]">
+                  <Link
+                    to="/profile"
+                    role="menuitem"
+                    onMouseEnter={() => void profileChunk()}
+                    onFocus={() => void profileChunk()}
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-lg px-3 py-2 text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      void signOut()
+                    }}
+                    className="rounded-lg px-3 py-2 text-left text-[0.85rem] text-[#1B1D1B] hover:bg-[#F3F5F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#ECEEE8] dark:hover:bg-[#14171A]"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <Link

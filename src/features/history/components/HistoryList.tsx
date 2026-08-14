@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { CheckSquare, Eye, RotateCcw, Square, Trash2, X } from 'lucide-react'
 import { getModelLabel } from '@/shared/utils/modelLabel'
 import { getTagColorClasses } from '@/shared/utils/colorTag'
@@ -39,6 +39,7 @@ export function HistoryList({
   onConfirmDelete,
 }: HistoryListProps) {
   const navigate = useNavigate()
+  const shouldReduceMotion = useReducedMotion()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [expandedDetail, setExpandedDetail] = useState<HistoryDetail | null>(null)
   const [expandLoading, setExpandLoading] = useState(false)
@@ -158,11 +159,14 @@ export function HistoryList({
           return (
             <motion.article
               key={item.id}
-              layout
-              initial={{ opacity: 0, y: 8 }}
+              layout={!shouldReduceMotion}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25, delay: Math.min(index, 14) * 0.03 }}
+              exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.25,
+                delay: shouldReduceMotion ? 0 : Math.min(index, 14) * 0.03,
+              }}
               className="flex items-start gap-3 rounded-card border border-[#DBDFD3] bg-white p-4 dark:border-[#2C3130] dark:bg-[#1C2024]"
             >
               {selectMode && (
@@ -244,12 +248,12 @@ export function HistoryList({
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
                       className="overflow-hidden"
                     >
                       {expandLoading ? (
                         <p className="m-0 text-[0.8rem] text-[#8B8F86] dark:text-[#6D726A]">
-                          Loading...
+                          Loading…
                         </p>
                       ) : (
                         expandedDetail &&
@@ -288,7 +292,7 @@ export function HistoryList({
           disabled={isLoadingMore}
           className="mt-1 self-center rounded-panel border border-[#DBDFD3] bg-transparent px-[1.3rem] py-[0.7rem] text-[0.92rem] font-semibold text-[#1B1D1B] transition-colors duration-150 hover:border-[#8B8F86] hover:bg-[#EAEDE6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:cursor-not-allowed disabled:opacity-55 dark:border-[#2C3130] dark:text-[#ECEEE8] dark:hover:border-[#6D726A] dark:hover:bg-[#23282C]"
         >
-          {isLoadingMore ? 'Loading...' : 'Load more'}
+          {isLoadingMore ? 'Loading…' : 'Load more'}
         </button>
       )}
     </div>

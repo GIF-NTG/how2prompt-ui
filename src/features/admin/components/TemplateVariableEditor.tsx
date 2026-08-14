@@ -90,9 +90,7 @@ export function TemplateVariableEditor({
       </div>
 
       {variables.length === 0 ? (
-        <p className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">
-          No variables declared yet.
-        </p>
+        <p className="text-xs text-[#5B5F58] dark:text-[#A2A79C]">No variables declared yet.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {variables.map((variable, index) => (
@@ -104,6 +102,7 @@ export function TemplateVariableEditor({
                 value={variable.varKey}
                 onChange={(e) => updateVariable(index, { varKey: e.target.value })}
                 readOnly={disabled}
+                aria-label={`Variable ${index + 1} key`}
                 placeholder="varKey"
                 className={FIELD_CLASSES}
               />
@@ -113,6 +112,7 @@ export function TemplateVariableEditor({
                   updateVariable(index, { label: { ...variable.label, en: e.target.value } })
                 }
                 readOnly={disabled}
+                aria-label={`Variable ${index + 1} label`}
                 placeholder="Label"
                 className={FIELD_CLASSES}
               />
@@ -147,7 +147,8 @@ export function TemplateVariableEditor({
                     type="button"
                     onClick={() => moveVariable(index, -1)}
                     disabled={index === 0}
-                    className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
+                    aria-label={`Move variable ${index + 1} up`}
+                    className="text-xs text-[#5B5F58] hover:text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-40 dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
                   >
                     ↑
                   </button>
@@ -155,14 +156,15 @@ export function TemplateVariableEditor({
                     type="button"
                     onClick={() => moveVariable(index, 1)}
                     disabled={index === variables.length - 1}
-                    className="text-xs text-[#5B5F58] disabled:opacity-40 dark:text-[#A2A79C]"
+                    aria-label={`Move variable ${index + 1} down`}
+                    className="text-xs text-[#5B5F58] hover:text-[#1B1D1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-40 dark:text-[#A2A79C] dark:hover:text-[#ECEEE8]"
                   >
                     ↓
                   </button>
                   <button
                     type="button"
                     onClick={() => removeVariable(index)}
-                    className="text-xs text-[#C23A2E] dark:text-[#FF7A6B]"
+                    className="text-xs text-[#C23A2E] hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] dark:text-[#FF7A6B]"
                   >
                     Delete
                   </button>

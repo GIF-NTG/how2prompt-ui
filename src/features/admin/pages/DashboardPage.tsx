@@ -27,7 +27,7 @@ export function DashboardPage() {
       />
 
       {!dashboardStatsLoaded && !error ? (
-        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading...</p>
+        <p className="text-sm text-[#5B5F58] dark:text-[#A2A79C]">Loading…</p>
       ) : error ? (
         <p role="alert" className="text-sm text-[#C23A2E] dark:text-[#FF7A6B]">
           {error}

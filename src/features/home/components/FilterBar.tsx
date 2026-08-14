@@ -58,7 +58,11 @@ export function FilterBar({
               : 'border-[#DBDFD3] bg-white text-[#1B1D1B] hover:border-[#8B8F86] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]'
           }`}
         >
-          <Heart size={16} fill={filters.favoritesOnly ? 'currentColor' : 'none'} />
+          <Heart
+            aria-hidden="true"
+            size={16}
+            fill={filters.favoritesOnly ? 'currentColor' : 'none'}
+          />
           Favorites
         </button>
       )}

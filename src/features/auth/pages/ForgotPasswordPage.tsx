@@ -59,7 +59,7 @@ export function ForgotPasswordPage() {
           Forgot password
         </h2>
         <p className="mt-1 text-sm text-[#5B5F58] dark:text-[#A2A79C]">
-          Enter your registered email and we&apos;ll send you a password reset link.
+          Enter your registered email and we’ll send you a password reset link.
         </p>
       </div>
 
@@ -101,7 +101,7 @@ export function ForgotPasswordPage() {
               disabled={submitting}
               className="rounded-lg bg-[#3652E0] px-5 py-2 text-base font-bold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] disabled:opacity-60 dark:bg-[#8493FF] dark:text-[#14171A]"
             >
-              Send link →
+              {submitting ? 'Sending…' : 'Send link →'}
             </button>
           </div>
         </form>
