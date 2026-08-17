@@ -59,11 +59,13 @@ cycle.
 
 ## Hooks (opt-in)
 
-Real scripts live at `.claude/hooks/typescript/format-lint.sh` (prettier + eslint on
+Real scripts live at `.claude/hooks/typescript/format-lint.sh` (prettier + oxlint on
 save) and `.claude/hooks/common/block-destructive.sh` (blocks destructive Bash
 commands before they run). Enable them by copying
 `.claude/settings.example.typescript.json` to this project's own
 `.claude/settings.json` (not synced — machine-local by design).
 
-`format-lint.sh` assumes `pnpm`; adjust the commands inside it if this project uses
-`npm`/`yarn` instead.
+`format-lint.sh` assumes `npm` + `oxlint` (matches `how2prompt-ui`'s actual
+toolchain — `package-lock.json`, no `pnpm-lock.yaml`, `oxlint` as the `lint` script);
+adjust the commands inside it if a different consuming project uses `pnpm`/`yarn` or
+`eslint` instead.

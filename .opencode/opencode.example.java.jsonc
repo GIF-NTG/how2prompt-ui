@@ -1,0 +1,35 @@
+// Reference only — OpenCode equivalent of .claude/settings.example.java.json.
+// Copy the relevant block into this project's own opencode.json / opencode.jsonc
+// by hand to enable it (same "machine-local, not auto-wired" rule as Claude's
+// settings.json — see how2prompt-agentic/scripts/sync.sh).
+//
+// Gap vs. Claude Code: OpenCode's `formatter` and `permission` config are
+// declarative (glob/pattern matching), not arbitrary scripts reading a JSON
+// stdin payload — so .claude/hooks/common/block-destructive.sh can't be
+// reused verbatim here. The formatter below instead calls
+// .claude/hooks/java/format-file.sh directly with $FILE as $1 — the same
+// single-file-scoped helper format.sh (Claude's PostToolUse hook) delegates
+// to, so both editors share one implementation instead of drifting. Do NOT
+// call the Maven goal with no file filter here — that reformats every .java
+// file in the module on every single edit (confirmed 226 files touched
+// before this was scoped).
+{
+  "$schema": "https://opencode.ai/config.json",
+  "formatter": {
+    "spotify-fmt": {
+      "command": ["bash", ".claude/hooks/java/format-file.sh", "$FILE"],
+      "extensions": [".java"]
+    }
+  },
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "rm -rf /*": "deny",
+      "rm -rf ~*": "deny",
+      "rm -rf $HOME*": "deny",
+      "git push*--force*": "deny",
+      "git push*-f*": "ask",
+      "git reset --hard*": "ask"
+    }
+  }
+}

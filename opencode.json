@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "formatter": {
+    "prettier": {
+      "command": ["npm", "exec", "--no", "--", "prettier", "--write", "$FILE"],
+      "extensions": [".ts", ".tsx", ".js", ".jsx"]
+    },
+    "oxlint": {
+      "command": ["npm", "exec", "--no", "--", "oxlint", "--fix", "$FILE"],
+      "extensions": [".ts", ".tsx", ".js", ".jsx"]
+    }
+  },
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "rm -rf /*": "deny",
+      "rm -rf ~*": "deny",
+      "rm -rf $HOME*": "deny",
+      "git push*--force*": "deny",
+      "git push*-f*": "ask",
+      "git reset --hard*": "ask"
+    }
+  }
+}
