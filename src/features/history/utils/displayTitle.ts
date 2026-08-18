@@ -12,7 +12,7 @@ const MAX_LENGTH = 60
 export function getHistoryDisplayTitle(item: HistoryListItem): string {
   if (item.title) return item.title
   if (!item.templateId) return getI18nValue(item.templateTitle)
-  const snippet = item.promptSnippet.trim()
+  const snippet = (item.promptSnippet ?? '').trim()
   if (!snippet) return getI18nValue(item.templateTitle)
   return snippet.length > MAX_LENGTH ? `${snippet.slice(0, MAX_LENGTH)}…` : snippet
 }

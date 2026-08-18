@@ -44,13 +44,21 @@ interface CursorPage<T> {
  *  project memory `project_templates_pagination_contract_drift`. There's no
  *  template title to fall back on short of an extra `GET /templates/{id}`
  *  call per row, so `mapHistoryListItem` below substitutes a generic label
- *  instead of fabricating one. */
+ *  instead of fabricating one.
+ *
+ *  `GET /generated-prompts/{id}` (the detail endpoint) additionally omits
+ *  `finalPromptPreview` entirely — it only sends the full `finalPrompt` —
+ *  unlike the list endpoint which sends the truncated preview and no full
+ *  text. `mapHistoryListItem` is shared by both call sites (list rows and
+ *  `mapHistoryDetail`), so `finalPromptPreview` must be treated as optional
+ *  here and derived from `finalPrompt` when absent, or `promptSnippet` ends
+ *  up `undefined` and crashes `getHistoryDisplayTitle`'s `.trim()` call. */
 interface RawHistoryListItem {
   id: string
   title: string | null
   templateId: string | null
   aiModelId: string | null
-  finalPromptPreview: string
+  finalPromptPreview?: string
   createdAt: string
 }
 
@@ -61,7 +69,12 @@ interface RawHistoryDetail extends RawHistoryListItem {
   finalPrompt: string
 }
 
-function mapHistoryListItem(raw: RawHistoryListItem, codeById: Map<string, string>): HistoryListItem {
+const PROMPT_SNIPPET_LENGTH = 150
+
+function mapHistoryListItem(
+  raw: RawHistoryListItem,
+  codeById: Map<string, string>,
+): HistoryListItem {
   return {
     id: raw.id,
     title: raw.title,
@@ -70,14 +83,21 @@ function mapHistoryListItem(raw: RawHistoryListItem, codeById: Map<string, strin
       ? { en: 'Generated prompt', vi: 'Prompt đã tạo' }
       : { en: 'Removed template', vi: 'Mẫu đã bị xoá' },
     aiModelCode: (raw.aiModelId ? codeById.get(raw.aiModelId) : undefined) ?? raw.aiModelId ?? '',
-    promptSnippet: raw.finalPromptPreview,
+    promptSnippet: raw.finalPromptPreview ?? '',
     createdAt: raw.createdAt,
   }
 }
 
 function mapHistoryDetail(raw: RawHistoryDetail, codeById: Map<string, string>): HistoryDetail {
+  const listItem = mapHistoryListItem(
+    {
+      ...raw,
+      finalPromptPreview: raw.finalPromptPreview ?? raw.finalPrompt.slice(0, PROMPT_SNIPPET_LENGTH),
+    },
+    codeById,
+  )
   return {
-    ...mapHistoryListItem(raw, codeById),
+    ...listItem,
     templateVersionId: raw.templateVersionId,
     inputValues: raw.inputValues,
     extraInstructions: raw.extraInstructions,
