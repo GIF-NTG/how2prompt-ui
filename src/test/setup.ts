@@ -9,3 +9,9 @@ class ResizeObserverStub {
   disconnect() {}
 }
 globalThis.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver
+
+// jsdom doesn't implement scrollIntoView (used by RefineDiffView to bring a
+// freshly-arrived refine result into view without the user hunting for it).
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {}
+}

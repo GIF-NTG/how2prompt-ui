@@ -5,6 +5,8 @@ import { useAuth } from '@/features/auth/context/useAuth'
 import { useTemplateDetail } from '@/features/template-detail/hooks/useTemplateDetail'
 import { ReloadUnavailableBanner } from '@/features/template-detail/components/ReloadUnavailableBanner'
 import { TemplateGenerateSection } from '@/features/template-generate/components/TemplateGenerateSection'
+import { estimateTokens } from '@/features/template-generate/utils/renderTemplate'
+import { getI18nValue } from '@/shared/utils/i18n'
 import { createHistoryClient } from '../api/historyClient'
 import { getHistoryDisplayTitle } from '../utils/displayTitle'
 import type { HistoryDetail } from '../types'
@@ -90,7 +92,13 @@ export function RegenerateHistoryPage() {
       ) : (
         <>
           <h1 className="m-0 text-[clamp(1.4rem,2.4vw,1.7rem)] leading-[1.2] tracking-[-0.015em]">
-            Regenerate: {getHistoryDisplayTitle(entry)}
+            {/* Prefer the real template title (already loaded below) over
+                `getHistoryDisplayTitle`'s raw-prompt-snippet fallback — that
+                fallback exists for entries with no template at all, but here
+                a proper human-readable title is available and shouldn't be
+                shadowed by a snippet that still carries markdown syntax
+                (`### Role`, `**Task:**`, ...) from the prompt body. */}
+            Regenerate: {template ? getI18nValue(template.title) : getHistoryDisplayTitle(entry)}
           </h1>
 
           {templateUnavailable ? (
@@ -106,6 +114,13 @@ export function RegenerateHistoryPage() {
                     string | number | boolean | string[]
                   >,
                   extraInstructions: entry.extraInstructions,
+                }}
+                initialResult={{
+                  generatedPromptId: entry.id,
+                  finalPrompt: entry.finalPrompt,
+                  tokensEstimate: estimateTokens(entry.finalPrompt),
+                  aiModelCode: entry.aiModelCode,
+                  remainingQuota: null,
                 }}
               />
             )

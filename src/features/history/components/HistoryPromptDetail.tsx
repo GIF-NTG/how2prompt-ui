@@ -1,16 +1,36 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Check, Copy } from 'lucide-react'
+import { useAuth } from '@/features/auth/context/useAuth'
+import { createAiEnhanceClient } from '@/features/ai-enhance/api/aiEnhanceClient'
+import { useRefinePrompt } from '@/features/ai-enhance/hooks/useRefinePrompt'
+import { RefineTrigger } from '@/features/ai-enhance/components/RefineTrigger'
+import { RefineDiffView } from '@/features/ai-enhance/components/RefineDiffView'
 
 interface HistoryPromptDetailProps {
+  generatedPromptId: string
   finalPrompt: string
   extraInstructions: string | null
+  onFinalPromptRefined: (finalPrompt: string) => void
 }
 
 /** Read-only view of a history entry's full generated prompt (FR: "xem chi
  *  tiết prompt trong lịch sử") — the list only shows a truncated
- *  `promptSnippet`, this shows the complete `finalPrompt` saved server-side. */
-export function HistoryPromptDetail({ finalPrompt, extraInstructions }: HistoryPromptDetailProps) {
+ *  `promptSnippet`, this shows the complete `finalPrompt` saved server-side.
+ *  Also hosts the US-6.1 "Refine with AI" flow for this same prompt. */
+export function HistoryPromptDetail({
+  generatedPromptId,
+  finalPrompt,
+  extraInstructions,
+  onFinalPromptRefined,
+}: HistoryPromptDetailProps) {
   const [justCopied, setJustCopied] = useState(false)
+  const { session } = useAuth()
+  const aiEnhanceClient = useMemo(() => createAiEnhanceClient(session?.token), [session?.token])
+  const refineState = useRefinePrompt({
+    client: aiEnhanceClient,
+    generatedPromptId,
+    onAccepted: onFinalPromptRefined,
+  })
 
   async function handleCopy() {
     await navigator.clipboard.writeText(finalPrompt)
@@ -44,6 +64,18 @@ export function HistoryPromptDetail({ finalPrompt, extraInstructions }: HistoryP
         )}
         Copy
       </button>
+
+      <RefineTrigger
+        eligible={Boolean(session?.emailVerified)}
+        state={refineState.state}
+        errorMessage={refineState.errorMessage}
+        onRefine={() => void refineState.refine()}
+      />
+      <RefineDiffView
+        result={refineState.result}
+        onAccept={(editedText) => void refineState.acceptRefine(editedText)}
+        onDiscard={() => void refineState.discardRefine()}
+      />
     </section>
   )
 }

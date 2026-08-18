@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { GenerateActions } from './GenerateActions'
@@ -18,29 +18,14 @@ function makeResponse(overrides: Partial<GenerateResponse> = {}): GenerateRespon
 }
 
 describe('GenerateActions', () => {
-  it('shows the final prompt copy affordance and a working Copy button after success', async () => {
+  it('calls onGenerate on click', async () => {
     const user = userEvent.setup()
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText },
-      configurable: true,
-    })
-
     const onGenerate = vi.fn().mockResolvedValue(makeResponse())
-    const { rerender } = render(
-      <GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />,
-    )
+    render(<GenerateActions isValid onGenerate={onGenerate} />)
 
     await user.click(screen.getByRole('button', { name: /generate prompt/i }))
-    await waitFor(() => expect(onGenerate).toHaveBeenCalledTimes(1))
 
-    rerender(<GenerateActions isValid onGenerate={onGenerate} finalPrompt="the final prompt" />)
-
-    const copyButton = screen.getByRole('button', { name: /copy/i })
-    await user.click(copyButton)
-
-    expect(writeText).toHaveBeenCalledWith('the final prompt')
-    expect(await screen.findByRole('status')).toHaveTextContent(/copied/i)
+    expect(onGenerate).toHaveBeenCalledTimes(1)
   })
 
   it('shows the guest quota message when generation fails with GUEST_QUOTA_EXCEEDED', async () => {
@@ -48,7 +33,7 @@ describe('GenerateActions', () => {
     const onGenerate = vi
       .fn()
       .mockRejectedValue(new ApiError('GUEST_QUOTA_EXCEEDED', 'quota exceeded', 429))
-    render(<GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />)
+    render(<GenerateActions isValid onGenerate={onGenerate} />)
 
     await user.click(screen.getByRole('button', { name: /generate prompt/i }))
 
@@ -58,16 +43,15 @@ describe('GenerateActions', () => {
   it('shows a generic retry-able message on a non-quota failure and fabricates no result', async () => {
     const user = userEvent.setup()
     const onGenerate = vi.fn().mockRejectedValue(new ApiError('INTERNAL_ERROR', 'boom', 500))
-    render(<GenerateActions isValid onGenerate={onGenerate} finalPrompt={null} />)
+    render(<GenerateActions isValid onGenerate={onGenerate} />)
 
     await user.click(screen.getByRole('button', { name: /generate prompt/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/unable to generate/i)
-    expect(screen.queryByRole('button', { name: /copy/i })).not.toBeInTheDocument()
   })
 
   it('disables the Generate button while the form is invalid', () => {
-    render(<GenerateActions isValid={false} onGenerate={vi.fn()} finalPrompt={null} />)
+    render(<GenerateActions isValid={false} onGenerate={vi.fn()} />)
     expect(screen.getByRole('button', { name: /generate prompt/i })).toBeDisabled()
   })
 

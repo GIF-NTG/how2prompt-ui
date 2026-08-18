@@ -259,8 +259,12 @@ export function HistoryList({
                         expandedDetail &&
                         (expandedDetail.templateId ? (
                           <HistoryPromptDetail
+                            generatedPromptId={expandedDetail.id}
                             finalPrompt={expandedDetail.finalPrompt}
                             extraInstructions={expandedDetail.extraInstructions}
+                            onFinalPromptRefined={(finalPrompt) =>
+                              setExpandedDetail((prev) => (prev ? { ...prev, finalPrompt } : prev))
+                            }
                           />
                         ) : (
                           <ReloadUnavailableBanner finalPrompt={expandedDetail.finalPrompt} />
