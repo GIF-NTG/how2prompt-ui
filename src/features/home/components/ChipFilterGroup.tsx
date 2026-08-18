@@ -32,7 +32,7 @@ export function ChipFilterGroup({
         type="button"
         onClick={() => (multiple ? onClear?.() : onChange(''))}
         aria-pressed={isAllActive}
-        className={`font-mono text-[0.78rem] font-semibold rounded-full border px-[0.85rem] py-[0.4rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
+        className={`text-[0.78rem] font-semibold rounded-full border px-[0.85rem] py-[0.4rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
           isAllActive
             ? 'border-[#3652E0] bg-[#3652E0] text-white dark:border-[#8493FF] dark:bg-[#8493FF] dark:text-[#14171A]'
             : 'border-[#DBDFD3] bg-white text-[#5B5F58] hover:border-[#8B8F86] dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#A2A79C]'
@@ -49,7 +49,7 @@ export function ChipFilterGroup({
               type="button"
               onClick={() => onChange(item.slug)}
               aria-pressed={isSelected}
-              className={`font-mono text-[0.78rem] font-semibold rounded-full border px-[0.85rem] py-[0.4rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
+              className={`text-[0.78rem] font-semibold rounded-full border px-[0.85rem] py-[0.4rem] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3652E0] ${
                 isSelected
                   ? 'border-[#3652E0] bg-[#3652E0] text-white dark:border-[#8493FF] dark:bg-[#8493FF] dark:text-[#14171A]'
                   : `bg-white dark:bg-[#1C2024] ${getTagColorClasses(item.slug)}`

@@ -69,9 +69,7 @@ export function FilterPopover({
   const tagSlugs = tag ? tag.split(',').filter(Boolean) : []
 
   function handleToggleTag(slug: string) {
-    const next = tagSlugs.includes(slug)
-      ? tagSlugs.filter((s) => s !== slug)
-      : [...tagSlugs, slug]
+    const next = tagSlugs.includes(slug) ? tagSlugs.filter((s) => s !== slug) : [...tagSlugs, slug]
     onTagChange(next.join(','))
   }
 
@@ -93,7 +91,7 @@ export function FilterPopover({
         <FunnelSimple size={16} weight="bold" aria-hidden="true" />
         Filters
         {activeCount > 0 && (
-          <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/25 px-1 font-mono text-[0.68rem]">
+          <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-white/25 px-1 text-[0.68rem]">
             {activeCount}
           </span>
         )}
@@ -135,7 +133,7 @@ export function FilterPopover({
             <button
               type="button"
               onClick={onClear}
-              className="self-start font-mono text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
+              className="self-start text-[0.78rem] text-[#3652E0] underline underline-offset-2 dark:text-[#8493FF]"
             >
               Clear filters
             </button>

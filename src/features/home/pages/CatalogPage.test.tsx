@@ -214,12 +214,19 @@ describe('CatalogPage', () => {
     await screen.findByText('First')
 
     mockedClient.getTemplates.mockResolvedValueOnce({
-      items: [makeTemplate({ id: 't2', slug: 't2', title: { en: 'Newest Template', vi: 'Newest Template' } })],
+      items: [
+        makeTemplate({
+          id: 't2',
+          slug: 't2',
+          title: { en: 'Newest Template', vi: 'Newest Template' },
+        }),
+      ],
       nextCursor: null,
       hasMore: false,
     })
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'newest')
+    await user.click(screen.getByRole('button', { name: 'Sort by' }))
+    await user.click(await screen.findByRole('option', { name: 'Newest' }))
 
     await screen.findByText('Newest Template')
     const lastCall = mockedClient.getTemplates.mock.calls.at(-1)?.[0]
@@ -252,14 +259,14 @@ describe('CatalogPage', () => {
     renderPage()
     await screen.findByText('First')
 
-    // ModelFilter's <select> is rendered before the sort <select> and has no
-    // accessible name of its own.
-    await user.selectOptions(screen.getAllByRole('combobox')[0], 'claude')
+    await user.click(screen.getByRole('button', { name: 'Filter by AI model' }))
+    await user.click(await screen.findByRole('option', { name: 'Claude' }))
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({ model: 'claude' }),
     )
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'newest')
+    await user.click(screen.getByRole('button', { name: 'Sort by' }))
+    await user.click(await screen.findByRole('option', { name: 'Newest' }))
 
     await waitFor(() =>
       expect(mockedClient.getTemplates.mock.calls.at(-1)?.[0]).toMatchObject({

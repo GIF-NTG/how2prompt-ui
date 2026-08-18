@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useHomeData } from '@/features/home/context/useHomeData'
+import { SelectMenu } from '@/shared/components/SelectMenu'
 import type { HistoryFilters } from '../types'
 
 interface TemplateOption {
@@ -15,9 +16,6 @@ interface HistoryFilterBarProps {
   onFromChange: (from: string) => void
   onToChange: (to: string) => void
 }
-
-const SELECT_CLASSES =
-  'font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]'
 
 const DATE_CLASSES =
   'font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.55rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]'
@@ -36,35 +34,37 @@ export function HistoryFilterBar({
     void ensureModels()
   }, [ensureModels])
 
+  const templateSelectOptions = useMemo(
+    () => [
+      { value: '', label: 'All templates' },
+      ...templateOptions.map((t) => ({ value: t.id, label: t.title })),
+    ],
+    [templateOptions],
+  )
+
+  const modelSelectOptions = useMemo(
+    () => [
+      { value: '', label: 'All AI models' },
+      ...models.map((m) => ({ value: m.code, label: m.name })),
+    ],
+    [models],
+  )
+
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <select
-        aria-label="Filter by template"
+      <SelectMenu
         value={filters.templateId}
-        onChange={(e) => onTemplateChange(e.target.value)}
-        className={SELECT_CLASSES}
-      >
-        <option value="">All templates</option>
-        {templateOptions.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.title}
-          </option>
-        ))}
-      </select>
+        options={templateSelectOptions}
+        onChange={onTemplateChange}
+        ariaLabel="Filter by template"
+      />
 
-      <select
-        aria-label="Filter by AI model"
+      <SelectMenu
         value={filters.model}
-        onChange={(e) => onModelChange(e.target.value)}
-        className={SELECT_CLASSES}
-      >
-        <option value="">All AI models</option>
-        {models.map((m) => (
-          <option key={m.id} value={m.code}>
-            {m.name}
-          </option>
-        ))}
-      </select>
+        options={modelSelectOptions}
+        onChange={onModelChange}
+        ariaLabel="Filter by AI model"
+      />
 
       <label className="flex items-center gap-1.5 text-[0.8rem] text-[#5B5F58] dark:text-[#A2A79C]">
         From

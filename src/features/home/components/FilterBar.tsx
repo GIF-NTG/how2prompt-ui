@@ -1,7 +1,13 @@
 import { Heart } from 'lucide-react'
 import type { CatalogFilterState, CatalogSort } from '@/features/home/hooks/useCatalogFilters'
+import { SelectMenu } from '@/shared/components/SelectMenu'
 import { ModelFilter } from './ModelFilter'
 import { FilterPopover } from './FilterPopover'
+
+const SORT_OPTIONS = [
+  { value: 'popular', label: 'Most popular' },
+  { value: 'newest', label: 'Newest' },
+]
 
 interface FilterBarProps {
   filters: CatalogFilterState
@@ -31,15 +37,12 @@ export function FilterBar({
     <div className="flex flex-wrap items-center gap-3">
       {search}
       <ModelFilter value={filters.model} onChange={onModelChange} />
-      <select
-        aria-label="Sort by"
+      <SelectMenu
         value={filters.sort}
-        onChange={(e) => onSortChange(e.target.value as CatalogSort)}
-        className="font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
-      >
-        <option value="popular">Most popular</option>
-        <option value="newest">Newest</option>
-      </select>
+        options={SORT_OPTIONS}
+        onChange={(v) => onSortChange(v as CatalogSort)}
+        ariaLabel="Sort by"
+      />
       <FilterPopover
         category={filters.category}
         tag={filters.tag}

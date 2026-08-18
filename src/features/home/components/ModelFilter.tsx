@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useHomeData } from '@/features/home/context/useHomeData'
+import { SelectMenu } from '@/shared/components/SelectMenu'
 
 interface ModelFilterProps {
   value: string
@@ -13,19 +14,20 @@ export function ModelFilter({ value, onChange }: ModelFilterProps) {
     void ensureModels()
   }, [ensureModels])
 
+  const options = useMemo(
+    () => [
+      { value: '', label: modelsLoaded ? 'All AI models' : 'Loading…' },
+      ...models.map((m) => ({ value: m.code, label: m.name })),
+    ],
+    [models, modelsLoaded],
+  )
+
   return (
-    <select
+    <SelectMenu
       value={value}
-      onChange={(e) => onChange(e.target.value)}
-      aria-label="Filter by AI model"
-      className="font-[inherit] cursor-pointer rounded-xl border border-[#DBDFD3] bg-white px-[0.9rem] py-[0.62rem] text-[0.86rem] text-[#1B1D1B] transition-colors duration-150 focus:border-[#3652E0] focus:outline-none dark:border-[#2C3130] dark:bg-[#1C2024] dark:text-[#ECEEE8]"
-    >
-      <option value="">{modelsLoaded ? 'All AI models' : 'Loading…'}</option>
-      {models.map((m) => (
-        <option key={m.id} value={m.code}>
-          {m.name}
-        </option>
-      ))}
-    </select>
+      options={options}
+      onChange={onChange}
+      ariaLabel="Filter by AI model"
+    />
   )
 }

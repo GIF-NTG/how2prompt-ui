@@ -90,11 +90,7 @@ export function CatalogPage() {
   // Any narrowing filter (not sort, which just reorders) makes "Trending
   // this week" read as unrelated noise next to the already-filtered grid.
   const hasActiveFilters = Boolean(
-    debouncedSearch ||
-      filters.category ||
-      filters.tag ||
-      filters.model ||
-      filters.favoritesOnly,
+    debouncedSearch || filters.category || filters.tag || filters.model || filters.favoritesOnly,
   )
 
   const handleLoadMore = useCallback(async () => {
@@ -168,16 +164,6 @@ export function CatalogPage() {
         <EmptyState />
       ) : (
         <>
-          <TemplateRail
-            title="Featured"
-            subtitle="curated by Admin"
-            templates={featured}
-            isSignedIn={!!session}
-            onTemplateClick={handleTemplateClick}
-          />
-
-          {/* Hidden while any filter is active — a "trending this week" rail
-              next to a narrowed grid reads as unrelated noise, not a suggestion. */}
           {!hasActiveFilters && (
             <TemplateRail
               title="Trending this week"
