@@ -115,7 +115,10 @@ describe('HistoryPage', () => {
     )
     await screen.findByText('Generated Prompt History')
     await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
-    expect(listSpy).toHaveBeenCalledTimes(1)
+    // Two calls: `ensureHistory` (the paginated list) and
+    // `ensureTemplateOptions` (the unfiltered sample for the "Filter by
+    // template" dropdown) — see HistoryDataProvider.
+    await waitFor(() => expect(listSpy).toHaveBeenCalledTimes(2))
 
     // Simulates RootLayout's Outlet swapping the nested route while
     // HistoryDataProvider itself stays mounted across the navigation.
@@ -144,6 +147,6 @@ describe('HistoryPage', () => {
     await screen.findByText('Generated Prompt History')
     await waitFor(() => expect(screen.getAllByRole('article').length).toBeGreaterThan(0))
 
-    expect(listSpy).toHaveBeenCalledTimes(1)
+    expect(listSpy).toHaveBeenCalledTimes(2)
   })
 })

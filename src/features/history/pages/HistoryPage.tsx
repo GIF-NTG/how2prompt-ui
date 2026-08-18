@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { useHistoryData } from '../context/useHistoryData'
-import { getHistoryDisplayTitle } from '../utils/displayTitle'
 import { useHistoryFilters } from '../hooks/useHistoryFilters'
 import { HistoryFilterBar } from '../components/HistoryFilterBar'
 import { HistoryList } from '../components/HistoryList'
@@ -16,8 +15,17 @@ export function HistoryPage() {
   // HistoryDataProvider) — `ensureHistory()` only re-fetches when the
   // filters actually change, so navigating away from and back to History
   // reuses the cached data instead of re-fetching it.
-  const { items, cursor, hasMore, historyClient, ensureHistory, loadMoreHistory, removeHistoryItems } =
-    useHistoryData()
+  const {
+    items,
+    cursor,
+    hasMore,
+    templateOptions,
+    historyClient,
+    ensureHistory,
+    loadMoreHistory,
+    ensureTemplateOptions,
+    removeHistoryItems,
+  } = useHistoryData()
 
   const [loading, setLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -50,6 +58,11 @@ export function HistoryPage() {
     }
   }, [session, queryKey, ensureHistory])
 
+  useEffect(() => {
+    if (!session) return
+    void ensureTemplateOptions()
+  }, [session, ensureTemplateOptions])
+
   const handleLoadMore = useCallback(async () => {
     if (!cursor) return
     setIsLoadingMore(true)
@@ -71,16 +84,6 @@ export function HistoryPage() {
     },
     [removeHistoryItems],
   )
-
-  const templateOptions = useMemo(() => {
-    const seen = new Map<string, string>()
-    for (const item of items) {
-      if (item.templateId && !seen.has(item.templateId)) {
-        seen.set(item.templateId, getHistoryDisplayTitle(item))
-      }
-    }
-    return [...seen.entries()].map(([id, title]) => ({ id, title }))
-  }, [items])
 
   const hasActiveFilters = Boolean(
     filters.templateId || filters.model || filters.from || filters.to,
