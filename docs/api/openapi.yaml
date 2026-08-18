@@ -127,6 +127,10 @@ tags:
     description: Template yêu thích
   - name: Admin
     description: Quản trị (yêu cầu isAdmin=true)
+  - name: AI Enhancement
+    description: 'Epic 6 — refine/score/translate một prompt đã sinh, Playground, chia sẻ công khai'
+  - name: Template Authoring
+    description: 'Epic 7 — fork template công khai, chỉnh sửa draft, lịch sử version, diff, submit duyệt'
 
 # ==========================================================
 # GLOBAL SECURITY
@@ -534,6 +538,26 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/TemplateListItem' }
                   meta: { $ref: '#/components/schemas/PageMeta' }
+    post:
+      tags: [Template Authoring]
+      summary: Tạo template mới (draft riêng của user)
+      description: Không kiểm tra ownership vì đây là tạo mới hoàn toàn.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateAuthoringCreateRequest' }
+      responses:
+        '201':
+          description: Đã tạo (status=draft)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateAuthoringResponse' }
+        '409':
+          description: Slug đã tồn tại trong workspace
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
 
   /templates/{id}:
     get:
@@ -552,6 +576,42 @@ paths:
           $ref: '#/components/responses/NotFound'
         '403':
           description: Template private của workspace khác
+    patch:
+      tags: [Template Authoring]
+      summary: Sửa nội dung draft (optimistic locking qua lockVersion)
+      description: |
+        Chỉ chủ sở hữu (403 nếu không phải). Sửa promptBody/systemPrompt/
+        exampleOutput/guideI18n sẽ tạo TemplateVersion mới (version +1) và set
+        làm current. Chỉ sửa titleI18n/descriptionI18n thì KHÔNG tạo version mới.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TemplateAuthoringEditRequest' }
+      responses:
+        '200':
+          description: Đã cập nhật, lockVersion tăng
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateAuthoringResponse' }
+        '409':
+          description: |
+            expectedLockVersion không khớp lockVersion hiện tại (người khác đã lưu
+            trước) — FE phải refetch và để user thử lại, không gửi lại nguyên payload cũ.
+            Hoặc: một key trong variableKeysToRemove vẫn còn được tham chiếu bởi
+            `{{placeholder}}` trong prompt/system text.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '400':
+          description: Một entry trong variableKeysToRemove không đúng định dạng identifier
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          $ref: '#/components/responses/Unauthorized'
 
   /templates/featured:
     get:
@@ -631,6 +691,151 @@ paths:
                   message: 'Bạn đã dùng hết lượt miễn phí hôm nay. Đăng ký để nhận 50 lượt/ngày!'
 
   # ========================================================
+  # TEMPLATE AUTHORING (Epic 7)
+  # ========================================================
+  # `POST /templates` and `PATCH /templates/{id}` are merged into the
+  # existing path items above (TEMPLATES section) — OpenAPI path keys must be
+  # unique, so their operations live there, not duplicated here.
+  /templates/{id}/fork:
+    post:
+      tags: [Template Authoring]
+      summary: Fork một template công khai/chính chủ thành draft của mình
+      description: |
+        Không yêu cầu là chủ sở hữu — chỉ cần template nguồn `isPublic` hoặc
+        `isOfficial`. Bất kỳ user nào cũng fork được bất kỳ template
+        public/official nào.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '201':
+          description: Đã tạo draft mới, forkedFromTemplateId/forkedFromVersionId trỏ về nguồn
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateAuthoringResponse' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          description: Template nguồn không phải public/official
+
+  /templates/{id}/versions:
+    get:
+      tags: [Template Authoring]
+      summary: Lịch sử version của template (mới nhất trước)
+      description: Chỉ chủ sở hữu.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TemplateVersionSummary' }
+
+  /templates/{id}/versions/diff:
+    get:
+      tags: [Template Authoring]
+      summary: So sánh 2 version
+      description: Chỉ chủ sở hữu. `from`/`to` là query param, không phải body.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateVersionDiff' }
+        '400':
+          description: from/to không thuộc về template này
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /templates/{id}/versions/{versionId}/current:
+    patch:
+      tags: [Template Authoring]
+      summary: Rollback / chuyển version hiện tại
+      description: Chỉ chủ sở hữu. Không có body.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: currentVersionId đã đổi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateAuthoringResponse' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          description: 'Version đích đã bị archive — không có endpoint "unarchive", phải chọn version khác chưa archive'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /templates/{id}/versions/{versionId}/archive:
+    patch:
+      tags: [Template Authoring]
+      summary: Archive một version
+      description: Chỉ chủ sở hữu. Không có body.
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Version đã archive (archivedAt được set)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateVersionSummary' }
+        '400':
+          description: Không thể archive version đang là current — đổi current trước
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /templates/{id}/submit:
+    post:
+      tags: [Template Authoring]
+      summary: Submit draft để duyệt
+      description: |
+        Chỉ chủ sở hữu. Đồng bộ (synchronous) — moderation chạy inline, không có
+        webhook/async step. Không có body. Response LUÔN LÀ 200 kể cả khi bị
+        reject — phải đọc `status`/`rejectionReason`/`missingFields` trong body
+        để phân biệt kết quả. Không có status "rejected" riêng — reject (auto
+        hoặc admin) chỉ đưa template về (hoặc giữ ở) "draft".
+      parameters:
+        - $ref: '#/components/parameters/TemplateId'
+      responses:
+        '200':
+          description: |
+            Luôn 200. Xem `status`: "draft" (thiếu field bắt buộc, xem
+            missingFields — hoặc bị auto-moderation reject, xem rejectionReason)
+            hay "pending" (đã vào hàng chờ duyệt).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TemplateSubmitResult' }
+        '400':
+          description: Template hiện không ở status "draft" (đã pending/published)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  # ========================================================
   # HISTORY
   # ========================================================
   /generated-prompts:
@@ -697,6 +902,219 @@ paths:
       responses:
         '204':
           description: Đã xóa
+
+  # ========================================================
+  # AI ENHANCEMENT (Epic 6)
+  # ========================================================
+  # Real provider round-trips ran 5–26s in testing (Gemini). FE nên coi loading
+  # state là first-class, không phải spinner ngắn, và không cho bắn 2 request
+  # trên cùng 1 prompt khi 1 request đang chạy.
+  /generated-prompts/{id}/refine:
+    post:
+      tags: [AI Enhancement]
+      summary: Refine (viết lại) một prompt đã sinh
+      description: Model dùng cho refine được admin cấu hình sẵn (xem /admin/ai-feature-settings) — FE không tự chọn model ở đây.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: generatedPromptId
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RefineResult' }
+        '403':
+          description: EMAIL_NOT_VERIFIED — refine yêu cầu email đã xác thực
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '429':
+          description: AI_QUOTA_EXCEEDED hoặc RATE_LIMITED
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '504':
+          description: AI_TIMEOUT
+        '503':
+          description: AI_UNAVAILABLE
+        '422':
+          description: AI_CONTENT_FILTERED
+    delete:
+      tags: [AI Enhancement]
+      summary: Hủy bản refine đang chờ (pending)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã hủy — raw, không bọc envelope
+
+  /generated-prompts/{id}/refine/accept:
+    post:
+      tags: [AI Enhancement]
+      summary: Chấp nhận bản refine, ghi đè thành final text của prompt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acceptedPrompt: { type: string }
+      responses:
+        '200':
+          description: OK — không có key `data`
+        '422':
+          description: NO_PENDING_REFINEMENT
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /generated-prompts/{id}/score:
+    post:
+      tags: [AI Enhancement]
+      summary: Chấm điểm chất lượng một prompt đã sinh
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScoreResult' }
+
+  /generated-prompts/{id}/translate:
+    post:
+      tags: [AI Enhancement]
+      summary: Dịch prompt đã sinh sang ngôn ngữ khác
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetLanguage]
+              properties:
+                targetLanguage: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TranslateResult' }
+        '422':
+          description: SAME_TARGET_MODEL hoặc NOT_IMPLEMENTED (prompt nguồn là image-based)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /playground/run:
+    post:
+      tags: [AI Enhancement]
+      summary: Chạy một prompt tự do trong Playground (không cần prompt/template có sẵn)
+      description: Đây là endpoint DUY NHẤT của Epic 6 mà client tự chọn aiModelId (từ GET /ai-models, public, không cần auth).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PlaygroundRunRequest' }
+      responses:
+        '200':
+          description: |
+            OK. Nếu `truncated=true`, báo cho user là model đã chạm giới hạn
+            output token chứ không phải hoàn thành tự nhiên.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PlaygroundRunResult' }
+        '422':
+          description: AI_MODEL_UNAVAILABLE
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /generated-prompts/{id}/share:
+    post:
+      tags: [AI Enhancement]
+      summary: Tạo/xoay link chia sẻ công khai cho một prompt đã sinh
+      description: |
+        ⚠️ Response này và DELETE cùng path, cùng GET /public/prompts/{slug}
+        top-level đều là **snake_case** — khác với phần còn lại của Epic 6
+        (camelCase). Không dùng chung response type với các endpoint khác.
+        Gọi lại khi đã share rồi sẽ ROTATE slug — link cũ ngừng hoạt động ngay.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hideInputs: { type: boolean, default: false }
+      responses:
+        '200':
+          description: OK — snake_case
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShareResult' }
+    delete:
+      tags: [AI Enhancement]
+      summary: Hủy chia sẻ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Đã hủy chia sẻ — raw, không bọc envelope
+
+  /public/prompts/{slug}:
+    get:
+      tags: [AI Enhancement]
+      summary: Xem một prompt đã share qua slug công khai
+      description: |
+        **Public — không cần auth.** Rate-limit theo IP của client, gọi trực
+        tiếp được từ trang static/SSR public. `template`/`ai_model`/
+        `input_values` mỗi trường **vắng mặt** (không phải `null`) khi prompt
+        nguồn không có — check bằng `"template" in data`, không check truthy.
+        Slug bị revoke, chưa từng tồn tại, hay đã xóa đều trả cùng 404
+        NOT_FOUND — không cố phân biệt thông báo cho từng trường hợp (chủ ý).
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK — top-level snake_case, nested object camelCase
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicSharedPrompt' }
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   # ========================================================
   # FAVORITES
@@ -877,6 +1295,55 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/DashboardStats' }
+
+  /admin/ai-feature-settings:
+    get:
+      tags: [Admin, AI Enhancement]
+      summary: (Admin) Xem model đang cấu hình cho từng AI feature
+      description: '⚠️ Trả về mảng thô (raw array), KHÔNG bọc trong envelope `{data: ...}` — ngoại lệ duy nhất của Epic 6.'
+      responses:
+        '200':
+          description: OK — raw array
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AiFeatureSetting' }
+
+  /admin/ai-feature-settings/{feature}:
+    put:
+      tags: [Admin, AI Enhancement]
+      summary: (Admin) Set model dùng cho một AI feature
+      description: |
+        ⚠️ Response trả về object thô, KHÔNG bọc envelope — cùng ngoại lệ như
+        GET ở trên. `{feature}` là một trong `REFINE`, `SCORE`, `TRANSLATE` —
+        `PLAYGROUND` bị từ chối với `BAD_REQUEST` (không có default để set,
+        client luôn tự chọn model ở Playground).
+      parameters:
+        - name: feature
+          in: path
+          required: true
+          schema: { type: string, enum: [REFINE, SCORE, TRANSLATE] }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [aiModelId]
+              properties:
+                aiModelId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK — raw object
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AiFeatureSetting' }
+        '400':
+          description: feature=PLAYGROUND bị từ chối
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
 
 # ==========================================================
 # COMPONENTS
@@ -1353,3 +1820,211 @@ components:
             signups: { type: integer }
             verifiedEmails: { type: integer }
             promptGenerations: { type: integer }
+
+    # ---------- AI Enhancement (Epic 6) ----------
+    RefineResult:
+      type: object
+      properties:
+        promptId: { type: string, format: uuid }
+        originalPrompt: { type: string }
+        refinedPrompt: { type: string }
+        explanations: { type: array, items: { type: string } }
+        modelVersion: { type: string }
+
+    ScoreBreakdown:
+      type: object
+      description: Luôn có đúng 4 key này.
+      properties:
+        clarity: { type: integer }
+        specificity: { type: integer }
+        context: { type: integer }
+        format: { type: integer }
+
+    ScoreResult:
+      type: object
+      properties:
+        promptId: { type: string, format: uuid }
+        score: { type: integer }
+        breakdown: { $ref: '#/components/schemas/ScoreBreakdown' }
+        suggestions: { type: array, items: { type: string } }
+        modelVersion: { type: string }
+
+    TranslateResult:
+      type: object
+      properties:
+        promptId: { type: string, format: uuid }
+        originalPrompt: { type: string }
+        translatedPrompt: { type: string }
+        sourceLanguage: { type: string }
+        targetLanguage: { type: string }
+        modelVersion: { type: string }
+
+    PlaygroundRunRequest:
+      type: object
+      required: [prompt, aiModelId]
+      properties:
+        prompt: { type: string }
+        aiModelId: { type: string, format: uuid }
+        generatedPromptId: { type: string, format: uuid, nullable: true, description: 'Bỏ qua nếu không gắn với 1 generated prompt có sẵn' }
+        temperature: { type: number, format: float, default: 0.7 }
+        maxOutputTokens: { type: integer, default: 4096 }
+
+    PlaygroundRunResult:
+      type: object
+      properties:
+        promptId: { type: string, format: uuid }
+        response: { type: string }
+        tokensUsed:
+          type: object
+          properties:
+            input: { type: integer }
+            output: { type: integer }
+        latencyMs: { type: integer }
+        modelVersion: { type: string }
+        truncated: { type: boolean, description: 'true nếu model chạm giới hạn output token' }
+        effectiveTemperature: { type: number, format: float }
+        effectiveMaxOutputTokens: { type: integer }
+
+    ShareResult:
+      type: object
+      description: 'snake_case — ngoại lệ duy nhất trong Epic 6, xem mô tả POST /generated-prompts/{id}/share.'
+      properties:
+        share_slug: { type: string }
+        is_public: { type: boolean }
+        hide_inputs: { type: boolean }
+
+    PublicSharedPrompt:
+      type: object
+      description: Top-level snake_case, nested object camelCase. `template`/`ai_model`/`input_values` vắng mặt (không phải null) nếu prompt nguồn không có.
+      properties:
+        final_prompt: { type: string }
+        template:
+          type: object
+          properties:
+            title: { type: string }
+            slug: { type: string }
+        ai_model:
+          type: object
+          properties:
+            name: { type: string }
+            code: { type: string }
+        input_values: { type: object, additionalProperties: true }
+        created_at: { type: string, format: date-time }
+
+    AiFeatureSetting:
+      type: object
+      description: 'GET/PUT /admin/ai-feature-settings trả object này ở dạng thô, không bọc envelope.'
+      properties:
+        feature: { type: string, enum: [REFINE, SCORE, TRANSLATE] }
+        aiModelId: { type: string, format: uuid }
+        updatedAt: { type: string, format: date-time }
+        updatedBy: { type: string, format: uuid }
+
+    # ---------- Template Authoring (Epic 7) ----------
+    TemplateAuthoringCreateRequest:
+      type: object
+      required: [slug, promptBody]
+      properties:
+        slug: { type: string, maxLength: 80 }
+        titleI18n: { $ref: '#/components/schemas/I18nString' }
+        descriptionI18n: { $ref: '#/components/schemas/I18nString' }
+        coverImage: { type: string, maxLength: 500, nullable: true }
+        promptBody: { type: string }
+        systemPrompt: { type: string, nullable: true }
+        exampleOutput: { type: string, nullable: true }
+        guideI18n: { $ref: '#/components/schemas/I18nString' }
+
+    TemplateAuthoringEditRequest:
+      type: object
+      required: [expectedLockVersion]
+      description: Tất cả field khác optional. `expectedLockVersion` bắt buộc để optimistic locking.
+      properties:
+        titleI18n: { $ref: '#/components/schemas/I18nString' }
+        descriptionI18n: { $ref: '#/components/schemas/I18nString' }
+        promptBody: { type: string, nullable: true }
+        systemPrompt: { type: string, nullable: true }
+        exampleOutput: { type: string, nullable: true }
+        guideI18n: { $ref: '#/components/schemas/I18nString' }
+        changelog: { type: string, nullable: true }
+        variableKeysToRemove:
+          type: array
+          items: { type: string, pattern: '^[a-zA-Z][a-zA-Z0-9_]*$' }
+        expectedLockVersion: { type: integer }
+
+    TemplateAuthoringResponse:
+      type: object
+      description: Response type cho create/fork/edit/set-current-version. 4 field cuối là mới ở Epic 7.
+      properties:
+        id: { type: string, format: uuid }
+        workspaceId: { type: string, format: uuid }
+        slug: { type: string }
+        titleI18n: { $ref: '#/components/schemas/I18nString' }
+        descriptionI18n: { $ref: '#/components/schemas/I18nString' }
+        coverImage: { type: string, nullable: true }
+        authorId: { type: string, format: uuid }
+        authorType: { type: string }
+        official: { type: boolean }
+        isPublic: { type: boolean }
+        status: { type: string, enum: [draft, pending, published] }
+        currentVersionId: { type: string, format: uuid }
+        usageCount: { type: integer }
+        favoriteCount: { type: integer }
+        featuredAt: { type: string, nullable: true }
+        publishedAt: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        categoryIds: { type: array, items: { type: string, format: uuid } }
+        tagIds: { type: array, items: { type: string, format: uuid } }
+        models:
+          type: array
+          items:
+            type: object
+            properties:
+              aiModelId: { type: string, format: uuid }
+              primary: { type: boolean }
+        forkedFromTemplateId: { type: string, format: uuid, nullable: true }
+        forkedFromVersionId: { type: string, format: uuid, nullable: true }
+        forkCount: { type: integer }
+        lockVersion: { type: integer }
+
+    TemplateVersionSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        versionNumber: { type: integer }
+        changelog: { type: string, nullable: true }
+        createdBy: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        current: { type: boolean }
+        archivedAt: { type: string, nullable: true }
+
+    TemplateVersionDiff:
+      type: object
+      properties:
+        promptBodyChanged: { type: boolean }
+        oldPromptBody: { type: string, nullable: true }
+        newPromptBody: { type: string, nullable: true }
+        systemPromptChanged: { type: boolean }
+        oldSystemPrompt: { type: string, nullable: true }
+        newSystemPrompt: { type: string, nullable: true }
+        guideI18nChanged: { type: boolean }
+        oldGuideI18n: { $ref: '#/components/schemas/I18nString' }
+        newGuideI18n: { $ref: '#/components/schemas/I18nString' }
+        addedVariableKeys: { type: array, items: { type: string } }
+        removedVariableKeys: { type: array, items: { type: string } }
+        changedVariableKeys:
+          type: array
+          items: { type: string }
+          description: 'Key có ở cả 2 version nhưng khác inputType/defaultValue/labelI18n.'
+
+    TemplateSubmitResult:
+      type: object
+      description: Response LUÔN LÀ 200 kể cả khi bị reject.
+      properties:
+        templateId: { type: string, format: uuid }
+        status: { type: string, enum: [draft, pending] }
+        rejectionReason: { type: string, nullable: true, description: 'Chỉ có giá trị khi auto-moderation reject; không có status "rejected" riêng.' }
+        missingFields:
+          type: array
+          items: { type: string }
+          description: 'Non-empty khi status=draft do thiếu field bắt buộc: coverImage, descriptionI18n, exampleOutput, guideI18n, categoryIds.'

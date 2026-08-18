@@ -135,3 +135,14 @@ export async function apiFetchPage<T>(
   const data = await rawFetch(path, options)
   return data as { data: T; meta: PageMeta }
 }
+
+/**
+ * Like `apiFetch`, but skips the `{data, meta}` envelope unwrap entirely —
+ * for `/admin/ai-feature-settings` (GET and PUT), the one Epic 6 exception
+ * that returns its raw object/array body directly (docs/api/openapi.yaml).
+ * Don't reuse this for any other endpoint without checking the contract.
+ */
+export async function apiFetchRaw<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+  const data = await rawFetch(path, options)
+  return (data === SENTINEL_NO_CONTENT ? undefined : data) as T
+}
