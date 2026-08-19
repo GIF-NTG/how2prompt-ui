@@ -3,8 +3,11 @@ import type { TemplateDetail } from '@/features/template-detail/types'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { createAiEnhanceClient } from '@/features/ai-enhance/api/aiEnhanceClient'
 import { useRefinePrompt } from '@/features/ai-enhance/hooks/useRefinePrompt'
+import { useScorePrompt } from '@/features/ai-enhance/hooks/useScorePrompt'
 import { RefineTrigger } from '@/features/ai-enhance/components/RefineTrigger'
 import { RefineDiffView } from '@/features/ai-enhance/components/RefineDiffView'
+import { ScoreTrigger } from '@/features/ai-enhance/components/ScoreTrigger'
+import { ScoreResultView } from '@/features/ai-enhance/components/ScoreResultView'
 import { useGenerateForm } from '../hooks/useGenerateForm'
 import { createGenerateClient } from '../api/generateClient'
 import type { GenerateResponse } from '../api/generateClient.types'
@@ -58,6 +61,10 @@ export function TemplateGenerateSection({
     generatedPromptId: generateResult?.generatedPromptId ?? null,
     onAccepted: handleRefineAccepted,
   })
+  const scoreState = useScorePrompt({
+    client: aiEnhanceClient,
+    generatedPromptId: generateResult?.generatedPromptId ?? null,
+  })
 
   const handleGenerate = useCallback(async () => {
     const result = await generateClient.generate(template.id, {
@@ -108,10 +115,11 @@ export function TemplateGenerateSection({
   // RegenerateHistoryPage's `max-w-[1120px]` shell, not just the wide
   // template detail page).
   const hasRefineResult = Boolean(refineState.result)
+  const hasScoreResult = Boolean(scoreState.result)
 
   return (
     <div
-      className={`grid min-w-0 gap-6 lg:items-start ${hasRefineResult ? '' : 'lg:grid-cols-[1.1fr_0.9fr]'}`}
+      className={`grid min-w-0 gap-6 lg:items-start ${hasRefineResult || hasScoreResult ? '' : 'lg:grid-cols-[1.1fr_0.9fr]'}`}
     >
       <section className="flex min-w-0 flex-col gap-6 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
         <h2 className="m-0 text-[1.1rem] font-semibold text-[#14171A] dark:text-[#F3F5F0]">
@@ -176,6 +184,12 @@ export function TemplateGenerateSection({
                 errorMessage={refineState.errorMessage}
                 onRefine={() => void refineState.refine()}
               />
+              <ScoreTrigger
+                generatedPromptId={generateResult.generatedPromptId ?? null}
+                state={scoreState.state}
+                errorMessage={scoreState.errorMessage}
+                onScore={() => void scoreState.score()}
+              />
             </div>
           )}
         </div>
@@ -186,6 +200,11 @@ export function TemplateGenerateSection({
               onAccept={(editedText) => void refineState.acceptRefine(editedText)}
               onDiscard={() => void refineState.discardRefine()}
             />
+          </div>
+        )}
+        {scoreState.result && (
+          <div className="min-w-0 rounded-panel border border-[#E2E5DC] bg-white p-6 dark:border-[#2C3130] dark:bg-[#1A1E1D]">
+            <ScoreResultView result={scoreState.result} />
           </div>
         )}
       </aside>

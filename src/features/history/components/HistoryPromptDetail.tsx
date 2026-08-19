@@ -3,8 +3,11 @@ import { Check, Copy } from 'lucide-react'
 import { useAuth } from '@/features/auth/context/useAuth'
 import { createAiEnhanceClient } from '@/features/ai-enhance/api/aiEnhanceClient'
 import { useRefinePrompt } from '@/features/ai-enhance/hooks/useRefinePrompt'
+import { useScorePrompt } from '@/features/ai-enhance/hooks/useScorePrompt'
 import { RefineTrigger } from '@/features/ai-enhance/components/RefineTrigger'
 import { RefineDiffView } from '@/features/ai-enhance/components/RefineDiffView'
+import { ScoreTrigger } from '@/features/ai-enhance/components/ScoreTrigger'
+import { ScoreResultView } from '@/features/ai-enhance/components/ScoreResultView'
 
 interface HistoryPromptDetailProps {
   generatedPromptId: string
@@ -30,6 +33,10 @@ export function HistoryPromptDetail({
     client: aiEnhanceClient,
     generatedPromptId,
     onAccepted: onFinalPromptRefined,
+  })
+  const scoreState = useScorePrompt({
+    client: aiEnhanceClient,
+    generatedPromptId,
   })
 
   async function handleCopy() {
@@ -76,6 +83,13 @@ export function HistoryPromptDetail({
         onAccept={(editedText) => void refineState.acceptRefine(editedText)}
         onDiscard={() => void refineState.discardRefine()}
       />
+      <ScoreTrigger
+        generatedPromptId={generatedPromptId}
+        state={scoreState.state}
+        errorMessage={scoreState.errorMessage}
+        onScore={() => void scoreState.score()}
+      />
+      <ScoreResultView result={scoreState.result} />
     </section>
   )
 }
